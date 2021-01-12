@@ -1,0 +1,30 @@
+{
+  "Name": "ContractTestCreate",
+  "OauthToken": "dummyOAuthToken",
+  "BuildSpec": "dummySpec",
+  "AccessToken": "dummyAccessToken",
+  "EnableBranchAutoDeletion": false,
+  "Repository": "{{CFNTestCodeCommitCloneUrl}}",
+  "CustomRules": [
+    {
+      "Source": "/source",
+      "Target": "/target",
+      "Status": "200"
+    }
+  ],
+  "EnvironmentVariables": [
+    {
+      "Name": "envName1",
+      "Value": "envValue1"
+    },
+    {
+      "Name": "envName2",
+      "Value": "envValue2"
+    }
+  ],
+  "BasicAuthConfig": {
+    "EnableBasicAuth": true,
+    "Username": "user",
+    "Password": "pass"
+  }
+}
