@@ -1,0 +1,67 @@
+{
+  "desiredResourceState": {
+    "Name": "CfnInvokeTestCreate",
+    "OauthToken": "dummyOAuthToken",
+    "BuildSpec": "dummySpec",
+    "AccessToken": "dummyAccessToken",
+    "EnableBranchAutoDeletion": false,
+    "CustomHeaders": "customHeaders:\n- pattern: '**/*'\n  headers:\n  - key: 'foo'\n    value: 'bar'\n",
+    "CustomRules": [
+      {
+        "Source": "/source",
+        "Target": "/target",
+        "Status": "200"
+      }
+    ],
+    "EnvironmentVariables": [
+      {
+        "Name": "envName1",
+        "Value": "envValue1"
+      },
+      {
+        "Name": "envName2",
+        "Value": "envValue2"
+      }
+    ],
+    "BasicAuthConfig": {
+      "EnableBasicAuth": true,
+      "Username": "user",
+      "Password": "pass"
+    },
+    "AutoBranchCreationConfig": {
+      "AutoBranchCreationPatterns": [
+        "/*"
+      ],
+      "BasicAuthConfig": {
+        "EnableBasicAuth": true,
+        "Username": "user",
+        "Password": "pass"
+      },
+      "BuildSpec": "dummySpec",
+      "EnableAutoBranchCreation": true,
+      "EnableAutoBuild": true,
+      "EnablePerformanceMode": true,
+      "EnablePullRequestPreview": true,
+      "EnvironmentVariables": [
+        {
+          "Name": "foo",
+          "Value": "bar"
+        }
+      ],
+      "PullRequestEnvironmentName": "pr-1",
+      "Stage": "DEVELOPMENT"
+    },
+    "Tags": [
+      {
+        "Key": "tagKey1",
+        "Value": "tagValue1"
+      },
+      {
+        "Key": "tagKey2",
+        "Value": "tagValue2"
+      }
+    ]
+  },
+  "previousResourceState": {},
+  "logicalResourceIdentifier": "testId"
+}

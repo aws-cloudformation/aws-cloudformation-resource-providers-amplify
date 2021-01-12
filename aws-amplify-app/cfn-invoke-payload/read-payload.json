@@ -1,0 +1,7 @@
+{
+  "desiredResourceState": {
+    "AppId": "replacewithrealappid"
+  },
+  "previousResourceState": {},
+  "logicalResourceIdentifier": "testId"
+}

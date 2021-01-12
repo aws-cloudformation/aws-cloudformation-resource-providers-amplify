@@ -1,0 +1,25 @@
+{
+  "Name": "ContractTestUpdate",
+  "BuildSpec": "dummySpecUpdate",
+  "AccessToken": "dummyAccessTokenUpdate",
+  "EnableBranchAutoDeletion": false,
+  "Repository": "{{CFNTestCodeCommitCloneUrl}}",
+  "CustomRules": [
+    {
+      "Source": "/sourceUpdate",
+      "Target": "/targetUpdate",
+      "Status": "200"
+    }
+  ],
+  "EnvironmentVariables": [
+    {
+      "Name": "fooUpdate",
+      "Value": "barUpdate"
+    }
+  ],
+  "BasicAuthConfig": {
+    "EnableBasicAuth": true,
+    "Username": "userUpdate",
+    "Password": "passUpdate"
+  }
+}
