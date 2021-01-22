@@ -1,53 +1,33 @@
 {
   "desiredResourceState": {
     "AppId": "replacewithrealappid",
-    "Name": "ContractTestUpdate",
-    "BuildSpec": "dummySpecUpdate",
-    "AccessToken": "dummyAccessTokenUpdate",
-    "EnableBranchAutoDeletion": false,
-    "CustomHeaders": "customHeaders:\n- pattern: '**/*'\n  headers:\n  - key: 'fooUpdate'\n    value: 'barUpdate'\n",
-    "CustomRules": [
-      {
-        "Source": "/sourceUpdate",
-        "Target": "/targetUpdate",
-        "Status": "200"
-      }
-    ],
-    "EnvironmentVariables": [
-      {
-        "Name": "fooUpdate",
-        "Value": "barUpdate"
-      }
-    ],
+    "BranchName": "replacewithrealbranchname",
+    "BackendEnvironmentArn": "arn:aws:amplify:region:accountId:apps/appId/backendenvironments/backendEnvironmentName",
     "BasicAuthConfig": {
       "EnableBasicAuth": true,
-      "Username": "userUpdate",
-      "Password": "passUpdate"
+      "Username": "userupdate",
+      "Password": "passupdate"
     },
-    "AutoBranchCreationConfig": {
-      "AutoBranchCreationPatterns": [
-        "/*",
-        "/update"
-      ],
-      "BasicAuthConfig": {
-        "EnableBasicAuth": true,
-        "Username": "userUpdate",
-        "Password": "passUpdate"
+    "BuildSpec": "foo: bar",
+    "Description": "dummyDescriptionUpdate",
+    "DisplayName": "dummydisplaynameupdate",
+    "EnableAutoBuild": false,
+    "EnableNotification": false,
+    "EnablePerformanceMode": false,
+    "EnablePullRequestPreview": false,
+    "EnvironmentVariables": [
+      {
+        "Name": "envName1update",
+        "Value": "envValue1update"
       },
-      "BuildSpec": "dummySpecUpdate",
-      "EnableAutoBranchCreation": true,
-      "EnableAutoBuild": true,
-      "EnablePerformanceMode": true,
-      "EnablePullRequestPreview": true,
-      "EnvironmentVariables": [
-        {
-          "Name": "fooUpdate",
-          "Value": "barUpdate"
-        }
-      ],
-      "PullRequestEnvironmentName": "pr-update",
-      "Stage": "DEVELOPMENT"
-    },
+      {
+        "Name": "envName2update",
+        "Value": "envValue2update"
+      }
+    ],
+    "Framework": "dummyFrameworkUpdate",
+    "PullRequestEnvironmentName": "pr-update",
+    "Stage": "DEVELOPMENT",
     "Tags": [
       {
         "Key": "tagKey1Update",

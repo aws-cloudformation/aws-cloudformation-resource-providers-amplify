@@ -20,8 +20,9 @@ import software.amazon.cloudformation.proxy.ProxyClient;
 public class AbstractTestBase {
   protected static final Credentials MOCK_CREDENTIALS;
   protected static final LoggerProxy logger;
+  protected static String APP_ID = "dummyId";
   protected static String BRANCH_NAME = "dummyName";
-  protected static String BRANCH_ARN = String.format("arn:aws:amplify:region:accountId:%s", BRANCH_NAME);
+  protected static String BRANCH_ARN = String.format("arn:aws:amplify:region:accountId:apps/%s/branches/%s", APP_ID, BRANCH_NAME);
   protected static List<Tag> TAGS = ImmutableList.of(Tag.builder().key("foo").value("bar").build());
 
   static {

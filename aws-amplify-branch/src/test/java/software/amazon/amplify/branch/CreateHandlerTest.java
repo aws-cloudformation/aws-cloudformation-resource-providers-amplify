@@ -54,7 +54,10 @@ public class CreateHandlerTest extends AbstractTestBase {
     public void handleRequest_SimpleSuccess() {
         final CreateHandler handler = new CreateHandler();
 
-        final ResourceModel model = ResourceModel.builder().build();
+        final ResourceModel model = ResourceModel.builder()
+                .appId(APP_ID)
+                .branchName(BRANCH_NAME)
+                .build();
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
             .desiredResourceState(model)
@@ -68,12 +71,18 @@ public class CreateHandlerTest extends AbstractTestBase {
                                 .build())
                         .build());
 
-        final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(proxy, request, new CallbackContext(), proxyClient, logger);
+        final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(proxy, request,
+                new CallbackContext(), proxyClient, logger);
+        final ResourceModel expected = ResourceModel.builder()
+                .appId(APP_ID)
+                .arn(BRANCH_ARN)
+                .branchName(BRANCH_NAME)
+                .build();
 
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
         assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
-        assertThat(response.getResourceModel()).isEqualTo(request.getDesiredResourceState());
+        assertThat(response.getResourceModel()).isEqualTo(expected);
         assertThat(response.getResourceModels()).isNull();
         assertThat(response.getMessage()).isNull();
         assertThat(response.getErrorCode()).isNull();

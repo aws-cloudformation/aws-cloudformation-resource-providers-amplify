@@ -1,15 +1,25 @@
 package software.amazon.amplify.branch;
 
-
-import software.amazon.awssdk.awscore.AwsResponse;
-import software.amazon.awssdk.awscore.exception.AwsServiceException;
+import com.google.common.collect.Sets;
+import org.apache.commons.collections.MapUtils;
+import software.amazon.amplify.common.utils.ClientWrapper;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
-import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
+import software.amazon.awssdk.services.amplify.model.ListTagsForResourceRequest;
+import software.amazon.awssdk.services.amplify.model.ListTagsForResourceResponse;
+import software.amazon.awssdk.services.amplify.model.TagResourceRequest;
+import software.amazon.awssdk.services.amplify.model.UntagResourceRequest;
+import software.amazon.awssdk.services.amplify.model.UpdateBranchResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ProxyClient;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class UpdateHandler extends BaseHandlerStd {
     private Logger logger;
@@ -22,117 +32,88 @@ public class UpdateHandler extends BaseHandlerStd {
         final Logger logger) {
 
         this.logger = logger;
+        final ResourceModel model = request.getDesiredResourceState();
 
-        // TODO: Adjust Progress Chain according to your implementation
-        // https://github.com/aws-cloudformation/cloudformation-cli-java-plugin/blob/master/src/main/java/software/amazon/cloudformation/proxy/CallChain.java
-
-        return ProgressEvent.progress(request.getDesiredResourceState(), callbackContext)
-
-            // STEP 1 [check if resource already exists]
-            // for more information -> https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/resource-type-test-contract.html
-            // if target API does not support 'ResourceNotFoundException' then following check is required
+        return ProgressEvent.progress(model, callbackContext)
             .then(progress ->
-                // STEP 1.0 [initialize a proxy context]
-                // If your service API does not return ResourceNotFoundException on update requests against some identifier (e.g; resource Name)
-                // and instead returns a 200 even though a resource does not exist, you must first check if the resource exists here
-                // NOTE: If your service API throws 'ResourceNotFoundException' for update requests this method is not necessary
-                proxy.initiate("AWS-Amplify-Branch::Update::PreUpdateCheck", proxyClient, progress.getResourceModel(), progress.getCallbackContext())
+                proxy.initiate("AWS-Amplify-Branch::Update", proxyClient, model, progress.getCallbackContext())
+                    .translateToServiceRequest(Translator::translateToUpdateRequest)
+                    .makeServiceCall((updateBranchRequest, proxyInvocation) -> (UpdateBranchResponse) ClientWrapper.execute(
+                            proxy,
+                            updateBranchRequest,
+                            proxyInvocation.client()::updateBranch,
+                            ResourceModel.TYPE_NAME,
+                            model.getArn(),
+                            logger
+                    ))
+                    .done(updateBranchResponse -> ProgressEvent.defaultSuccessHandler(handleUpdateResponse(updateBranchResponse,
+                            model, proxy, proxyClient)))
+            );
+    }
 
-                    // STEP 1.1 [initialize a proxy context]
-                    .translateToServiceRequest(Translator::translateToReadRequest)
+    private ResourceModel handleUpdateResponse(final UpdateBranchResponse createBranchResponse,
+                                               final ResourceModel model,
+                                               final AmazonWebServicesClientProxy proxy,
+                                               final ProxyClient<AmplifyClient> proxyClient
+    ) {
+        setResourceModelId(model, createBranchResponse.branch());
+        updateTags(proxy, proxyClient, model, convertToResourceTags(model.getTags()));
+        return model;
+    }
 
-                    // STEP 1.2 [TODO: make an api call]
-                    .makeServiceCall((awsRequest, client) -> {
-                        AwsResponse awsResponse = null;
+    private void updateTags(final AmazonWebServicesClientProxy proxy,
+                            final ProxyClient<AmplifyClient> proxyClient,
+                            final ResourceModel model,
+                            final Map<String, String> desiredTags) {
+        logger.log("INFO: Modifying Tags");
+        final Set<Tag> finalTags = convertResourceTagsToSet(desiredTags);
+        final Set<Tag> existingTags = getExistingTags(proxy, proxyClient, model);
 
-                        // TODO: add custom read resource logic
-                        // If describe request does not return ResourceNotFoundException, you must throw ResourceNotFoundException based on
-                        // awsResponse values
+        final Set<Tag> tagsToRemove = Sets.difference(existingTags, finalTags);
+        final Set<Tag> tagsToAdd = Sets.difference(finalTags, existingTags);
 
-                        logger.log(String.format("%s has successfully been read.", ResourceModel.TYPE_NAME));
-                        return awsResponse;
-                    })
-                    .progress()
-            )
+        if (tagsToRemove.size() > 0) {
+            Collection<String> tagKeys = tagsToRemove.stream().map(Tag::getKey).collect(Collectors.toSet());
+            final UntagResourceRequest untagResourceRequest = UntagResourceRequest.builder().resourceArn(model.getArn())
+                    .tagKeys(tagKeys).build();
+            ClientWrapper.execute(proxy, untagResourceRequest, proxyClient.client()::untagResource, ResourceModel.TYPE_NAME,
+                    model.getAppId(), logger);
+        }
 
-            // STEP 2 [first update/stabilize progress chain - required for resource update]
-            .then(progress ->
-                // STEP 2.0 [initialize a proxy context]
-                // Implement client invocation of the update request through the proxyClient, which is already initialised with
-                // caller credentials, correct region and retry settings
-                proxy.initiate("AWS-Amplify-Branch::Update::first", proxyClient, progress.getResourceModel(), progress.getCallbackContext())
+        if (tagsToAdd.size() > 0) {
+            Map<String, String> tags = convertToResourceTags(tagsToAdd);
+            final TagResourceRequest tagResourceRequest = TagResourceRequest.builder()
+                    .resourceArn(model.getArn()).tags(tags).build();
+            ClientWrapper.execute(proxy, tagResourceRequest, proxyClient.client()::tagResource, ResourceModel.TYPE_NAME,
+                    model.getAppId(), logger);
+        }
+        logger.log("INFO: Successfully Updated Tags");
+    }
 
-                    // STEP 2.1 [TODO: construct a body of a request]
-                    .translateToServiceRequest(Translator::translateToFirstUpdateRequest)
+    private Set<Tag> getExistingTags(final AmazonWebServicesClientProxy proxy,
+                                     final ProxyClient<AmplifyClient> proxyClient,
+                                     final ResourceModel model) {
+        ListTagsForResourceRequest listTagsForResourceRequest = Translator.translateToListTagsForResourceRequest(model.getArn());
+        ListTagsForResourceResponse listTagsForResourceResponse = (ListTagsForResourceResponse) ClientWrapper.execute(proxy,
+                listTagsForResourceRequest, proxyClient.client()::listTagsForResource, ResourceModel.TYPE_NAME, model.getAppId(), logger);
+        return convertResourceTagsToSet(listTagsForResourceResponse.tags());
+    }
 
-                    // STEP 2.2 [TODO: make an api call]
-                    .makeServiceCall((awsRequest, client) -> {
-                        AwsResponse awsResponse = null;
-                        try {
+    private static Set<Tag> convertResourceTagsToSet(final Map<String, String> resourceTags) {
+        final Set<Tag> tagSet = Sets.newHashSet();
+        if (MapUtils.isNotEmpty(resourceTags)) {
+            resourceTags.forEach((key, value) -> tagSet.add(Tag.builder().key(key).value(value).build()));
+        }
+        return tagSet;
+    }
 
-                            // TODO: put your update resource code here
-
-                        } catch (final AwsServiceException e) {
-                            /*
-                            * While the handler contract states that the handler must always return a progress event,
-                            * you may throw any instance of BaseHandlerException, as the wrapper map it to a progress event.
-                            * Each BaseHandlerException maps to a specific error code, and you should map service exceptions as closely as possible
-                            * to more specific error codes
-                            */
-                            throw new CfnGeneralServiceException(ResourceModel.TYPE_NAME, e);
-                        }
-
-                        logger.log(String.format("%s has successfully been updated.", ResourceModel.TYPE_NAME));
-                        return awsResponse;
-                    })
-
-                    // STEP 2.3 [TODO: stabilize step is not necessarily required but typically involves describing the resource until it is in a certain status, though it can take many forms]
-                    // stabilization step may or may not be needed after each API call
-                    // for more information -> https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/resource-type-test-contract.html
-                    .stabilize((awsRequest, awsResponse, client, model, context) -> {
-                        // TODO: put your stabilization code here
-
-                        final boolean stabilized = true;
-
-                        logger.log(String.format("%s [%s] update has stabilized: %s", ResourceModel.TYPE_NAME, model.getPrimaryIdentifier(), stabilized));
-                        return stabilized;
-                    })
-                    .progress())
-
-            // If your resource is provisioned through multiple API calls, then the following pattern is required (and might take as many postUpdate callbacks as necessary)
-            // STEP 3 [second update/stabilize progress chain]
-            .then(progress ->
-                    // STEP 3.0 [initialize a proxy context]
-                    // If your resource is provisioned through multiple API calls, you will need to apply each subsequent update
-                    // step in a discrete call/stabilize chain to ensure the entire resource is provisioned as intended.
-                    proxy.initiate("AWS-Amplify-Branch::Update::second", proxyClient, progress.getResourceModel(), progress.getCallbackContext())
-
-                    // STEP 3.1 [TODO: construct a body of a request]
-                    .translateToServiceRequest(Translator::translateToSecondUpdateRequest)
-
-                    // STEP 3.2 [TODO: make an api call]
-                    .makeServiceCall((awsRequest, client) -> {
-                        AwsResponse awsResponse = null;
-                        try {
-
-                            // TODO: put your post update resource code here
-
-                        } catch (final AwsServiceException e) {
-                            /*
-                            * While the handler contract states that the handler must always return a progress event,
-                            * you may throw any instance of BaseHandlerException, as the wrapper map it to a progress event.
-                            * Each BaseHandlerException maps to a specific error code, and you should map service exceptions as closely as possible
-                            * to more specific error codes
-                            */
-                            throw new CfnGeneralServiceException(ResourceModel.TYPE_NAME, e);
-                        }
-
-                        logger.log(String.format("%s has successfully been updated.", ResourceModel.TYPE_NAME));
-                        return awsResponse;
-                    })
-                    .progress())
-
-            // STEP 4 [TODO: describe call/chain to return the resource model]
-            .then(progress -> new ReadHandler().handleRequest(proxy, request, callbackContext, proxyClient, logger));
+    private static Map<String, String> convertToResourceTags(final Collection<Tag> tagSet) {
+        final Map<String, String> tagMap = new HashMap<>();
+        if (tagSet != null) {
+            for (final Tag tag : tagSet) {
+                tagMap.put(tag.getKey(), tag.getValue());
+            }
+        }
+        return tagMap;
     }
 }

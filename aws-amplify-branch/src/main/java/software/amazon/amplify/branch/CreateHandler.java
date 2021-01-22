@@ -1,5 +1,6 @@
 package software.amazon.amplify.branch;
 
+import software.amazon.amplify.common.utils.ClientWrapper;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
 import software.amazon.awssdk.services.amplify.model.CreateBranchResponse;
 import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
@@ -29,7 +30,14 @@ public class CreateHandler extends BaseHandlerStd {
             .then(progress ->
                 proxy.initiate("AWS-Amplify-Branch::Create", proxyClient, model, callbackContext)
                     .translateToServiceRequest(Translator::translateToCreateRequest)
-                    .makeServiceCall((createBranchRequest, proxyInvocation) -> (CreateBranchResponse) execute(proxy, createBranchRequest, proxyInvocation.client()::createBranch, model, logger))
+                    .makeServiceCall((createBranchRequest, proxyInvocation) -> (CreateBranchResponse) ClientWrapper.execute(
+                            proxy,
+                            createBranchRequest,
+                            proxyInvocation.client()::createBranch,
+                            ResourceModel.TYPE_NAME,
+                            model.getArn(),
+                            logger
+                    ))
                     .done(createBranchResponse -> ProgressEvent.defaultSuccessHandler(handleCreateResponse(createBranchResponse, model)))
                );
     }

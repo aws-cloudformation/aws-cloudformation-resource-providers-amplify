@@ -6,6 +6,9 @@ import org.apache.commons.collections.CollectionUtils;
 import software.amazon.awssdk.awscore.AwsRequest;
 import software.amazon.awssdk.awscore.AwsResponse;
 import software.amazon.awssdk.services.amplify.model.CreateBranchRequest;
+import software.amazon.awssdk.services.amplify.model.ListTagsForResourceRequest;
+import software.amazon.awssdk.services.amplify.model.UpdateAppRequest;
+import software.amazon.awssdk.services.amplify.model.UpdateBranchRequest;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -107,22 +110,33 @@ public class Translator {
    * @param model resource model
    * @return awsRequest the aws service request to modify a resource
    */
-  static AwsRequest translateToFirstUpdateRequest(final ResourceModel model) {
-    final AwsRequest awsRequest = null;
-    // TODO: construct a request
-    // e.g. https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-logs/blob/2077c92299aeb9a68ae8f4418b5e932b12a8b186/aws-logs-loggroup/src/main/java/com/aws/logs/loggroup/Translator.java#L45-L50
-    return awsRequest;
-  }
+  static UpdateBranchRequest translateToUpdateRequest(final ResourceModel model) {
+    final UpdateBranchRequest.Builder updateBranchRequest = UpdateBranchRequest.builder()
+            .appId(model.getAppId())
+            .branchName(model.getBranchName())
+            .backendEnvironmentArn(model.getBackendEnvironmentArn())
+            .buildSpec(model.getBuildSpec())
+            .description(model.getDescription())
+            .displayName(model.getDisplayName())
+            .enableAutoBuild(model.getEnableAutoBuild())
+            .enableNotification(model.getEnableNotification())
+            .enablePerformanceMode(model.getEnablePerformanceMode())
+            .enablePullRequestPreview(model.getEnablePullRequestPreview())
+            .framework(model.getFramework())
+            .pullRequestEnvironmentName(model.getPullRequestEnvironmentName())
+            .stage(model.getStage())
+            .ttl(model.getTtl());
 
-  /**
-   * Request to update some other properties that could not be provisioned through first update request
-   * @param model resource model
-   * @return awsRequest the aws service request to modify a resource
-   */
-  static AwsRequest translateToSecondUpdateRequest(final ResourceModel model) {
-    final AwsRequest awsRequest = null;
-    // TODO: construct a request
-    return awsRequest;
+    List<EnvironmentVariable> environmentVariables = model.getEnvironmentVariables();
+    if (CollectionUtils.isNotEmpty(environmentVariables)) {
+      updateBranchRequest.environmentVariables(getEnvironmentVariables(environmentVariables));
+    }
+    BasicAuthConfig basicAuthConfig = model.getBasicAuthConfig();
+    if (basicAuthConfig != null) {
+      updateBranchRequest.enableBasicAuth(basicAuthConfig.getEnableBasicAuth());
+      updateBranchRequest.basicAuthCredentials(getBasicAuthCredentials(basicAuthConfig));
+    }
+    return updateBranchRequest.build();
   }
 
   /**
@@ -151,10 +165,16 @@ public class Translator {
         .collect(Collectors.toList());
   }
 
+  static ListTagsForResourceRequest translateToListTagsForResourceRequest(final String arn) {
+    return ListTagsForResourceRequest.builder()
+            .resourceArn(arn)
+            .build();
+  }
+
   /*
    * Helpers
    */
-  private static Map<String, String> getTags(@NonNull final List<Tag> tags) {
+  public static Map<String, String> getTags(@NonNull final List<Tag> tags) {
     Map<String, String> tagMap = new HashMap<>();
     for (Tag tag : tags) {
       tagMap.put(tag.getKey(), tag.getValue());

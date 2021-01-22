@@ -3,8 +3,6 @@ package software.amazon.amplify.app;
 import java.time.Duration;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
 import software.amazon.awssdk.services.amplify.model.App;
-import software.amazon.awssdk.services.amplify.model.GetAppRequest;
-import software.amazon.awssdk.services.amplify.model.GetAppResponse;
 import software.amazon.awssdk.services.amplify.model.ListTagsForResourceRequest;
 import software.amazon.awssdk.services.amplify.model.ListTagsForResourceResponse;
 import software.amazon.awssdk.services.amplify.model.TagResourceRequest;

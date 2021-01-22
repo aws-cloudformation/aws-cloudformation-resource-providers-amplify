@@ -1,18 +1,10 @@
-package software.amazon.amplify.app;
+package software.amazon.amplify.common.utils;
 
 import com.google.common.collect.Sets;
 import org.apache.commons.collections.MapUtils;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
-import software.amazon.awssdk.services.amplify.model.ListTagsForResourceRequest;
-import software.amazon.awssdk.services.amplify.model.ListTagsForResourceResponse;
-import software.amazon.awssdk.services.amplify.model.TagResourceRequest;
-import software.amazon.awssdk.services.amplify.model.UntagResourceRequest;
-import software.amazon.awssdk.services.amplify.model.UpdateAppResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
-import software.amazon.cloudformation.proxy.Logger;
-import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ProxyClient;
-import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -20,41 +12,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class UpdateHandler extends BaseHandlerStd {
-    private Logger logger;
-
-    protected ProgressEvent<ResourceModel, CallbackContext> handleRequest(
-        final AmazonWebServicesClientProxy proxy,
-        final ResourceHandlerRequest<ResourceModel> request,
-        final CallbackContext callbackContext,
-        final ProxyClient<AmplifyClient> proxyClient,
-        final Logger logger) {
-
-        this.logger = logger;
-        final ResourceModel model = request.getDesiredResourceState();
-
-        return ProgressEvent.progress(model, callbackContext)
-            .then(progress ->
-                proxy.initiate("AWS-Amplify-App::Update", proxyClient, model, callbackContext)
-                    .translateToServiceRequest(Translator::translateToUpdateRequest)
-                    .makeServiceCall((updateAppRequest, proxyInvocation) -> (UpdateAppResponse) execute(proxy,
-                            updateAppRequest, proxyInvocation.client()::updateApp, model, logger))
-                    .done(updateAppResponse -> ProgressEvent.defaultSuccessHandler(handleUpdateResponse(updateAppResponse,
-                            model, proxy, proxyClient)))
-            );
-    }
-
-    private ResourceModel handleUpdateResponse(final UpdateAppResponse createAppResponse,
-                                               final ResourceModel model,
-                                               final AmazonWebServicesClientProxy proxy,
-                                               final ProxyClient<AmplifyClient> proxyClient
-    ) {
-        updateTags(proxy, proxyClient, model, convertToResourceTags(model.getTags()));
-        setResourceModelId(model, createAppResponse.app());
-        return model;
-    }
-
-    private void updateTags(final AmazonWebServicesClientProxy proxy,
+public class TagUtils {
+    private static void updateTags(final AmazonWebServicesClientProxy proxy,
                             final ProxyClient<AmplifyClient> proxyClient,
                             final ResourceModel model,
                             final Map<String, String> desiredTags) {
@@ -81,7 +40,7 @@ public class UpdateHandler extends BaseHandlerStd {
         logger.log("INFO: Successfully Updated Tags");
     }
 
-    private Set<Tag> getExistingTags(final AmazonWebServicesClientProxy proxy,
+    private static Set<Tag> getExistingTags(final AmazonWebServicesClientProxy proxy,
                                      final ProxyClient<AmplifyClient> proxyClient,
                                      final ResourceModel model) {
         ListTagsForResourceRequest listTagsForResourceRequest = Translator.translateToListTagsForResourceRequest(model.getArn());
@@ -107,4 +66,5 @@ public class UpdateHandler extends BaseHandlerStd {
         }
         return tagMap;
     }
+
 }

@@ -179,6 +179,8 @@ _Required_: No
 
 _Type_: String
 
+_Allowed Values_: <code>EXPERIMENTAL</code> | <code>BETA</code> | <code>PULL_REQUEST</code> | <code>PRODUCTION</code> | <code>DEVELOPMENT</code>
+
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### Tags
