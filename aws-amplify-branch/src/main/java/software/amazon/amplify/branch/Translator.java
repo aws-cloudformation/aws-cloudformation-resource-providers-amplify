@@ -3,14 +3,24 @@ package software.amazon.amplify.branch;
 import com.google.common.collect.Lists;
 import lombok.NonNull;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import software.amazon.awssdk.awscore.AwsRequest;
 import software.amazon.awssdk.awscore.AwsResponse;
+import software.amazon.awssdk.services.amplify.model.App;
+import software.amazon.awssdk.services.amplify.model.AutoBranchCreationConfig;
+import software.amazon.awssdk.services.amplify.model.Branch;
 import software.amazon.awssdk.services.amplify.model.CreateBranchRequest;
+import software.amazon.awssdk.services.amplify.model.CustomRule;
+import software.amazon.awssdk.services.amplify.model.GetAppRequest;
+import software.amazon.awssdk.services.amplify.model.GetAppResponse;
+import software.amazon.awssdk.services.amplify.model.GetBranchRequest;
+import software.amazon.awssdk.services.amplify.model.GetBranchResponse;
 import software.amazon.awssdk.services.amplify.model.ListTagsForResourceRequest;
 import software.amazon.awssdk.services.amplify.model.UpdateAppRequest;
 import software.amazon.awssdk.services.amplify.model.UpdateBranchRequest;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.HashMap;
@@ -74,11 +84,11 @@ public class Translator {
    * @param model resource model
    * @return awsRequest the aws service request to describe a resource
    */
-  static AwsRequest translateToReadRequest(final ResourceModel model) {
-    final AwsRequest awsRequest = null;
-    // TODO: construct a request
-    // e.g. https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-logs/blob/2077c92299aeb9a68ae8f4418b5e932b12a8b186/aws-logs-loggroup/src/main/java/com/aws/logs/loggroup/Translator.java#L20-L24
-    return awsRequest;
+  static GetBranchRequest translateToReadRequest(final ResourceModel model) {
+    return GetBranchRequest.builder()
+            .appId(model.getAppId())
+            .branchName(model.getBranchName())
+            .build();
   }
 
   /**
@@ -86,11 +96,34 @@ public class Translator {
    * @param awsResponse the aws service describe resource response
    * @return model resource model
    */
-  static ResourceModel translateFromReadResponse(final AwsResponse awsResponse) {
-    // e.g. https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-logs/blob/2077c92299aeb9a68ae8f4418b5e932b12a8b186/aws-logs-loggroup/src/main/java/com/aws/logs/loggroup/Translator.java#L58-L73
-    return ResourceModel.builder()
-        //.someProperty(response.property())
-        .build();
+  static ResourceModel translateFromReadResponse(final GetBranchResponse response) {
+    Branch branch = response.branch();
+
+    ResourceModel.ResourceModelBuilder branchModelBuilder = ResourceModel.builder()
+            .arn(branch.branchArn())
+            .branchName(branch.branchName())
+            .buildSpec(branch.buildSpec())
+            .description(branch.description())
+            .displayName(branch.displayName())
+            .enableAutoBuild(branch.enableAutoBuild())
+            .enableNotification(branch.enableNotification())
+            .enablePerformanceMode(branch.enablePerformanceMode())
+            .enablePullRequestPreview(branch.enablePullRequestPreview())
+            .framework(branch.framework())
+            .pullRequestEnvironmentName(branch.pullRequestEnvironmentName())
+            .stage(branch.stageAsString())
+            .ttl(branch.ttl());
+
+    Map<String, String> branchEnvVars = branch.environmentVariables();
+    if (MapUtils.isNotEmpty(branchEnvVars)) {
+      branchModelBuilder.environmentVariables(getEnvironmentVariablesCFN(branchEnvVars));
+    }
+
+    Map<String, String> branchTags = branch.tags();
+    if (MapUtils.isNotEmpty(branchTags)) {
+      branchModelBuilder.tags(getTagsCFN(branchTags));
+    }
+    return branchModelBuilder.build();
   }
 
   /**
@@ -174,6 +207,24 @@ public class Translator {
   /*
    * Helpers
    */
+  private static List<EnvironmentVariable> getEnvironmentVariablesCFN(@NonNull final Map<String, String> envVars) {
+    List<EnvironmentVariable> envVarsCFN = new ArrayList<>();
+    envVars.forEach((k, v) -> envVarsCFN.add(EnvironmentVariable.builder()
+            .name(k)
+            .value(v)
+            .build()));
+    return envVarsCFN;
+  }
+
+  private static List<Tag> getTagsCFN(@NonNull final Map<String, String> tags) {
+    List<Tag> tagsCFN = new ArrayList<>();
+    tags.forEach((k, v) -> tagsCFN.add(Tag.builder()
+            .key(k)
+            .value(v)
+            .build()));
+    return tagsCFN;
+  }
+
   public static Map<String, String> getTags(@NonNull final List<Tag> tags) {
     Map<String, String> tagMap = new HashMap<>();
     for (Tag tag : tags) {
