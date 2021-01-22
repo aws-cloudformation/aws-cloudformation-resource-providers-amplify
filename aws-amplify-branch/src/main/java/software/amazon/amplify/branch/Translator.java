@@ -1,11 +1,18 @@
 package software.amazon.amplify.branch;
 
 import com.google.common.collect.Lists;
+import lombok.NonNull;
+import org.apache.commons.collections.CollectionUtils;
 import software.amazon.awssdk.awscore.AwsRequest;
 import software.amazon.awssdk.awscore.AwsResponse;
+import software.amazon.awssdk.services.amplify.model.CreateBranchRequest;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -24,11 +31,39 @@ public class Translator {
    * @param model resource model
    * @return awsRequest the aws service request to create a resource
    */
-  static AwsRequest translateToCreateRequest(final ResourceModel model) {
-    final AwsRequest awsRequest = null;
-    // TODO: construct a request
-    // e.g. https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-logs/blob/2077c92299aeb9a68ae8f4418b5e932b12a8b186/aws-logs-loggroup/src/main/java/com/aws/logs/loggroup/Translator.java#L39-L43
-    return awsRequest;
+  static CreateBranchRequest translateToCreateRequest(final ResourceModel model) {
+    final CreateBranchRequest.Builder createBranchRequest = CreateBranchRequest.builder()
+            .appId(model.getAppId())
+            .backendEnvironmentArn(model.getBackendEnvironmentArn())
+            .branchName(model.getBranchName())
+            .buildSpec(model.getBuildSpec())
+            .description(model.getDescription())
+            .displayName(model.getDisplayName())
+            .enableAutoBuild(model.getEnableAutoBuild())
+            .enableNotification(model.getEnableNotification())
+            .enablePerformanceMode(model.getEnablePerformanceMode())
+            .enablePullRequestPreview(model.getEnablePullRequestPreview())
+            .framework(model.getFramework())
+            .pullRequestEnvironmentName(model.getPullRequestEnvironmentName())
+            .stage(model.getStage())
+            .ttl(model.getTtl());
+
+    BasicAuthConfig basicAuthConfig = model.getBasicAuthConfig();
+    if (basicAuthConfig != null) {
+      createBranchRequest.enableBasicAuth(basicAuthConfig.getEnableBasicAuth());
+      createBranchRequest.basicAuthCredentials(getBasicAuthCredentials(basicAuthConfig));
+    }
+
+    List<EnvironmentVariable> environmentVariables = model.getEnvironmentVariables();
+    if (CollectionUtils.isNotEmpty(environmentVariables)) {
+      createBranchRequest.environmentVariables(getEnvironmentVariables(environmentVariables));
+    }
+
+    List<Tag> appTags = model.getTags();
+    if (CollectionUtils.isNotEmpty(appTags)) {
+      createBranchRequest.tags(getTags(appTags));
+    }
+    return createBranchRequest.build();
   }
 
   /**
@@ -114,6 +149,30 @@ public class Translator {
             // include only primary identifier
             .build())
         .collect(Collectors.toList());
+  }
+
+  /*
+   * Helpers
+   */
+  private static Map<String, String> getTags(@NonNull final List<Tag> tags) {
+    Map<String, String> tagMap = new HashMap<>();
+    for (Tag tag : tags) {
+      tagMap.put(tag.getKey(), tag.getValue());
+    }
+    return tagMap;
+  }
+
+  private static Map<String, String> getEnvironmentVariables(@NonNull final List<EnvironmentVariable> envVarsCFN) {
+    Map<String, String> envVars = new HashMap<>();
+    for (EnvironmentVariable envVarCFN : envVarsCFN) {
+      envVars.put(envVarCFN.getName(), envVarCFN.getValue());
+    }
+    return envVars;
+  }
+
+  private static String getBasicAuthCredentials(@NonNull BasicAuthConfig basicAuthConfig) {
+    final String userInfo = String.format("%s:%s", basicAuthConfig.getUsername(), basicAuthConfig.getPassword());
+    return Base64.getEncoder().encodeToString(userInfo.getBytes(StandardCharsets.UTF_8));
   }
 
   private static <T> Stream<T> streamOfOrEmpty(final Collection<T> collection) {

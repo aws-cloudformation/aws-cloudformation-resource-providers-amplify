@@ -216,7 +216,6 @@ public class Translator {
     return customRules;
   }
 
-
   private static Map<String, String> getEnvironmentVariables(@NonNull final List<EnvironmentVariable> envVarsCFN) {
     Map<String, String> envVars = new HashMap<>();
     for (EnvironmentVariable envVarCFN : envVarsCFN) {
@@ -250,8 +249,6 @@ public class Translator {
             .build()));
     return tagsCFN;
   }
-
-
 
   private static String getBasicAuthCredentials(@NonNull BasicAuthConfig basicAuthConfig) {
     final String userInfo = String.format("%s:%s", basicAuthConfig.getUsername(), basicAuthConfig.getPassword());

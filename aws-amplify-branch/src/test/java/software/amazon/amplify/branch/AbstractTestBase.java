@@ -1,13 +1,17 @@
 package software.amazon.amplify.branch;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
+
+import com.google.common.collect.ImmutableList;
 import software.amazon.awssdk.awscore.AwsRequest;
 import software.amazon.awssdk.awscore.AwsResponse;
 import software.amazon.awssdk.core.SdkClient;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.pagination.sync.SdkIterable;
+import software.amazon.awssdk.services.amplify.AmplifyClient;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Credentials;
 import software.amazon.cloudformation.proxy.LoggerProxy;
@@ -16,15 +20,18 @@ import software.amazon.cloudformation.proxy.ProxyClient;
 public class AbstractTestBase {
   protected static final Credentials MOCK_CREDENTIALS;
   protected static final LoggerProxy logger;
+  protected static String BRANCH_NAME = "dummyName";
+  protected static String BRANCH_ARN = String.format("arn:aws:amplify:region:accountId:%s", BRANCH_NAME);
+  protected static List<Tag> TAGS = ImmutableList.of(Tag.builder().key("foo").value("bar").build());
 
   static {
     MOCK_CREDENTIALS = new Credentials("accessKey", "secretKey", "token");
     logger = new LoggerProxy();
   }
-  static ProxyClient<SdkClient> MOCK_PROXY(
+  static ProxyClient<AmplifyClient> MOCK_PROXY(
     final AmazonWebServicesClientProxy proxy,
-    final SdkClient sdkClient) {
-    return new ProxyClient<SdkClient>() {
+    final AmplifyClient sdkClient) {
+    return new ProxyClient<AmplifyClient>() {
       @Override
       public <RequestT extends AwsRequest, ResponseT extends AwsResponse> ResponseT
       injectCredentialsAndInvokeV2(RequestT request, Function<RequestT, ResponseT> requestFunction) {
@@ -58,7 +65,7 @@ public class AbstractTestBase {
       }
 
       @Override
-      public SdkClient client() {
+      public AmplifyClient client() {
         return sdkClient;
       }
     };

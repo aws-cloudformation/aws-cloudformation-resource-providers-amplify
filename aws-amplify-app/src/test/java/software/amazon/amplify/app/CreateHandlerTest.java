@@ -5,8 +5,6 @@ import software.amazon.awssdk.services.amplify.AmplifyClient;
 import software.amazon.awssdk.services.amplify.model.App;
 import software.amazon.awssdk.services.amplify.model.CreateAppRequest;
 import software.amazon.awssdk.services.amplify.model.CreateAppResponse;
-import software.amazon.awssdk.services.amplify.model.GetAppRequest;
-import software.amazon.awssdk.services.amplify.model.GetAppResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.OperationStatus;
 import software.amazon.cloudformation.proxy.ProgressEvent;
@@ -54,14 +52,24 @@ public class CreateHandlerTest extends AbstractTestBase {
 
     @Test
     public void handleRequest_SimpleSuccess() {
-        buildDummyResponse();
         final CreateHandler handler = new CreateHandler();
 
-        final ResourceModel model = ResourceModel.builder().build();
+        final ResourceModel model = ResourceModel.builder()
+                .name(APP_NAME)
+                .build();
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
             .desiredResourceState(model)
             .build();
+
+        when(proxyClient.client().createApp(any(CreateAppRequest.class)))
+                .thenReturn(CreateAppResponse.builder()
+                        .app(App.builder()
+                                .appArn(APP_ARN)
+                                .appId(APP_ID)
+                                .name(APP_NAME)
+                                .build())
+                        .build());
 
         final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(proxy, request, new CallbackContext(), proxyClient, logger);
         final ResourceModel expected = ResourceModel.builder()
@@ -77,24 +85,5 @@ public class CreateHandlerTest extends AbstractTestBase {
         assertThat(response.getResourceModels()).isNull();
         assertThat(response.getMessage()).isNull();
         assertThat(response.getErrorCode()).isNull();
-    }
-
-    private void buildDummyResponse() {
-        when(proxyClient.client().createApp(any(CreateAppRequest.class)))
-                .thenReturn(CreateAppResponse.builder()
-                        .app(App.builder()
-                                .appArn(APP_ARN)
-                                .appId(APP_ID)
-                                .name(APP_NAME)
-                                .build())
-                        .build());
-        when(proxyClient.client().getApp(any(GetAppRequest.class)))
-                .thenReturn(GetAppResponse.builder()
-                        .app(App.builder()
-                                .appArn(APP_ARN)
-                                .appId(APP_ID)
-                                .name(APP_NAME)
-                                .build())
-                        .build());
     }
 }

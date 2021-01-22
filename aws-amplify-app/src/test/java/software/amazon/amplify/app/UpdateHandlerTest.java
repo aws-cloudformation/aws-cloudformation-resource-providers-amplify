@@ -65,8 +65,6 @@ public class UpdateHandlerTest extends AbstractTestBase {
         final UpdateHandler handler = new UpdateHandler();
 
         final ResourceModel model = ResourceModel.builder()
-                .arn(APP_ARN)
-                .appId(APP_ID)
                 .name(APP_NAME)
                 .tags(TAGS)
                 .build();
@@ -105,15 +103,6 @@ public class UpdateHandlerTest extends AbstractTestBase {
     private void buildDummyResponse() {
         when(proxyClient.client().updateApp(any(UpdateAppRequest.class)))
                 .thenReturn(UpdateAppResponse.builder()
-                        .app(App.builder()
-                                .appArn(APP_ARN)
-                                .appId(APP_ID)
-                                .name(APP_NAME)
-                                .tags(getTags(TAGS))
-                                .build())
-                        .build());
-        when(proxyClient.client().getApp(any(GetAppRequest.class)))
-                .thenReturn(GetAppResponse.builder()
                         .app(App.builder()
                                 .appArn(APP_ARN)
                                 .appId(APP_ID)

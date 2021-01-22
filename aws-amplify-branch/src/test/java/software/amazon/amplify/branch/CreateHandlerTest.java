@@ -1,7 +1,10 @@
 package software.amazon.amplify.branch;
 
 import java.time.Duration;
-import software.amazon.awssdk.core.SdkClient;
+import software.amazon.awssdk.services.amplify.AmplifyClient;
+import software.amazon.awssdk.services.amplify.model.Branch;
+import software.amazon.awssdk.services.amplify.model.CreateBranchRequest;
+import software.amazon.awssdk.services.amplify.model.CreateBranchResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.OperationStatus;
 import software.amazon.cloudformation.proxy.ProgressEvent;
@@ -19,6 +22,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
 public class CreateHandlerTest extends AbstractTestBase {
@@ -27,15 +32,15 @@ public class CreateHandlerTest extends AbstractTestBase {
     private AmazonWebServicesClientProxy proxy;
 
     @Mock
-    private ProxyClient<SdkClient> proxyClient;
+    private ProxyClient<AmplifyClient> proxyClient;
 
     @Mock
-    SdkClient sdkClient;
+    AmplifyClient sdkClient;
 
     @BeforeEach
     public void setup() {
         proxy = new AmazonWebServicesClientProxy(logger, MOCK_CREDENTIALS, () -> Duration.ofSeconds(600).toMillis());
-        sdkClient = mock(SdkClient.class);
+        sdkClient = mock(AmplifyClient.class);
         proxyClient = MOCK_PROXY(proxy, sdkClient);
     }
 
@@ -54,6 +59,14 @@ public class CreateHandlerTest extends AbstractTestBase {
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
             .desiredResourceState(model)
             .build();
+
+        when(proxyClient.client().createBranch(any(CreateBranchRequest.class)))
+                .thenReturn(CreateBranchResponse.builder()
+                        .branch(Branch.builder()
+                                .branchArn(BRANCH_ARN)
+                                .branchName(BRANCH_NAME)
+                                .build())
+                        .build());
 
         final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(proxy, request, new CallbackContext(), proxyClient, logger);
 

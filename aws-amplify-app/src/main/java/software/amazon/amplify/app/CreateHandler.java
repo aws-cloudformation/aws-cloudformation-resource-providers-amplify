@@ -31,18 +31,19 @@ public class CreateHandler extends BaseHandlerStd {
             .then(progress ->
                 proxy.initiate("AWS-Amplify-App::Create", proxyClient, model, callbackContext)
                     .translateToServiceRequest(Translator::translateToCreateRequest)
-                    .makeServiceCall((createAppRequest, proxyInvocation) -> {
-                        CreateAppResponse response = (CreateAppResponse) execute(proxy, createAppRequest, proxyInvocation.client()::createApp, model, logger);
-                        setResourceModelId(model, response.app());
-                        return response;
-                    })
-                    .progress()
-                    )
-            .then(progress -> new ReadHandler().handleRequest(proxy, request, callbackContext, proxyClient, logger));
+                    .makeServiceCall((createAppRequest, proxyInvocation) -> (CreateAppResponse) execute(proxy, createAppRequest, proxyInvocation.client()::createApp, model, logger))
+                    .done(createAppResponse -> ProgressEvent.defaultSuccessHandler(handleCreateResponse(createAppResponse, model)))
+                );
     }
 
     private boolean hasReadOnlyProperties(final ResourceModel model) {
         return ObjectUtils.anyNotNull(model.getAppId(),
                 model.getAppName(), model.getArn(), model.getDefaultDomain());
+    }
+
+    private ResourceModel handleCreateResponse(final CreateAppResponse createAppResponse,
+                                               final ResourceModel model) {
+        setResourceModelId(model, createAppResponse.app());
+        return model;
     }
 }
