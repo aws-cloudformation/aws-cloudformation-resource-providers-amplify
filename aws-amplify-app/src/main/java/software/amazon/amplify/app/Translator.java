@@ -1,5 +1,6 @@
 package software.amazon.amplify.app;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import software.amazon.awssdk.services.amplify.model.App;
 import software.amazon.awssdk.services.amplify.model.CreateAppRequest;
@@ -18,7 +19,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.amazonaws.util.CollectionUtils;
 import lombok.NonNull;
 import software.amazon.awssdk.services.amplify.model.DeleteAppRequest;
 import software.amazon.awssdk.services.amplify.model.GetAppRequest;
@@ -26,8 +26,6 @@ import software.amazon.awssdk.services.amplify.model.GetAppResponse;
 import software.amazon.awssdk.services.amplify.model.ListAppsRequest;
 import software.amazon.awssdk.services.amplify.model.ListAppsResponse;
 import software.amazon.awssdk.services.amplify.model.ListTagsForResourceRequest;
-import software.amazon.awssdk.services.amplify.model.TagResourceRequest;
-import software.amazon.awssdk.services.amplify.model.UntagResourceRequest;
 import software.amazon.awssdk.services.amplify.model.UpdateAppRequest;
 
 public class Translator {
@@ -44,11 +42,11 @@ public class Translator {
             .customHeaders(model.getCustomHeaders());
 
     List<software.amazon.amplify.app.CustomRule> customRules = model.getCustomRules();
-    if (Boolean.FALSE.equals(CollectionUtils.isNullOrEmpty(customRules))) {
+    if (CollectionUtils.isNotEmpty(customRules)) {
       createAppRequest.customRules(getCustomRules(customRules));
     }
     List<EnvironmentVariable> environmentVariables = model.getEnvironmentVariables();
-    if (Boolean.FALSE.equals(CollectionUtils.isNullOrEmpty(environmentVariables))) {
+    if (CollectionUtils.isNotEmpty(environmentVariables)) {
       createAppRequest.environmentVariables(getEnvironmentVariables(environmentVariables));
     }
     BasicAuthConfig basicAuthConfig = model.getBasicAuthConfig();
@@ -59,17 +57,17 @@ public class Translator {
     software.amazon.amplify.app.AutoBranchCreationConfig autoBranchCreationConfigCFN = model.getAutoBranchCreationConfig();
     if (autoBranchCreationConfigCFN != null) {
       createAppRequest.enableAutoBranchCreation(autoBranchCreationConfigCFN.getEnableAutoBranchCreation());
-      if (Boolean.TRUE.equals(autoBranchCreationConfigCFN.getEnableAutoBranchCreation())) {
+      if (autoBranchCreationConfigCFN.getEnableAutoBranchCreation()) {
         createAppRequest.autoBranchCreationConfig(getAutoBranchCreationConfig(autoBranchCreationConfigCFN));
         List<String> autoBranchCreationPatterns = autoBranchCreationConfigCFN.getAutoBranchCreationPatterns();
-        if (!CollectionUtils.isNullOrEmpty(autoBranchCreationPatterns)) {
+        if (CollectionUtils.isNotEmpty(autoBranchCreationPatterns)) {
           createAppRequest.autoBranchCreationPatterns(autoBranchCreationPatterns);
         }
       }
     }
 
     List<Tag> appTags = model.getTags();
-    if (Boolean.FALSE.equals(CollectionUtils.isNullOrEmpty(appTags))) {
+    if (CollectionUtils.isNotEmpty(appTags)) {
       createAppRequest.tags(getTags(appTags));
     }
     return createAppRequest.build();
@@ -121,7 +119,7 @@ public class Translator {
       appModelBuilder.autoBranchCreationConfig(autoBranchCreationConfigCFN.build());
     }
 
-    if (Boolean.FALSE.equals(CollectionUtils.isNullOrEmpty(app.customRules()))) {
+    if (CollectionUtils.isNotEmpty(app.customRules())) {
       List<software.amazon.amplify.app.CustomRule> customRulesCFN = new ArrayList<>();
       for (CustomRule customRule : app.customRules()) {
         customRulesCFN.add(software.amazon.amplify.app.CustomRule.builder()
@@ -161,11 +159,11 @@ public class Translator {
             .customHeaders(model.getCustomHeaders());
 
     List<software.amazon.amplify.app.CustomRule> customRules = model.getCustomRules();
-    if (Boolean.FALSE.equals(CollectionUtils.isNullOrEmpty(customRules))) {
+    if (CollectionUtils.isNotEmpty(customRules)) {
       updateAppRequest.customRules(getCustomRules(customRules));
     }
     List<EnvironmentVariable> environmentVariables = model.getEnvironmentVariables();
-    if (Boolean.FALSE.equals(CollectionUtils.isNullOrEmpty(environmentVariables))) {
+    if (CollectionUtils.isNotEmpty(environmentVariables)) {
       updateAppRequest.environmentVariables(getEnvironmentVariables(environmentVariables));
     }
     BasicAuthConfig basicAuthConfig = model.getBasicAuthConfig();
@@ -281,7 +279,7 @@ public class Translator {
             .pullRequestEnvironmentName(autoBranchCreationConfigCFN.getPullRequestEnvironmentName());
 
     List<EnvironmentVariable> envVarsCFN = autoBranchCreationConfigCFN.getEnvironmentVariables();
-    if (Boolean.FALSE.equals(CollectionUtils.isNullOrEmpty(envVarsCFN))) {
+    if (CollectionUtils.isNotEmpty(envVarsCFN)) {
       autoBranchCreationConfig.environmentVariables(getEnvironmentVariables(envVarsCFN));
     }
     BasicAuthConfig basicAuthConfig = autoBranchCreationConfigCFN.getBasicAuthConfig();
