@@ -1,5 +1,6 @@
 package software.amazon.amplify.app;
 
+import software.amazon.amplify.common.utils.ClientWrapper;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
 import software.amazon.awssdk.services.amplify.model.GetAppResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
@@ -23,8 +24,14 @@ public class ReadHandler extends BaseHandlerStd {
 
         return proxy.initiate("AWS-Amplify-App::Read", proxyClient, model, callbackContext)
             .translateToServiceRequest(Translator::translateToReadRequest)
-            .makeServiceCall((getAppRequest, proxyInvocation) -> (GetAppResponse) execute(proxy, getAppRequest,
-                    proxyInvocation.client()::getApp, model, logger))
+            .makeServiceCall((getAppRequest, proxyInvocation) -> (GetAppResponse) ClientWrapper.execute(
+                    proxy,
+                    getAppRequest,
+                    proxyInvocation.client()::getApp,
+                    ResourceModel.TYPE_NAME,
+                    model.getAppId(),
+                    logger
+            ))
             .done(getAppResponse -> ProgressEvent.defaultSuccessHandler(Translator.translateFromReadResponse(getAppResponse)));
     }
 }

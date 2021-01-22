@@ -71,7 +71,8 @@ public class CreateHandlerTest extends AbstractTestBase {
                                 .build())
                         .build());
 
-        final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(proxy, request, new CallbackContext(), proxyClient, logger);
+        final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(proxy, request,
+                new CallbackContext(), proxyClient, logger);
         final ResourceModel expected = ResourceModel.builder()
                 .arn(APP_ARN)
                 .appId(APP_ID)

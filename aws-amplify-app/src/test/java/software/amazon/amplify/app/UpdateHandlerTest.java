@@ -59,7 +59,7 @@ public class UpdateHandlerTest extends AbstractTestBase {
 
     @Test
     public void handleRequest_SimpleSuccess() {
-        buildDummyResponse();
+        stubProxyClient();
         final UpdateHandler handler = new UpdateHandler();
 
         final ResourceModel model = ResourceModel.builder()
@@ -70,12 +70,6 @@ public class UpdateHandlerTest extends AbstractTestBase {
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
             .desiredResourceState(model)
             .build();
-
-        when(proxyClient.client().tagResource(any(TagResourceRequest.class))).thenReturn(TagResourceResponse.builder()
-                .build());
-
-        when(proxyClient.client().untagResource(any(UntagResourceRequest.class))).thenReturn(UntagResourceResponse.builder()
-                .build());
 
         final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(proxy, request, new CallbackContext(), proxyClient, logger);
 
@@ -98,19 +92,24 @@ public class UpdateHandlerTest extends AbstractTestBase {
         verify(amplifyClient).untagResource(any(UntagResourceRequest.class));
     }
 
-    private void buildDummyResponse() {
+    private void stubProxyClient() {
         when(proxyClient.client().updateApp(any(UpdateAppRequest.class)))
                 .thenReturn(UpdateAppResponse.builder()
                         .app(App.builder()
                                 .appArn(APP_ARN)
                                 .appId(APP_ID)
                                 .name(APP_NAME)
-                                .tags(getTags(TAGS))
+                                .tags(Translator.getTags(TAGS))
                                 .build())
                         .build());
         when(proxyClient.client().listTagsForResource(any(ListTagsForResourceRequest.class)))
                 .thenReturn(ListTagsForResourceResponse.builder()
                     .tags(ImmutableMap.of("oldFoo", "oldBar"))
+                .build());
+        when(proxyClient.client().tagResource(any(TagResourceRequest.class))).thenReturn(TagResourceResponse.builder()
+                .build());
+
+        when(proxyClient.client().untagResource(any(UntagResourceRequest.class))).thenReturn(UntagResourceResponse.builder()
                 .build());
     }
 }

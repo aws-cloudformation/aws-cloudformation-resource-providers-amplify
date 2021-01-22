@@ -202,6 +202,14 @@ public class Translator {
   /*
    * Helpers
    */
+  public static Map<String, String> getTags(@NonNull final List<Tag> tags) {
+    Map<String, String> tagMap = new HashMap<>();
+    for (Tag tag : tags) {
+      tagMap.put(tag.getKey(), tag.getValue());
+    }
+    return tagMap;
+  }
+
   private static List<CustomRule> getCustomRules(@NonNull final List<software.amazon.amplify.app.CustomRule> customRulesCFN) {
     List<CustomRule> customRules = new ArrayList<>();
     for (software.amazon.amplify.app.CustomRule customRuleCFN: customRulesCFN) {
@@ -231,14 +239,6 @@ public class Translator {
             .value(v)
             .build()));
     return envVarsCFN;
-  }
-
-  private static Map<String, String> getTags(@NonNull final List<Tag> tags) {
-    Map<String, String> tagMap = new HashMap<>();
-    for (Tag tag : tags) {
-      tagMap.put(tag.getKey(), tag.getValue());
-    }
-    return tagMap;
   }
 
   private static List<Tag> getTagsCFN(@NonNull final Map<String, String> tags) {

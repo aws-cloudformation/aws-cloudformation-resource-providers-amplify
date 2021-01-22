@@ -1,5 +1,6 @@
 package software.amazon.amplify.app;
 
+import software.amazon.amplify.common.utils.ClientWrapper;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
 import software.amazon.awssdk.services.amplify.model.ListAppsRequest;
 import software.amazon.awssdk.services.amplify.model.ListAppsResponse;
@@ -21,9 +22,14 @@ public class ListHandler extends BaseHandlerStd {
         final Logger logger) {
 
         final ListAppsRequest listAppsRequest = Translator.translateToListRequest(request.getNextToken());
-        ListAppsResponse listAppsResponse = (ListAppsResponse) execute(proxy, listAppsRequest,
-                proxyClient.client()::listApps, request.getDesiredResourceState(), logger);
-
+        ListAppsResponse listAppsResponse = (ListAppsResponse) ClientWrapper.execute(
+                proxy,
+                listAppsRequest,
+                proxyClient.client()::listApps,
+                ResourceModel.TYPE_NAME,
+                request.getDesiredResourceState().getAppId(),
+                logger
+        );
         return ProgressEvent.<ResourceModel, CallbackContext>builder()
             .resourceModels(Translator.translateFromListRequest(listAppsResponse))
             .nextToken(listAppsResponse.nextToken())
