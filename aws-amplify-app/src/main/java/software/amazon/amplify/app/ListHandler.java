@@ -27,7 +27,6 @@ public class ListHandler extends BaseHandlerStd {
                 listAppsRequest,
                 proxyClient.client()::listApps,
                 ResourceModel.TYPE_NAME,
-                request.getDesiredResourceState().getAppId(),
                 logger
         );
         return ProgressEvent.<ResourceModel, CallbackContext>builder()

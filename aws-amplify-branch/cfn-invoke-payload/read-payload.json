@@ -1,7 +1,7 @@
 {
   "desiredResourceState": {
-    "AppId": "dggzgi0o4wjmx",
-    "BranchName": "CfnInvokeTestCreate"
+    "AppId": "replacewithrealappid",
+    "BranchName": "replacewithrealbranchname"
   },
   "previousResourceState": {},
   "logicalResourceIdentifier": "testId"

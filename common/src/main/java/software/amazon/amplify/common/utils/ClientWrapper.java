@@ -25,6 +25,15 @@ public final class ClientWrapper {
             final RequestT request,
             final Function<RequestT, ResultT> requestFunction,
             final String resourceTypeName,
+            final Logger logger) {
+        return execute(clientProxy, request, requestFunction, resourceTypeName, "", logger);
+    }
+
+    public static <RequestT extends AwsRequest, ResultT extends AwsResponse> AwsResponse execute(
+            final AmazonWebServicesClientProxy clientProxy,
+            final RequestT request,
+            final Function<RequestT, ResultT> requestFunction,
+            final String resourceTypeName,
             final String resourceTypeId,
             final Logger logger) {
         try {

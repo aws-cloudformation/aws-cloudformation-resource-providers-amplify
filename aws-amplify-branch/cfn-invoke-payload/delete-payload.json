@@ -1,7 +1,7 @@
 {
   "desiredResourceState": {
     "AppId": "replacewithrealappid",
-    "Name": "ContractTestDelete"
+    "BranchName": "replacewithrealbranchname"
   },
   "previousResourceState": {},
   "logicalResourceIdentifier": "testId"

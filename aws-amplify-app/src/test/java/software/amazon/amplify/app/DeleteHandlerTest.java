@@ -52,8 +52,6 @@ public class DeleteHandlerTest extends AbstractTestBase {
 
     @Test
     public void handleRequest_SimpleSuccess() {
-        buildDummyResponse();
-
         final DeleteHandler handler = new DeleteHandler();
 
         final ResourceModel model = ResourceModel.builder()
@@ -64,7 +62,10 @@ public class DeleteHandlerTest extends AbstractTestBase {
             .desiredResourceState(model)
             .build();
 
-        final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(proxy, request, new CallbackContext(), proxyClient, logger);
+        when(proxyClient.client().deleteApp(any(DeleteAppRequest.class))).thenReturn(DeleteAppResponse.builder().build());
+
+        final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(proxy, request,
+                new CallbackContext(), proxyClient, logger);
 
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
@@ -73,9 +74,5 @@ public class DeleteHandlerTest extends AbstractTestBase {
         assertThat(response.getResourceModels()).isNull();
         assertThat(response.getMessage()).isNull();
         assertThat(response.getErrorCode()).isNull();
-    }
-
-    private void buildDummyResponse() {
-        when(proxyClient.client().deleteApp(any(DeleteAppRequest.class))).thenReturn(DeleteAppResponse.builder().build());
     }
 }

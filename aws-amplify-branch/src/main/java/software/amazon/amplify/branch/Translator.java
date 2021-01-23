@@ -11,10 +11,14 @@ import software.amazon.awssdk.services.amplify.model.AutoBranchCreationConfig;
 import software.amazon.awssdk.services.amplify.model.Branch;
 import software.amazon.awssdk.services.amplify.model.CreateBranchRequest;
 import software.amazon.awssdk.services.amplify.model.CustomRule;
+import software.amazon.awssdk.services.amplify.model.DeleteAppRequest;
+import software.amazon.awssdk.services.amplify.model.DeleteBranchRequest;
 import software.amazon.awssdk.services.amplify.model.GetAppRequest;
 import software.amazon.awssdk.services.amplify.model.GetAppResponse;
 import software.amazon.awssdk.services.amplify.model.GetBranchRequest;
 import software.amazon.awssdk.services.amplify.model.GetBranchResponse;
+import software.amazon.awssdk.services.amplify.model.ListAppsRequest;
+import software.amazon.awssdk.services.amplify.model.ListBranchesRequest;
 import software.amazon.awssdk.services.amplify.model.ListTagsForResourceRequest;
 import software.amazon.awssdk.services.amplify.model.UpdateAppRequest;
 import software.amazon.awssdk.services.amplify.model.UpdateBranchRequest;
@@ -131,11 +135,11 @@ public class Translator {
    * @param model resource model
    * @return awsRequest the aws service request to delete a resource
    */
-  static AwsRequest translateToDeleteRequest(final ResourceModel model) {
-    final AwsRequest awsRequest = null;
-    // TODO: construct a request
-    // e.g. https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-logs/blob/2077c92299aeb9a68ae8f4418b5e932b12a8b186/aws-logs-loggroup/src/main/java/com/aws/logs/loggroup/Translator.java#L33-L37
-    return awsRequest;
+  static DeleteBranchRequest translateToDeleteRequest(final ResourceModel model) {
+    return DeleteBranchRequest.builder()
+            .appId(model.getAppId())
+            .branchName(model.getBranchName())
+            .build();
   }
 
   /**
@@ -177,11 +181,11 @@ public class Translator {
    * @param nextToken token passed to the aws service list resources request
    * @return awsRequest the aws service request to list resources within aws account
    */
-  static AwsRequest translateToListRequest(final String nextToken) {
-    final AwsRequest awsRequest = null;
-    // TODO: construct a request
-    // e.g. https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-logs/blob/2077c92299aeb9a68ae8f4418b5e932b12a8b186/aws-logs-loggroup/src/main/java/com/aws/logs/loggroup/Translator.java#L26-L31
-    return awsRequest;
+  static ListBranchesRequest translateToListRequest(final ResourceModel model, String nextToken) {
+    return ListBranchesRequest.builder()
+            .appId(model.getAppId())
+            .nextToken(nextToken)
+            .build();
   }
 
   /**
