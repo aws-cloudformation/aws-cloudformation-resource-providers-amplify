@@ -1,0 +1,64 @@
+{
+  "desiredResourceState": {
+    "AppId": "replacewithrealappid",
+    "Name": "ContractTestUpdate",
+    "BuildSpec": "dummySpecUpdate",
+    "AccessToken": "dummyAccessTokenUpdate",
+    "EnableBranchAutoDeletion": false,
+    "CustomHeaders": "customHeaders:\n- pattern: '**/*'\n  headers:\n  - key: 'fooUpdate'\n    value: 'barUpdate'\n",
+    "CustomRules": [
+      {
+        "Source": "/sourceUpdate",
+        "Target": "/targetUpdate",
+        "Status": "200"
+      }
+    ],
+    "EnvironmentVariables": [
+      {
+        "Name": "fooUpdate",
+        "Value": "barUpdate"
+      }
+    ],
+    "BasicAuthConfig": {
+      "EnableBasicAuth": true,
+      "Username": "userUpdate",
+      "Password": "passUpdate"
+    },
+    "AutoBranchCreationConfig": {
+      "AutoBranchCreationPatterns": [
+        "/*",
+        "/update"
+      ],
+      "BasicAuthConfig": {
+        "EnableBasicAuth": true,
+        "Username": "userUpdate",
+        "Password": "passUpdate"
+      },
+      "BuildSpec": "dummySpecUpdate",
+      "EnableAutoBranchCreation": true,
+      "EnableAutoBuild": true,
+      "EnablePerformanceMode": true,
+      "EnablePullRequestPreview": true,
+      "EnvironmentVariables": [
+        {
+          "Name": "fooUpdate",
+          "Value": "barUpdate"
+        }
+      ],
+      "PullRequestEnvironmentName": "pr-update",
+      "Stage": "DEVELOPMENT"
+    },
+    "Tags": [
+      {
+        "Key": "tagKey1Update",
+        "Value": "tagValue1Update"
+      },
+      {
+        "Key": "tagKey2Update",
+        "Value": "tagValue2Update"
+      }
+    ]
+  },
+  "previousResourceState": {},
+  "logicalResourceIdentifier": "testId"
+}
