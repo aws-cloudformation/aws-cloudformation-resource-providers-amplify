@@ -1,0 +1,44 @@
+{
+  "desiredResourceState": {
+    "AppId": "replacewithrealappid",
+    "BranchName": "replacewithrealbranchname",
+    "BackendEnvironmentArn": "arn:aws:amplify:region:accountId:apps/appId/backendenvironments/backendEnvironmentName",
+    "BasicAuthConfig": {
+      "EnableBasicAuth": true,
+      "Username": "userupdate",
+      "Password": "passupdate"
+    },
+    "BuildSpec": "foo: bar",
+    "Description": "dummyDescriptionUpdate",
+    "DisplayName": "dummydisplaynameupdate",
+    "EnableAutoBuild": false,
+    "EnableNotification": false,
+    "EnablePerformanceMode": false,
+    "EnablePullRequestPreview": false,
+    "EnvironmentVariables": [
+      {
+        "Name": "envName1update",
+        "Value": "envValue1update"
+      },
+      {
+        "Name": "envName2update",
+        "Value": "envValue2update"
+      }
+    ],
+    "Framework": "dummyFrameworkUpdate",
+    "PullRequestEnvironmentName": "pr-update",
+    "Stage": "DEVELOPMENT",
+    "Tags": [
+      {
+        "Key": "tagKey1Update",
+        "Value": "tagValue1Update"
+      },
+      {
+        "Key": "tagKey2Update",
+        "Value": "tagValue2Update"
+      }
+    ]
+  },
+  "previousResourceState": {},
+  "logicalResourceIdentifier": "testId"
+}

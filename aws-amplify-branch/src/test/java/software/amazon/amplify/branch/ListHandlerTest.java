@@ -1,10 +1,10 @@
-package software.amazon.amplify.app;
+package software.amazon.amplify.branch;
 
 import com.google.common.collect.ImmutableList;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
-import software.amazon.awssdk.services.amplify.model.App;
-import software.amazon.awssdk.services.amplify.model.ListAppsRequest;
-import software.amazon.awssdk.services.amplify.model.ListAppsResponse;
+import software.amazon.awssdk.services.amplify.model.Branch;
+import software.amazon.awssdk.services.amplify.model.ListBranchesRequest;
+import software.amazon.awssdk.services.amplify.model.ListBranchesResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.OperationStatus;
 import software.amazon.cloudformation.proxy.ProgressEvent;
@@ -50,18 +50,19 @@ public class ListHandlerTest extends AbstractTestBase {
                 .build();
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
-            .desiredResourceState(model)
-            .build();
+                .desiredResourceState(model)
+                .build();
 
-        final ListAppsResponse listAppsResponse = ListAppsResponse.builder()
-                .apps(ImmutableList.of(App.builder()
-                        .appArn(APP_ARN)
+        final ListBranchesResponse listBranchesResponse = ListBranchesResponse.builder()
+                .branches(ImmutableList.of(Branch.builder()
+                        .branchArn(BRANCH_ARN)
+                        .branchName(BRANCH_NAME)
                         .build()))
                 .nextToken("token2")
                 .build();
 
-        when(proxyClient.client().listApps(any(ListAppsRequest.class)))
-                .thenReturn(listAppsResponse);
+        when(proxyClient.client().listBranches(any(ListBranchesRequest.class)))
+                .thenReturn(listBranchesResponse);
 
         final ProgressEvent<ResourceModel, CallbackContext> response =
                 handler.handleRequest(proxy, request, new CallbackContext(), proxyClient, logger);

@@ -1,9 +1,8 @@
-package software.amazon.amplify.app;
+package software.amazon.amplify.branch;
 
-import org.apache.commons.lang3.ObjectUtils;
 import software.amazon.amplify.common.utils.ClientWrapper;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
-import software.amazon.awssdk.services.amplify.model.CreateAppResponse;
+import software.amazon.awssdk.services.amplify.model.CreateBranchResponse;
 import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
@@ -23,34 +22,29 @@ public class CreateHandler extends BaseHandlerStd {
 
         this.logger = logger;
         final ResourceModel model = request.getDesiredResourceState();
-
-        if (hasReadOnlyProperties(model)) {
+        if (model.getArn() != null) {
             throw new CfnInvalidRequestException("Create request includes at least one read-only property.");
         }
 
-        return ProgressEvent.progress(model, callbackContext)
+        return ProgressEvent.progress(request.getDesiredResourceState(), callbackContext)
             .then(progress ->
-                proxy.initiate("AWS-Amplify-App::Create", proxyClient, model, callbackContext)
+                proxy.initiate("AWS-Amplify-Branch::Create", proxyClient, model, callbackContext)
                     .translateToServiceRequest(Translator::translateToCreateRequest)
-                    .makeServiceCall((createAppRequest, proxyInvocation) -> (CreateAppResponse) ClientWrapper.execute(
+                    .makeServiceCall((createBranchRequest, proxyInvocation) -> (CreateBranchResponse) ClientWrapper.execute(
                             proxy,
-                            createAppRequest,
-                            proxyInvocation.client()::createApp,
-                            ResourceModel.TYPE_NAME, model.getAppId(),
+                            createBranchRequest,
+                            proxyInvocation.client()::createBranch,
+                            ResourceModel.TYPE_NAME,
+                            model.getArn(),
                             logger
                     ))
-                    .done(createAppResponse -> ProgressEvent.defaultSuccessHandler(handleCreateResponse(createAppResponse, model)))
-                );
+                    .done(createBranchResponse -> ProgressEvent.defaultSuccessHandler(handleCreateResponse(createBranchResponse, model)))
+               );
     }
 
-    private boolean hasReadOnlyProperties(final ResourceModel model) {
-        return ObjectUtils.anyNotNull(model.getAppId(),
-                model.getAppName(), model.getArn(), model.getDefaultDomain());
-    }
-
-    private ResourceModel handleCreateResponse(final CreateAppResponse createAppResponse,
+    private ResourceModel handleCreateResponse(final CreateBranchResponse createBranchResponse,
                                                final ResourceModel model) {
-        setResourceModelId(model, createAppResponse.app());
+        setResourceModelId(model, createBranchResponse.branch());
         return model;
     }
 }

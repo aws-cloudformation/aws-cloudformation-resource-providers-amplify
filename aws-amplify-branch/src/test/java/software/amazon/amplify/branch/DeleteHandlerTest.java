@@ -1,30 +1,31 @@
-package software.amazon.amplify.app;
+package software.amazon.amplify.branch;
 
-import com.google.common.collect.ImmutableList;
+import java.time.Duration;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
-import software.amazon.awssdk.services.amplify.model.App;
-import software.amazon.awssdk.services.amplify.model.ListAppsRequest;
-import software.amazon.awssdk.services.amplify.model.ListAppsResponse;
+import software.amazon.awssdk.services.amplify.model.DeleteBranchRequest;
+import software.amazon.awssdk.services.amplify.model.DeleteBranchResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.OperationStatus;
 import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ProxyClient;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.Duration;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class ListHandlerTest extends AbstractTestBase {
+public class DeleteHandlerTest extends AbstractTestBase {
 
     @Mock
     private AmazonWebServicesClientProxy proxy;
@@ -33,45 +34,44 @@ public class ListHandlerTest extends AbstractTestBase {
     private ProxyClient<AmplifyClient> proxyClient;
 
     @Mock
-    AmplifyClient amplifyClient;
+    AmplifyClient sdkClient;
 
     @BeforeEach
     public void setup() {
         proxy = new AmazonWebServicesClientProxy(logger, MOCK_CREDENTIALS, () -> Duration.ofSeconds(600).toMillis());
-        amplifyClient = mock(AmplifyClient.class);
-        proxyClient = MOCK_PROXY(proxy, amplifyClient);
+        sdkClient = mock(AmplifyClient.class);
+        proxyClient = MOCK_PROXY(proxy, sdkClient);
+    }
+
+    @AfterEach
+    public void tear_down() {
+        verify(sdkClient, atLeastOnce()).serviceName();
+        verifyNoMoreInteractions(sdkClient);
     }
 
     @Test
     public void handleRequest_SimpleSuccess() {
-        final ListHandler handler = new ListHandler();
+        final DeleteHandler handler = new DeleteHandler();
 
         final ResourceModel model = ResourceModel.builder()
+                .appId(APP_ID)
+                .branchName(BRANCH_NAME)
                 .build();
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
             .desiredResourceState(model)
             .build();
 
-        final ListAppsResponse listAppsResponse = ListAppsResponse.builder()
-                .apps(ImmutableList.of(App.builder()
-                        .appArn(APP_ARN)
-                        .build()))
-                .nextToken("token2")
-                .build();
+        when(proxyClient.client().deleteBranch(any(DeleteBranchRequest.class))).thenReturn(DeleteBranchResponse.builder().build());
 
-        when(proxyClient.client().listApps(any(ListAppsRequest.class)))
-                .thenReturn(listAppsResponse);
-
-        final ProgressEvent<ResourceModel, CallbackContext> response =
-                handler.handleRequest(proxy, request, new CallbackContext(), proxyClient, logger);
+        final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(proxy, request,
+                new CallbackContext(), proxyClient, logger);
 
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
-        assertThat(response.getCallbackContext()).isNull();
         assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
         assertThat(response.getResourceModel()).isNull();
-        assertThat(response.getResourceModels()).isNotNull();
+        assertThat(response.getResourceModels()).isNull();
         assertThat(response.getMessage()).isNull();
         assertThat(response.getErrorCode()).isNull();
     }

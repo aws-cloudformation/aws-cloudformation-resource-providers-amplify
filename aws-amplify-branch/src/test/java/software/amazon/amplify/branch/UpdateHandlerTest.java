@@ -1,16 +1,16 @@
-package software.amazon.amplify.app;
+package software.amazon.amplify.branch;
 
 import java.time.Duration;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
-import software.amazon.awssdk.services.amplify.model.App;
+import software.amazon.awssdk.services.amplify.model.Branch;
 import software.amazon.awssdk.services.amplify.model.ListTagsForResourceRequest;
 import software.amazon.awssdk.services.amplify.model.ListTagsForResourceResponse;
 import software.amazon.awssdk.services.amplify.model.TagResourceRequest;
 import software.amazon.awssdk.services.amplify.model.TagResourceResponse;
 import software.amazon.awssdk.services.amplify.model.UntagResourceRequest;
 import software.amazon.awssdk.services.amplify.model.UntagResourceResponse;
-import software.amazon.awssdk.services.amplify.model.UpdateAppRequest;
-import software.amazon.awssdk.services.amplify.model.UpdateAppResponse;
+import software.amazon.awssdk.services.amplify.model.UpdateBranchRequest;
+import software.amazon.awssdk.services.amplify.model.UpdateBranchResponse;
 import software.amazon.awssdk.utils.ImmutableMap;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.OperationStatus;
@@ -42,19 +42,19 @@ public class UpdateHandlerTest extends AbstractTestBase {
     private ProxyClient<AmplifyClient> proxyClient;
 
     @Mock
-    AmplifyClient amplifyClient;
+    AmplifyClient sdkClient;
 
     @BeforeEach
     public void setup() {
         proxy = new AmazonWebServicesClientProxy(logger, MOCK_CREDENTIALS, () -> Duration.ofSeconds(600).toMillis());
-        amplifyClient = mock(AmplifyClient.class);
-        proxyClient = MOCK_PROXY(proxy, amplifyClient);
+        sdkClient = mock(AmplifyClient.class);
+        proxyClient = MOCK_PROXY(proxy, sdkClient);
     }
 
     @AfterEach
     public void tear_down() {
-        verify(amplifyClient, atLeastOnce()).serviceName();
-        verifyNoMoreInteractions(amplifyClient);
+        verify(sdkClient, atLeastOnce()).serviceName();
+        verifyNoMoreInteractions(sdkClient);
     }
 
     @Test
@@ -63,7 +63,8 @@ public class UpdateHandlerTest extends AbstractTestBase {
         final UpdateHandler handler = new UpdateHandler();
 
         final ResourceModel model = ResourceModel.builder()
-                .name(APP_NAME)
+                .appId(APP_ID)
+                .branchName(BRANCH_NAME)
                 .tags(TAGS)
                 .build();
 
@@ -71,12 +72,13 @@ public class UpdateHandlerTest extends AbstractTestBase {
             .desiredResourceState(model)
             .build();
 
-        final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(proxy, request, new CallbackContext(), proxyClient, logger);
+        final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(proxy, request,
+                new CallbackContext(), proxyClient, logger);
 
         final ResourceModel expected = ResourceModel.builder()
-                .arn(APP_ARN)
+                .arn(BRANCH_ARN)
                 .appId(APP_ID)
-                .name(APP_NAME)
+                .branchName(BRANCH_NAME)
                 .tags(TAGS)
                 .build();
 
@@ -87,25 +89,21 @@ public class UpdateHandlerTest extends AbstractTestBase {
         assertThat(response.getResourceModels()).isNull();
         assertThat(response.getMessage()).isNull();
         assertThat(response.getErrorCode()).isNull();
-
-        verify(amplifyClient).tagResource(any(TagResourceRequest.class));
-        verify(amplifyClient).untagResource(any(UntagResourceRequest.class));
     }
 
     private void stubProxyClient() {
-        when(proxyClient.client().updateApp(any(UpdateAppRequest.class)))
-                .thenReturn(UpdateAppResponse.builder()
-                        .app(App.builder()
-                                .appArn(APP_ARN)
-                                .appId(APP_ID)
-                                .name(APP_NAME)
+        when(proxyClient.client().updateBranch(any(UpdateBranchRequest.class)))
+                .thenReturn(UpdateBranchResponse.builder()
+                        .branch(Branch.builder()
+                                .branchArn(BRANCH_ARN)
+                                .branchName(BRANCH_NAME)
                                 .tags(Translator.getTags(TAGS))
                                 .build())
                         .build());
         when(proxyClient.client().listTagsForResource(any(ListTagsForResourceRequest.class)))
                 .thenReturn(ListTagsForResourceResponse.builder()
-                    .tags(ImmutableMap.of("oldFoo", "oldBar"))
-                .build());
+                        .tags(ImmutableMap.of("oldFoo", "oldBar"))
+                        .build());
         when(proxyClient.client().tagResource(any(TagResourceRequest.class))).thenReturn(TagResourceResponse.builder()
                 .build());
 

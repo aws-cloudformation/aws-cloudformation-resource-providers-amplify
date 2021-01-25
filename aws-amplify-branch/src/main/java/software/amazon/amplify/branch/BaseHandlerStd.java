@@ -1,12 +1,12 @@
-package software.amazon.amplify.app;
+package software.amazon.amplify.branch;
 
 import lombok.NonNull;
 import software.amazon.awssdk.awscore.AwsRequest;
 import software.amazon.awssdk.awscore.AwsResponse;
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
-import software.amazon.awssdk.services.amplify.model.App;
 import software.amazon.awssdk.services.amplify.model.BadRequestException;
+import software.amazon.awssdk.services.amplify.model.Branch;
 import software.amazon.awssdk.services.amplify.model.InternalFailureException;
 import software.amazon.awssdk.services.amplify.model.LimitExceededException;
 import software.amazon.awssdk.services.amplify.model.NotFoundException;
@@ -26,6 +26,7 @@ import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 import java.util.function.Function;
 
 public abstract class BaseHandlerStd extends BaseHandler<CallbackContext> {
+
   @Override
   public final ProgressEvent<ResourceModel, CallbackContext> handleRequest(
     final AmazonWebServicesClientProxy proxy,
@@ -41,9 +42,9 @@ public abstract class BaseHandlerStd extends BaseHandler<CallbackContext> {
     );
   }
 
-  public void setResourceModelId(@NonNull final ResourceModel model, @NonNull final App app) {
-    model.setAppId(app.appId());
-    model.setArn(app.appArn());
+  public void setResourceModelId(@NonNull final ResourceModel model, @NonNull final Branch branch) {
+    model.setArn(branch.branchArn());
+    model.setBranchName(branch.branchName());
   }
 
   protected abstract ProgressEvent<ResourceModel, CallbackContext> handleRequest(

@@ -5,9 +5,9 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>software.amazon.amplify.app</groupId>
-    <artifactId>aws-amplify-app-handler</artifactId>
-    <name>aws-amplify-app-handler</name>
+    <groupId>software.amazon.amplify.branch</groupId>
+    <artifactId>aws-amplify-branch-handler</artifactId>
+    <name>aws-amplify-branch-handler</name>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
@@ -224,7 +224,7 @@
             <resource>
                 <directory>${project.basedir}</directory>
                 <includes>
-                    <include>aws-amplify-app.json</include>
+                    <include>aws-amplify-branch.json</include>
                 </includes>
             </resource>
         </resources>

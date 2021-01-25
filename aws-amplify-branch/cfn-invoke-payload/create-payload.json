@@ -1,0 +1,44 @@
+{
+  "desiredResourceState": {
+    "AppId": "replacewithrealappid",
+    "BranchName": "CfnInvokeTestCreate",
+    "BackendEnvironmentArn": "arn:aws:amplify:region:accountId:apps/appId/backendenvironments/backendEnvironmentName",
+    "BasicAuthConfig": {
+      "EnableBasicAuth": true,
+      "Username": "user",
+      "Password": "pass"
+    },
+    "BuildSpec": "foo: bar",
+    "Description": "dummyDescription",
+    "DisplayName": "dummydisplayname",
+    "EnableAutoBuild": true,
+    "EnableNotification": true,
+    "EnablePerformanceMode": true,
+    "EnablePullRequestPreview": true,
+    "EnvironmentVariables": [
+      {
+        "Name": "envName1",
+        "Value": "envValue1"
+      },
+      {
+        "Name": "envName2",
+        "Value": "envValue2"
+      }
+    ],
+    "Framework": "dummyFramework",
+    "PullRequestEnvironmentName": "pr-1",
+    "Stage": "DEVELOPMENT",
+    "Tags": [
+      {
+        "Key": "tagKey1",
+        "Value": "tagValue1"
+      },
+      {
+        "Key": "tagKey2",
+        "Value": "tagValue2"
+      }
+    ]
+  },
+  "previousResourceState": {},
+  "logicalResourceIdentifier": "testId"
+}

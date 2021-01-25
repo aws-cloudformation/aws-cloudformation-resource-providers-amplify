@@ -1,10 +1,10 @@
-package software.amazon.amplify.app;
+package software.amazon.amplify.branch;
 
 import java.time.Duration;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
-import software.amazon.awssdk.services.amplify.model.App;
-import software.amazon.awssdk.services.amplify.model.CreateAppRequest;
-import software.amazon.awssdk.services.amplify.model.CreateAppResponse;
+import software.amazon.awssdk.services.amplify.model.Branch;
+import software.amazon.awssdk.services.amplify.model.CreateBranchRequest;
+import software.amazon.awssdk.services.amplify.model.CreateBranchResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.OperationStatus;
 import software.amazon.cloudformation.proxy.ProgressEvent;
@@ -35,19 +35,19 @@ public class CreateHandlerTest extends AbstractTestBase {
     private ProxyClient<AmplifyClient> proxyClient;
 
     @Mock
-    AmplifyClient amplifyClient;
+    AmplifyClient sdkClient;
 
     @BeforeEach
     public void setup() {
         proxy = new AmazonWebServicesClientProxy(logger, MOCK_CREDENTIALS, () -> Duration.ofSeconds(600).toMillis());
-        amplifyClient = mock(AmplifyClient.class);
-        proxyClient = MOCK_PROXY(proxy, amplifyClient);
+        sdkClient = mock(AmplifyClient.class);
+        proxyClient = MOCK_PROXY(proxy, sdkClient);
     }
 
     @AfterEach
     public void tear_down() {
-        verify(amplifyClient, atLeastOnce()).serviceName();
-        verifyNoMoreInteractions(amplifyClient);
+        verify(sdkClient, atLeastOnce()).serviceName();
+        verifyNoMoreInteractions(sdkClient);
     }
 
     @Test
@@ -55,28 +55,28 @@ public class CreateHandlerTest extends AbstractTestBase {
         final CreateHandler handler = new CreateHandler();
 
         final ResourceModel model = ResourceModel.builder()
-                .name(APP_NAME)
+                .appId(APP_ID)
+                .branchName(BRANCH_NAME)
                 .build();
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
             .desiredResourceState(model)
             .build();
 
-        when(proxyClient.client().createApp(any(CreateAppRequest.class)))
-                .thenReturn(CreateAppResponse.builder()
-                        .app(App.builder()
-                                .appArn(APP_ARN)
-                                .appId(APP_ID)
-                                .name(APP_NAME)
+        when(proxyClient.client().createBranch(any(CreateBranchRequest.class)))
+                .thenReturn(CreateBranchResponse.builder()
+                        .branch(Branch.builder()
+                                .branchArn(BRANCH_ARN)
+                                .branchName(BRANCH_NAME)
                                 .build())
                         .build());
 
         final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(proxy, request,
                 new CallbackContext(), proxyClient, logger);
         final ResourceModel expected = ResourceModel.builder()
-                .arn(APP_ARN)
                 .appId(APP_ID)
-                .name(APP_NAME)
+                .arn(BRANCH_ARN)
+                .branchName(BRANCH_NAME)
                 .build();
 
         assertThat(response).isNotNull();

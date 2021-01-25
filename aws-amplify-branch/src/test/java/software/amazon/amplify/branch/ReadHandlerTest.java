@@ -1,10 +1,10 @@
-package software.amazon.amplify.app;
+package software.amazon.amplify.branch;
 
 import java.time.Duration;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
-import software.amazon.awssdk.services.amplify.model.App;
-import software.amazon.awssdk.services.amplify.model.CreateAppRequest;
-import software.amazon.awssdk.services.amplify.model.CreateAppResponse;
+import software.amazon.awssdk.services.amplify.model.Branch;
+import software.amazon.awssdk.services.amplify.model.GetBranchRequest;
+import software.amazon.awssdk.services.amplify.model.GetBranchResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.OperationStatus;
 import software.amazon.cloudformation.proxy.ProgressEvent;
@@ -18,15 +18,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
-public class CreateHandlerTest extends AbstractTestBase {
+public class ReadHandlerTest extends AbstractTestBase {
 
     @Mock
     private AmazonWebServicesClientProxy proxy;
@@ -35,48 +35,49 @@ public class CreateHandlerTest extends AbstractTestBase {
     private ProxyClient<AmplifyClient> proxyClient;
 
     @Mock
-    AmplifyClient amplifyClient;
+    AmplifyClient sdkClient;
 
     @BeforeEach
     public void setup() {
         proxy = new AmazonWebServicesClientProxy(logger, MOCK_CREDENTIALS, () -> Duration.ofSeconds(600).toMillis());
-        amplifyClient = mock(AmplifyClient.class);
-        proxyClient = MOCK_PROXY(proxy, amplifyClient);
+        sdkClient = mock(AmplifyClient.class);
+        proxyClient = MOCK_PROXY(proxy, sdkClient);
     }
 
     @AfterEach
     public void tear_down() {
-        verify(amplifyClient, atLeastOnce()).serviceName();
-        verifyNoMoreInteractions(amplifyClient);
+        verify(sdkClient, atLeastOnce()).serviceName();
+        verifyNoMoreInteractions(sdkClient);
     }
 
     @Test
     public void handleRequest_SimpleSuccess() {
-        final CreateHandler handler = new CreateHandler();
+        final ReadHandler handler = new ReadHandler();
 
         final ResourceModel model = ResourceModel.builder()
-                .name(APP_NAME)
+                .appId(APP_ID)
+                .branchName(BRANCH_NAME)
                 .build();
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
             .desiredResourceState(model)
             .build();
 
-        when(proxyClient.client().createApp(any(CreateAppRequest.class)))
-                .thenReturn(CreateAppResponse.builder()
-                        .app(App.builder()
-                                .appArn(APP_ARN)
-                                .appId(APP_ID)
-                                .name(APP_NAME)
+        when(proxyClient.client().getBranch(any(GetBranchRequest.class)))
+                .thenReturn(GetBranchResponse.builder()
+                        .branch(Branch.builder()
+                                .branchArn(BRANCH_ARN)
+                                .branchName(BRANCH_NAME)
                                 .build())
                         .build());
 
         final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(proxy, request,
                 new CallbackContext(), proxyClient, logger);
+
         final ResourceModel expected = ResourceModel.builder()
-                .arn(APP_ARN)
                 .appId(APP_ID)
-                .name(APP_NAME)
+                .arn(BRANCH_ARN)
+                .branchName(BRANCH_NAME)
                 .build();
 
         assertThat(response).isNotNull();
