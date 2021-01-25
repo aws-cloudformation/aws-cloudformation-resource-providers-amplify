@@ -21,7 +21,8 @@ public class ListHandler extends BaseHandlerStd {
             final ProxyClient<AmplifyClient> proxyClient,
             final Logger logger) {
 
-        final ListBranchesRequest listBranchesRequest = Translator.translateToListRequest(request.getDesiredResourceState(), request.getNextToken());
+        final ListBranchesRequest listBranchesRequest = Translator.translateToListRequest(request.getDesiredResourceState(),
+                request.getNextToken());
         ListBranchesResponse listBranchesResponse = (ListBranchesResponse) ClientWrapper.execute(
                 proxy,
                 listBranchesRequest,

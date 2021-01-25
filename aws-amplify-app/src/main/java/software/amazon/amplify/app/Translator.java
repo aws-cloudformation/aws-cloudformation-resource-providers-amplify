@@ -28,7 +28,19 @@ import software.amazon.awssdk.services.amplify.model.ListAppsResponse;
 import software.amazon.awssdk.services.amplify.model.ListTagsForResourceRequest;
 import software.amazon.awssdk.services.amplify.model.UpdateAppRequest;
 
+/**
+ * This class is a centralized placeholder for
+ *  - api request construction
+ *  - object translation to/from aws sdk
+ *  - resource model construction for read/list handlers
+ */
+
 public class Translator {
+  /**
+   * Request to create a resource
+   * @param model resource model
+   * @return createAppRequest the aws service request to create a resource
+   */
   static CreateAppRequest translateToCreateRequest(final ResourceModel model) {
     final CreateAppRequest.Builder createAppRequest = CreateAppRequest.builder()
             .name(model.getName())
@@ -73,14 +85,24 @@ public class Translator {
     return createAppRequest.build();
   }
 
+  /**
+   * Request to read a resource
+   * @param model resource model
+   * @return getAppRequest the aws service request to describe a resource
+   */
   static GetAppRequest translateToReadRequest(final ResourceModel model) {
     return GetAppRequest.builder()
             .appId(model.getAppId())
             .build();
   }
 
-  static ResourceModel translateFromReadResponse(final GetAppResponse response) {
-    App app = response.app();
+  /**
+   * Translates resource object from sdk into a resource model
+   * @param getAppResponse the aws service describe resource response
+   * @return model resource model
+   */
+  static ResourceModel translateFromReadResponse(final GetAppResponse getAppResponse) {
+    App app = getAppResponse.app();
 
     ResourceModel.ResourceModelBuilder appModelBuilder = ResourceModel.builder()
             .appId(app.appId())
@@ -139,12 +161,22 @@ public class Translator {
     return appModelBuilder.build();
   }
 
+  /**
+   * Request to delete a resource
+   * @param model resource model
+   * @return deleteAppRequest the aws service request to delete a resource
+   */
   static DeleteAppRequest translateToDeleteRequest(final ResourceModel model) {
     return DeleteAppRequest.builder()
             .appId(model.getAppId())
             .build();
   }
 
+  /**
+   * Request to update properties of a previously created resource
+   * @param model resource model
+   * @return updateAppRequest the aws service request to modify a resource
+   */
   static UpdateAppRequest translateToUpdateRequest(final ResourceModel model) {
     final UpdateAppRequest.Builder updateAppRequest = UpdateAppRequest.builder()
             .appId(model.getAppId())
@@ -179,14 +211,24 @@ public class Translator {
     return updateAppRequest.build();
   }
 
+  /**
+   * Request to list resources
+   * @param nextToken token passed to the aws service list resources request
+   * @return listAppsRequest the aws service request to list resources within aws account
+   */
   static ListAppsRequest translateToListRequest(final String nextToken) {
     return ListAppsRequest.builder()
             .nextToken(nextToken)
             .build();
   }
 
-  static List<ResourceModel> translateFromListRequest(final ListAppsResponse response) {
-    return streamOfOrEmpty(response.apps())
+  /**
+   * Translates resource objects from sdk into a resource model (primary identifier only)
+   * @param listAppsResponse the aws service describe resource response
+   * @return list of resource models
+   */
+  static List<ResourceModel> translateFromListRequest(final ListAppsResponse listAppsResponse) {
+    return streamOfOrEmpty(listAppsResponse.apps())
         .map(resource -> ResourceModel.builder()
             .arn(resource.appArn())
             .build())

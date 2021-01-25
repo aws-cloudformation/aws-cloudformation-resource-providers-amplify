@@ -1,9 +1,7 @@
 package software.amazon.amplify.branch;
 
 import java.time.Duration;
-import software.amazon.awssdk.core.SdkClient;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
-import software.amazon.awssdk.services.amplify.model.App;
 import software.amazon.awssdk.services.amplify.model.Branch;
 import software.amazon.awssdk.services.amplify.model.ListTagsForResourceRequest;
 import software.amazon.awssdk.services.amplify.model.ListTagsForResourceResponse;
@@ -11,8 +9,6 @@ import software.amazon.awssdk.services.amplify.model.TagResourceRequest;
 import software.amazon.awssdk.services.amplify.model.TagResourceResponse;
 import software.amazon.awssdk.services.amplify.model.UntagResourceRequest;
 import software.amazon.awssdk.services.amplify.model.UntagResourceResponse;
-import software.amazon.awssdk.services.amplify.model.UpdateAppRequest;
-import software.amazon.awssdk.services.amplify.model.UpdateAppResponse;
 import software.amazon.awssdk.services.amplify.model.UpdateBranchRequest;
 import software.amazon.awssdk.services.amplify.model.UpdateBranchResponse;
 import software.amazon.awssdk.utils.ImmutableMap;

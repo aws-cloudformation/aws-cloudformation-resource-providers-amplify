@@ -1,7 +1,6 @@
 package software.amazon.amplify.branch;
 
 import java.time.Duration;
-import software.amazon.awssdk.core.SdkClient;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
 import software.amazon.awssdk.services.amplify.model.DeleteBranchRequest;
 import software.amazon.awssdk.services.amplify.model.DeleteBranchResponse;

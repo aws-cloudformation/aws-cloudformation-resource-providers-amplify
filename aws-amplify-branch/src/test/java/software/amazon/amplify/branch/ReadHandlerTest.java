@@ -75,6 +75,7 @@ public class ReadHandlerTest extends AbstractTestBase {
                 new CallbackContext(), proxyClient, logger);
 
         final ResourceModel expected = ResourceModel.builder()
+                .appId(APP_ID)
                 .arn(BRANCH_ARN)
                 .branchName(BRANCH_NAME)
                 .build();

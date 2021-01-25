@@ -1,27 +1,18 @@
 package software.amazon.amplify.branch;
 
-import com.google.common.collect.Lists;
 import lombok.NonNull;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
-import software.amazon.awssdk.awscore.AwsRequest;
-import software.amazon.awssdk.awscore.AwsResponse;
-import software.amazon.awssdk.services.amplify.model.App;
-import software.amazon.awssdk.services.amplify.model.AutoBranchCreationConfig;
 import software.amazon.awssdk.services.amplify.model.Branch;
 import software.amazon.awssdk.services.amplify.model.CreateBranchRequest;
-import software.amazon.awssdk.services.amplify.model.CustomRule;
-import software.amazon.awssdk.services.amplify.model.DeleteAppRequest;
 import software.amazon.awssdk.services.amplify.model.DeleteBranchRequest;
-import software.amazon.awssdk.services.amplify.model.GetAppRequest;
-import software.amazon.awssdk.services.amplify.model.GetAppResponse;
 import software.amazon.awssdk.services.amplify.model.GetBranchRequest;
 import software.amazon.awssdk.services.amplify.model.GetBranchResponse;
-import software.amazon.awssdk.services.amplify.model.ListAppsRequest;
 import software.amazon.awssdk.services.amplify.model.ListBranchesRequest;
+import software.amazon.awssdk.services.amplify.model.ListBranchesResponse;
 import software.amazon.awssdk.services.amplify.model.ListTagsForResourceRequest;
-import software.amazon.awssdk.services.amplify.model.UpdateAppRequest;
 import software.amazon.awssdk.services.amplify.model.UpdateBranchRequest;
+import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -46,7 +37,7 @@ public class Translator {
   /**
    * Request to create a resource
    * @param model resource model
-   * @return awsRequest the aws service request to create a resource
+   * @return createBranchRequest the aws service request to create a resource
    */
   static CreateBranchRequest translateToCreateRequest(final ResourceModel model) {
     final CreateBranchRequest.Builder createBranchRequest = CreateBranchRequest.builder()
@@ -86,7 +77,7 @@ public class Translator {
   /**
    * Request to read a resource
    * @param model resource model
-   * @return awsRequest the aws service request to describe a resource
+   * @return getBranchRequest the aws service request to describe a resource
    */
   static GetBranchRequest translateToReadRequest(final ResourceModel model) {
     return GetBranchRequest.builder()
@@ -97,13 +88,14 @@ public class Translator {
 
   /**
    * Translates resource object from sdk into a resource model
-   * @param awsResponse the aws service describe resource response
+   * @param getBranchResponse the aws service describe resource response
    * @return model resource model
    */
-  static ResourceModel translateFromReadResponse(final GetBranchResponse response) {
-    Branch branch = response.branch();
+  static ResourceModel translateFromReadResponse(final GetBranchResponse getBranchResponse) {
+    Branch branch = getBranchResponse.branch();
 
     ResourceModel.ResourceModelBuilder branchModelBuilder = ResourceModel.builder()
+            .appId(getAppId(branch.branchArn()))
             .arn(branch.branchArn())
             .branchName(branch.branchName())
             .buildSpec(branch.buildSpec())
@@ -133,7 +125,7 @@ public class Translator {
   /**
    * Request to delete a resource
    * @param model resource model
-   * @return awsRequest the aws service request to delete a resource
+   * @return deleteBranchRequest the aws service request to delete a resource
    */
   static DeleteBranchRequest translateToDeleteRequest(final ResourceModel model) {
     return DeleteBranchRequest.builder()
@@ -145,7 +137,7 @@ public class Translator {
   /**
    * Request to update properties of a previously created resource
    * @param model resource model
-   * @return awsRequest the aws service request to modify a resource
+   * @return updateBranchRequest the aws service request to modify a resource
    */
   static UpdateBranchRequest translateToUpdateRequest(final ResourceModel model) {
     final UpdateBranchRequest.Builder updateBranchRequest = UpdateBranchRequest.builder()
@@ -179,7 +171,7 @@ public class Translator {
   /**
    * Request to list resources
    * @param nextToken token passed to the aws service list resources request
-   * @return awsRequest the aws service request to list resources within aws account
+   * @return listBranchesRequest the aws service request to list resources within aws account
    */
   static ListBranchesRequest translateToListRequest(final ResourceModel model, String nextToken) {
     return ListBranchesRequest.builder()
@@ -190,18 +182,22 @@ public class Translator {
 
   /**
    * Translates resource objects from sdk into a resource model (primary identifier only)
-   * @param awsResponse the aws service describe resource response
+   * @param listBranchesResponse the aws service describe resource response
    * @return list of resource models
    */
-  static List<ResourceModel> translateFromListRequest(final AwsResponse awsResponse) {
-    // e.g. https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-logs/blob/2077c92299aeb9a68ae8f4418b5e932b12a8b186/aws-logs-loggroup/src/main/java/com/aws/logs/loggroup/Translator.java#L75-L82
-    return streamOfOrEmpty(Lists.newArrayList())
+  static List<ResourceModel> translateFromListRequest(final ListBranchesResponse listBranchesResponse) {
+    return streamOfOrEmpty(listBranchesResponse.branches())
         .map(resource -> ResourceModel.builder()
-            // include only primary identifier
+            .arn(resource.branchArn())
             .build())
         .collect(Collectors.toList());
   }
 
+  /**
+   * Request to list tags
+   * @param arn string
+   * @return listTagsForResourceRequest
+   */
   static ListTagsForResourceRequest translateToListTagsForResourceRequest(final String arn) {
     return ListTagsForResourceRequest.builder()
             .resourceArn(arn)
@@ -211,6 +207,18 @@ public class Translator {
   /*
    * Helpers
    */
+
+  private static String getAppId(String branchArn) {
+    final String APP_SPLIT_KEY = "apps/";
+    final String BRANCH_SPLIT_KEY = "/branches/";
+    final String[] arnSplit = branchArn.split(APP_SPLIT_KEY);
+    if (arnSplit.length == 2) {
+      return arnSplit[1].split(BRANCH_SPLIT_KEY)[0];
+    } else {
+      throw new CfnInvalidRequestException("Invalid arn: " + branchArn);
+    }
+  }
+
   private static List<EnvironmentVariable> getEnvironmentVariablesCFN(@NonNull final Map<String, String> envVars) {
     List<EnvironmentVariable> envVarsCFN = new ArrayList<>();
     envVars.forEach((k, v) -> envVarsCFN.add(EnvironmentVariable.builder()

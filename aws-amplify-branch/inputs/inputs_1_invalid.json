@@ -1,11 +1,5 @@
 {
-  "TPSCode": "...",
-  "Title": "...",
-  "CoverSheetIncluded": "...",
-  "DueDate": "...",
-  "ApprovalDate": "...",
-  "Memo": "...",
-  "SecondCopyOfMemo": "...",
-  "TestCode": "...",
-  "Authors": "..."
+  "Arn": "this property is read only",
+  "AppId": "dnonexistent",
+  "BranchName": "CfnInvokeTestInvalid"
 }
