@@ -19,7 +19,7 @@ public class AbstractTestBase {
   protected static final LoggerProxy logger;
   protected static String APP_ID = "dummyId";
   protected static String DOMAIN_NAME = "dummydomain.amplifyapp.com";
-  protected static String DOMAIN_ARN = String.format("arn:aws:amplify:region:accountId:apps/%s/domains/%s", APP_ID, DOMAIN_NAME);
+  protected static String DOMAIN_ASSOCIATION_ARN = String.format("arn:aws:amplify:region:accountId:apps/%s/domains/%s", APP_ID, DOMAIN_NAME);
 
   static {
     MOCK_CREDENTIALS = new Credentials("accessKey", "secretKey", "token");

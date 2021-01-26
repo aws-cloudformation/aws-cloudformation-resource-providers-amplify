@@ -2,8 +2,6 @@ package software.amazon.amplify.domain;
 
 import java.time.Duration;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
-import software.amazon.awssdk.services.amplify.model.CreateDomainAssociationRequest;
-import software.amazon.awssdk.services.amplify.model.CreateDomainAssociationResponse;
 import software.amazon.awssdk.services.amplify.model.DomainAssociation;
 import software.amazon.awssdk.services.amplify.model.DomainStatus;
 import software.amazon.awssdk.services.amplify.model.GetDomainAssociationRequest;
@@ -74,7 +72,7 @@ public class UpdateHandlerTest extends AbstractTestBase {
 
         final ResourceModel expected = ResourceModel.builder()
                 .appId(APP_ID)
-                .arn(DOMAIN_ARN)
+                .arn(DOMAIN_ASSOCIATION_ARN)
                 .domainName(DOMAIN_NAME)
                 .build();
 
@@ -94,7 +92,7 @@ public class UpdateHandlerTest extends AbstractTestBase {
         when(proxyClient.client().updateDomainAssociation(any(UpdateDomainAssociationRequest.class)))
                 .thenReturn(UpdateDomainAssociationResponse.builder()
                         .domainAssociation(DomainAssociation.builder()
-                                .domainAssociationArn(DOMAIN_ARN)
+                                .domainAssociationArn(DOMAIN_ASSOCIATION_ARN)
                                 .domainName(DOMAIN_NAME)
                                 .domainStatus(DomainStatus.UPDATING)
                                 .build())
@@ -102,7 +100,7 @@ public class UpdateHandlerTest extends AbstractTestBase {
         when(proxyClient.client().getDomainAssociation(any(GetDomainAssociationRequest.class)))
                 .thenReturn(GetDomainAssociationResponse.builder()
                         .domainAssociation(DomainAssociation.builder()
-                                .domainAssociationArn(DOMAIN_ARN)
+                                .domainAssociationArn(DOMAIN_ASSOCIATION_ARN)
                                 .domainName(DOMAIN_NAME)
                                 .domainStatus(DomainStatus.AVAILABLE)
                                 .build())

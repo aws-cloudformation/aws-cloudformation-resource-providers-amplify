@@ -2,9 +2,14 @@ package software.amazon.amplify.domain;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
+import software.amazon.amplify.common.utils.ArnUtils;
 import software.amazon.awssdk.awscore.AwsRequest;
 import software.amazon.awssdk.awscore.AwsResponse;
 import software.amazon.awssdk.services.amplify.model.CreateDomainAssociationRequest;
+import software.amazon.awssdk.services.amplify.model.DomainAssociation;
+import software.amazon.awssdk.services.amplify.model.GetDomainAssociationRequest;
+import software.amazon.awssdk.services.amplify.model.GetDomainAssociationResponse;
+import software.amazon.awssdk.services.amplify.model.SubDomain;
 import software.amazon.awssdk.services.amplify.model.UpdateDomainAssociationRequest;
 
 import java.util.ArrayList;
@@ -55,25 +60,44 @@ public class Translator {
   /**
    * Request to read a resource
    * @param model resource model
-   * @return awsRequest the aws service request to describe a resource
+   * @return getDomainAssociationRequest the aws service request to describe a resource
    */
-  static AwsRequest translateToReadRequest(final ResourceModel model) {
-    final AwsRequest awsRequest = null;
-    // TODO: construct a request
-    // e.g. https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-logs/blob/2077c92299aeb9a68ae8f4418b5e932b12a8b186/aws-logs-loggroup/src/main/java/com/aws/logs/loggroup/Translator.java#L20-L24
-    return awsRequest;
+  static GetDomainAssociationRequest translateToReadRequest(final ResourceModel model) {
+    return GetDomainAssociationRequest.builder()
+            .appId(model.getAppId())
+            .domainName(model.getDomainName())
+            .build();
   }
 
   /**
    * Translates resource object from sdk into a resource model
-   * @param awsResponse the aws service describe resource response
+   * @param getDomainAssociationResponse the aws service describe resource response
    * @return model resource model
    */
-  static ResourceModel translateFromReadResponse(final AwsResponse awsResponse) {
-    // e.g. https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-logs/blob/2077c92299aeb9a68ae8f4418b5e932b12a8b186/aws-logs-loggroup/src/main/java/com/aws/logs/loggroup/Translator.java#L58-L73
-    return ResourceModel.builder()
-        //.someProperty(response.property())
-        .build();
+  static ResourceModel translateFromReadResponse(final GetDomainAssociationResponse getDomainAssociationResponse) {
+    final DomainAssociation domainAssociation = getDomainAssociationResponse.domainAssociation();
+    final String SPLIT_KEY = "/domains/";
+
+    ResourceModel.ResourceModelBuilder domainAssociationModelBuilder = ResourceModel.builder()
+            .appId(ArnUtils.getAppId(domainAssociation.domainAssociationArn(), SPLIT_KEY))
+            .arn(domainAssociation.domainAssociationArn())
+            .domainName(domainAssociation.domainName())
+            .enableAutoSubDomain(domainAssociation.enableAutoSubDomain())
+            .autoSubDomainIAMRole(domainAssociation.autoSubDomainIAMRole())
+            .domainStatus(domainAssociation.domainStatusAsString())
+            .statusReason(domainAssociation.statusReason())
+            .certificateRecord(domainAssociation.certificateVerificationDNSRecord());
+
+    List<String> autoSubDomainCreationPatterns = domainAssociation.autoSubDomainCreationPatterns();
+    if (CollectionUtils.isNotEmpty(autoSubDomainCreationPatterns)) {
+      domainAssociationModelBuilder.autoSubDomainCreationPatterns(autoSubDomainCreationPatterns);
+    }
+
+    List<SubDomain> subDomainsSDK = domainAssociation.subDomains();
+    if (CollectionUtils.isNotEmpty(subDomainsSDK)) {
+        domainAssociationModelBuilder.subDomainSettings(getSubDomainSettingsCFN(subDomainsSDK));
+    }
+    return domainAssociationModelBuilder.build();
   }
 
   /**
@@ -143,6 +167,21 @@ public class Translator {
         .collect(Collectors.toList());
   }
 
+  /*
+   * Helpers
+   */
+  private static List<SubDomainSetting> getSubDomainSettingsCFN(List<SubDomain> subDomainsSDK) {
+    List<SubDomainSetting> subDomainSettingsCFN = new ArrayList<>();
+    for (SubDomain subDomain : subDomainsSDK) {
+      software.amazon.awssdk.services.amplify.model.SubDomainSetting subDomainSettingSDK = subDomain.subDomainSetting();
+      subDomainSettingsCFN.add(SubDomainSetting.builder()
+              .branchName(subDomainSettingSDK.branchName())
+              .prefix(subDomainSettingSDK.prefix())
+              .build()
+      );
+    }
+    return subDomainSettingsCFN;
+  }
   private static <T> Stream<T> streamOfOrEmpty(final Collection<T> collection) {
     return Optional.ofNullable(collection)
         .map(Collection::stream)

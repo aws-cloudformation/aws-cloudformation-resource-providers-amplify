@@ -3,6 +3,7 @@ package software.amazon.amplify.branch;
 import lombok.NonNull;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import software.amazon.amplify.common.utils.ArnUtils;
 import software.amazon.awssdk.services.amplify.model.Branch;
 import software.amazon.awssdk.services.amplify.model.CreateBranchRequest;
 import software.amazon.awssdk.services.amplify.model.DeleteBranchRequest;
@@ -12,7 +13,6 @@ import software.amazon.awssdk.services.amplify.model.ListBranchesRequest;
 import software.amazon.awssdk.services.amplify.model.ListBranchesResponse;
 import software.amazon.awssdk.services.amplify.model.ListTagsForResourceRequest;
 import software.amazon.awssdk.services.amplify.model.UpdateBranchRequest;
-import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -95,10 +95,11 @@ public class Translator {
    * @return model resource model
    */
   static ResourceModel translateFromReadResponse(final GetBranchResponse getBranchResponse) {
-    Branch branch = getBranchResponse.branch();
+    final Branch branch = getBranchResponse.branch();
+    final String SPLIT_KEY = "/branches/";
 
     ResourceModel.ResourceModelBuilder branchModelBuilder = ResourceModel.builder()
-            .appId(getAppId(branch.branchArn()))
+            .appId(ArnUtils.getAppId(branch.branchArn(), SPLIT_KEY))
             .arn(branch.branchArn())
             .branchName(branch.branchName())
             .buildSpec(branch.buildSpec())
@@ -211,6 +212,7 @@ public class Translator {
    * Helpers
    */
 
+<<<<<<< HEAD
   private static String getAppId(String branchArn) {
     final String APP_SPLIT_KEY = "apps/";
     final String BRANCH_SPLIT_KEY = "/branches/";

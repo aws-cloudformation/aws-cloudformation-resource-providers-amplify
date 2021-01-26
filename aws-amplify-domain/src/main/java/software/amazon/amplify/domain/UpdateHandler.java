@@ -15,9 +15,6 @@ import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ProxyClient;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
-import software.amazon.cloudformation.proxy.delay.Constant;
-
-import java.time.Duration;
 
 public class UpdateHandler extends BaseHandlerStd {
     private Logger logger;

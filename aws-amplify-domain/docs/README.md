@@ -17,7 +17,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#autosubdomainiamrole" title="AutoSubDomainIAMRole">AutoSubDomainIAMRole</a>" : <i>String</i>,
         "<a href="#domainname" title="DomainName">DomainName</a>" : <i>String</i>,
         "<a href="#enableautosubdomain" title="EnableAutoSubDomain">EnableAutoSubDomain</a>" : <i>Boolean</i>,
-        "<a href="#id" title="Id">Id</a>" : <i>String</i>,
         "<a href="#subdomainsettings" title="SubDomainSettings">SubDomainSettings</a>" : <i>[ <a href="subdomainsetting.md">SubDomainSetting</a>, ... ]</i>
     }
 }
@@ -34,7 +33,6 @@ Properties:
     <a href="#autosubdomainiamrole" title="AutoSubDomainIAMRole">AutoSubDomainIAMRole</a>: <i>String</i>
     <a href="#domainname" title="DomainName">DomainName</a>: <i>String</i>
     <a href="#enableautosubdomain" title="EnableAutoSubDomain">EnableAutoSubDomain</a>: <i>Boolean</i>
-    <a href="#id" title="Id">Id</a>: <i>String</i>
     <a href="#subdomainsettings" title="SubDomainSettings">SubDomainSettings</a>: <i>
       - <a href="subdomainsetting.md">SubDomainSetting</a></i>
 </pre>
@@ -78,14 +76,6 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 _Required_: No
 
 _Type_: Boolean
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### Id
-
-_Required_: No
-
-_Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

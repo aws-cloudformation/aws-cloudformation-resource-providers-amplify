@@ -1,6 +1,5 @@
 package software.amazon.amplify.domain;
 
-import org.apache.commons.lang3.ObjectUtils;
 import software.amazon.amplify.common.utils.ClientWrapper;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
 import software.amazon.awssdk.services.amplify.model.CreateDomainAssociationResponse;

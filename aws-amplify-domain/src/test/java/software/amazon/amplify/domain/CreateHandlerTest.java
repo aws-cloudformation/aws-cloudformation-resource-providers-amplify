@@ -2,24 +2,12 @@ package software.amazon.amplify.domain;
 
 import java.time.Duration;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
-import software.amazon.awssdk.services.amplify.model.Branch;
-import software.amazon.awssdk.services.amplify.model.CreateBranchRequest;
-import software.amazon.awssdk.services.amplify.model.CreateBranchResponse;
 import software.amazon.awssdk.services.amplify.model.CreateDomainAssociationRequest;
 import software.amazon.awssdk.services.amplify.model.CreateDomainAssociationResponse;
 import software.amazon.awssdk.services.amplify.model.DomainAssociation;
 import software.amazon.awssdk.services.amplify.model.DomainStatus;
 import software.amazon.awssdk.services.amplify.model.GetDomainAssociationRequest;
 import software.amazon.awssdk.services.amplify.model.GetDomainAssociationResponse;
-import software.amazon.awssdk.services.amplify.model.ListTagsForResourceRequest;
-import software.amazon.awssdk.services.amplify.model.ListTagsForResourceResponse;
-import software.amazon.awssdk.services.amplify.model.TagResourceRequest;
-import software.amazon.awssdk.services.amplify.model.TagResourceResponse;
-import software.amazon.awssdk.services.amplify.model.UntagResourceRequest;
-import software.amazon.awssdk.services.amplify.model.UntagResourceResponse;
-import software.amazon.awssdk.services.amplify.model.UpdateBranchRequest;
-import software.amazon.awssdk.services.amplify.model.UpdateBranchResponse;
-import software.amazon.awssdk.utils.ImmutableMap;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.OperationStatus;
 import software.amazon.cloudformation.proxy.ProgressEvent;
@@ -84,7 +72,7 @@ public class CreateHandlerTest extends AbstractTestBase {
 
         final ResourceModel expected = ResourceModel.builder()
                 .appId(APP_ID)
-                .arn(DOMAIN_ARN)
+                .arn(DOMAIN_ASSOCIATION_ARN)
                 .domainName(DOMAIN_NAME)
                 .build();
 
@@ -101,7 +89,7 @@ public class CreateHandlerTest extends AbstractTestBase {
         when(proxyClient.client().createDomainAssociation(any(CreateDomainAssociationRequest.class)))
                 .thenReturn(CreateDomainAssociationResponse.builder()
                         .domainAssociation(DomainAssociation.builder()
-                                .domainAssociationArn(DOMAIN_ARN)
+                                .domainAssociationArn(DOMAIN_ASSOCIATION_ARN)
                                 .domainName(DOMAIN_NAME)
                                 .domainStatus(DomainStatus.CREATING)
                                 .build())
@@ -109,7 +97,7 @@ public class CreateHandlerTest extends AbstractTestBase {
         when(proxyClient.client().getDomainAssociation(any(GetDomainAssociationRequest.class)))
                 .thenReturn(GetDomainAssociationResponse.builder()
                         .domainAssociation(DomainAssociation.builder()
-                                .domainAssociationArn(DOMAIN_ARN)
+                                .domainAssociationArn(DOMAIN_ASSOCIATION_ARN)
                                 .domainName(DOMAIN_NAME)
                                 .domainStatus(DomainStatus.AVAILABLE)
                                 .build())
