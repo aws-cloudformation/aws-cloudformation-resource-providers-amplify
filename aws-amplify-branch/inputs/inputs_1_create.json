@@ -1,0 +1,29 @@
+{
+  "AppId": "dggzgi0o4wjmx",
+  "BranchName": "CfnInvokeTestOriginalName",
+  "BasicAuthConfig": {
+    "EnableBasicAuth": true,
+    "Username": "user",
+    "Password": "pass"
+  },
+  "Description": "dummyDescription",
+  "DisplayName": "dummydisplayname",
+  "EnableAutoBuild": true,
+  "EnableNotification": true,
+  "EnablePerformanceMode": true,
+  "EnablePullRequestPreview": true,
+  "EnvironmentVariables": [
+    {
+      "Name": "envName1",
+      "Value": "envValue1"
+    },
+    {
+      "Name": "envName2",
+      "Value": "envValue2"
+    }
+  ],
+  "Framework": "dummyFramework",
+  "PullRequestEnvironmentName": "pr-1",
+  "Stage": "DEVELOPMENT",
+  "Ttl": "5"
+}

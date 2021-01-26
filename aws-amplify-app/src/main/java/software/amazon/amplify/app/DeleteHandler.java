@@ -1,5 +1,6 @@
 package software.amazon.amplify.app;
 
+import software.amazon.amplify.common.utils.ClientWrapper;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
 import software.amazon.awssdk.services.amplify.model.DeleteAppResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
@@ -26,8 +27,14 @@ public class DeleteHandler extends BaseHandlerStd {
             .then(progress ->
                 proxy.initiate("AWS-Amplify-App::Delete", proxyClient, model, callbackContext)
                     .translateToServiceRequest(Translator::translateToDeleteRequest)
-                    .makeServiceCall((deleteAppRequest, proxyInvocation) -> (DeleteAppResponse) execute(proxy,
-                            deleteAppRequest, proxyInvocation.client()::deleteApp, model, logger))
+                    .makeServiceCall((deleteAppRequest, proxyInvocation) -> (DeleteAppResponse) ClientWrapper.execute(
+                            proxy,
+                            deleteAppRequest,
+                            proxyInvocation.client()::deleteApp,
+                            ResourceModel.TYPE_NAME,
+                            model.getAppId(),
+                            logger
+                    ))
                     .progress()
             )
             .then(progress -> ProgressEvent.defaultSuccessHandler(null));

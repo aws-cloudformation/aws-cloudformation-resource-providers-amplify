@@ -1,6 +1,7 @@
 package software.amazon.amplify.app;
 
 import org.apache.commons.lang3.ObjectUtils;
+import software.amazon.amplify.common.utils.ClientWrapper;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
 import software.amazon.awssdk.services.amplify.model.CreateAppResponse;
 import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
@@ -31,18 +32,25 @@ public class CreateHandler extends BaseHandlerStd {
             .then(progress ->
                 proxy.initiate("AWS-Amplify-App::Create", proxyClient, model, callbackContext)
                     .translateToServiceRequest(Translator::translateToCreateRequest)
-                    .makeServiceCall((createAppRequest, proxyInvocation) -> {
-                        CreateAppResponse response = (CreateAppResponse) execute(proxy, createAppRequest, proxyInvocation.client()::createApp, model, logger);
-                        setResourceModelId(model, response.app());
-                        return response;
-                    })
-                    .progress()
-                    )
-            .then(progress -> new ReadHandler().handleRequest(proxy, request, callbackContext, proxyClient, logger));
+                    .makeServiceCall((createAppRequest, proxyInvocation) -> (CreateAppResponse) ClientWrapper.execute(
+                            proxy,
+                            createAppRequest,
+                            proxyInvocation.client()::createApp,
+                            ResourceModel.TYPE_NAME, model.getAppId(),
+                            logger
+                    ))
+                    .done(createAppResponse -> ProgressEvent.defaultSuccessHandler(handleCreateResponse(createAppResponse, model)))
+                );
     }
 
     private boolean hasReadOnlyProperties(final ResourceModel model) {
         return ObjectUtils.anyNotNull(model.getAppId(),
                 model.getAppName(), model.getArn(), model.getDefaultDomain());
+    }
+
+    private ResourceModel handleCreateResponse(final CreateAppResponse createAppResponse,
+                                               final ResourceModel model) {
+        setResourceModelId(model, createAppResponse.app());
+        return model;
     }
 }

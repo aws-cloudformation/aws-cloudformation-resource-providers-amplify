@@ -1,0 +1,8 @@
+{
+  "desiredResourceState": {
+    "AppId": "replacewithrealappid",
+    "BranchName": "replacewithrealbranchname"
+  },
+  "previousResourceState": {},
+  "logicalResourceIdentifier": "testId"
+}

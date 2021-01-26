@@ -3,8 +3,6 @@ package software.amazon.amplify.app;
 import java.time.Duration;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
 import software.amazon.awssdk.services.amplify.model.App;
-import software.amazon.awssdk.services.amplify.model.GetAppRequest;
-import software.amazon.awssdk.services.amplify.model.GetAppResponse;
 import software.amazon.awssdk.services.amplify.model.ListTagsForResourceRequest;
 import software.amazon.awssdk.services.amplify.model.ListTagsForResourceResponse;
 import software.amazon.awssdk.services.amplify.model.TagResourceRequest;
@@ -61,12 +59,10 @@ public class UpdateHandlerTest extends AbstractTestBase {
 
     @Test
     public void handleRequest_SimpleSuccess() {
-        buildDummyResponse();
+        stubProxyClient();
         final UpdateHandler handler = new UpdateHandler();
 
         final ResourceModel model = ResourceModel.builder()
-                .arn(APP_ARN)
-                .appId(APP_ID)
                 .name(APP_NAME)
                 .tags(TAGS)
                 .build();
@@ -74,12 +70,6 @@ public class UpdateHandlerTest extends AbstractTestBase {
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
             .desiredResourceState(model)
             .build();
-
-        when(proxyClient.client().tagResource(any(TagResourceRequest.class))).thenReturn(TagResourceResponse.builder()
-                .build());
-
-        when(proxyClient.client().untagResource(any(UntagResourceRequest.class))).thenReturn(UntagResourceResponse.builder()
-                .build());
 
         final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(proxy, request, new CallbackContext(), proxyClient, logger);
 
@@ -102,28 +92,24 @@ public class UpdateHandlerTest extends AbstractTestBase {
         verify(amplifyClient).untagResource(any(UntagResourceRequest.class));
     }
 
-    private void buildDummyResponse() {
+    private void stubProxyClient() {
         when(proxyClient.client().updateApp(any(UpdateAppRequest.class)))
                 .thenReturn(UpdateAppResponse.builder()
                         .app(App.builder()
                                 .appArn(APP_ARN)
                                 .appId(APP_ID)
                                 .name(APP_NAME)
-                                .tags(getTags(TAGS))
-                                .build())
-                        .build());
-        when(proxyClient.client().getApp(any(GetAppRequest.class)))
-                .thenReturn(GetAppResponse.builder()
-                        .app(App.builder()
-                                .appArn(APP_ARN)
-                                .appId(APP_ID)
-                                .name(APP_NAME)
-                                .tags(getTags(TAGS))
+                                .tags(Translator.getTags(TAGS))
                                 .build())
                         .build());
         when(proxyClient.client().listTagsForResource(any(ListTagsForResourceRequest.class)))
                 .thenReturn(ListTagsForResourceResponse.builder()
                     .tags(ImmutableMap.of("oldFoo", "oldBar"))
+                .build());
+        when(proxyClient.client().tagResource(any(TagResourceRequest.class))).thenReturn(TagResourceResponse.builder()
+                .build());
+
+        when(proxyClient.client().untagResource(any(UntagResourceRequest.class))).thenReturn(UntagResourceResponse.builder()
                 .build());
     }
 }

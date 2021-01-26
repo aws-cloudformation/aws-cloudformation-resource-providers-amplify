@@ -1,0 +1,178 @@
+{
+  "typeName": "AWS::Amplify::Branch",
+  "description": "Resource Type definition for AWS::Amplify::Branch",
+  "additionalProperties": false,
+  "properties": {
+    "AppId": {
+      "type": "string"
+    },
+    "Arn": {
+      "type": "string"
+    },
+    "BackendEnvironmentArn": {
+      "type": "string"
+    },
+    "BasicAuthConfig": {
+      "$ref": "#/definitions/BasicAuthConfig"
+    },
+    "BranchName": {
+      "type": "string"
+    },
+    "BuildSpec": {
+      "type": "string"
+    },
+    "Description": {
+      "type": "string"
+    },
+    "DisplayName": {
+      "type": "string"
+    },
+    "EnableAutoBuild": {
+      "type": "boolean"
+    },
+    "EnableNotification": {
+      "type": "boolean"
+    },
+    "EnablePerformanceMode": {
+      "type": "boolean"
+    },
+    "EnablePullRequestPreview": {
+      "type": "boolean"
+    },
+    "EnvironmentVariables": {
+      "type": "array",
+      "uniqueItems": false,
+      "items": {
+        "$ref": "#/definitions/EnvironmentVariable"
+      }
+    },
+    "Framework": {
+      "type": "string"
+    },
+    "PullRequestEnvironmentName": {
+      "type": "string"
+    },
+    "Stage": {
+      "type": "string",
+      "enum": [
+        "EXPERIMENTAL",
+        "BETA",
+        "PULL_REQUEST",
+        "PRODUCTION",
+        "DEVELOPMENT"
+      ]
+    },
+    "Tags": {
+      "type": "array",
+      "uniqueItems": false,
+      "items": {
+        "$ref": "#/definitions/Tag"
+      }
+    },
+    "Ttl": {
+      "type": "string"
+    }
+  },
+  "definitions": {
+    "EnvironmentVariable": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Value": {
+          "type": "string"
+        },
+        "Name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "Value",
+        "Name"
+      ]
+    },
+    "Tag": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Value": {
+          "type": "string"
+        },
+        "Key": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "Value",
+        "Key"
+      ]
+    },
+    "BasicAuthConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Username": {
+          "type": "string"
+        },
+        "EnableBasicAuth": {
+          "type": "boolean"
+        },
+        "Password": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "Username",
+        "Password"
+      ]
+    }
+  },
+  "required": [
+    "AppId",
+    "BranchName"
+  ],
+  "createOnlyProperties": [
+    "/properties/BranchName"
+  ],
+  "primaryIdentifier": [
+    "/properties/Arn"
+  ],
+  "readOnlyProperties": [
+    "/properties/Arn"
+  ],
+  "writeOnlyProperties": [
+    "/properties/BasicAuthConfig"
+  ],
+  "handlers": {
+    "create": {
+      "permissions": [
+        "amplify:CreateBranch",
+        "amplify:TagResource"
+      ]
+    },
+    "delete": {
+      "permissions": [
+        "amplify:DeleteBranch"
+      ]
+    },
+    "list": {
+      "permissions": [
+        "amplify:ListBranches",
+        "amplify:ListTagsForResource"
+      ]
+    },
+    "read": {
+      "permissions": [
+        "amplify:GetBranch",
+        "amplify:ListTagsForResource"
+      ]
+    },
+    "update": {
+      "permissions": [
+        "amplify:UpdateBranch",
+        "amplify:ListTagsForResource",
+        "amplify:TagResource",
+        "amplify:UntagResource"
+      ]
+    }
+  }
+}

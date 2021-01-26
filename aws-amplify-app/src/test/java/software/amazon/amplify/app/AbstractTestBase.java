@@ -24,7 +24,7 @@ public class AbstractTestBase {
   protected static final LoggerProxy logger;
   protected static String APP_NAME = "dummyName";
   protected static String APP_ID = "dummyId";
-  protected static String APP_ARN = String.format("arn:aws:amplify:region:accountId:%s", APP_ID);
+  protected static String APP_ARN = String.format("arn:aws:amplify:region:accountId:apps/%s", APP_ID);
   protected static List<Tag> TAGS = ImmutableList.of(Tag.builder().key("foo").value("bar").build());
 
   static {
@@ -73,13 +73,5 @@ public class AbstractTestBase {
         return sdkClient;
       }
     };
-  }
-
-  protected Map<String, String> getTags(@NonNull final java.util.List<Tag> tags) {
-    Map<String, String> tagMap = new HashMap<>();
-    for (Tag tag : tags) {
-      tagMap.put(tag.getKey(), tag.getValue());
-    }
-    return tagMap;
   }
 }

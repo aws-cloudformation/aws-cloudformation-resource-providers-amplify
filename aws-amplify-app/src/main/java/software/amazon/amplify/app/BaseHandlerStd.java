@@ -52,28 +52,4 @@ public abstract class BaseHandlerStd extends BaseHandler<CallbackContext> {
     final CallbackContext callbackContext,
     final ProxyClient<AmplifyClient> proxyClient,
     final Logger logger);
-
-  protected static <RequestT extends AwsRequest, ResultT extends AwsResponse> AwsResponse execute(
-          final AmazonWebServicesClientProxy clientProxy,
-          RequestT request,
-          Function<RequestT, ResultT> requestFunction,
-          ResourceModel model,
-          Logger logger) {
-    try {
-      logger.log("Invoking with request: " + request.toString());
-      return clientProxy.injectCredentialsAndInvokeV2(request, requestFunction);
-    } catch (NotFoundException e) {
-      throw new CfnNotFoundException(ResourceModel.TYPE_NAME, model.getAppId());
-    } catch (InternalFailureException e) {
-      throw new CfnInternalFailureException(e);
-    } catch (LimitExceededException e) {
-      throw new CfnServiceLimitExceededException(ResourceModel.TYPE_NAME, e.getMessage());
-    } catch (BadRequestException e) {
-      throw new CfnInvalidRequestException(e.getMessage(), e);
-    } catch (UnauthorizedException e) {
-      throw new CfnAccessDeniedException(e);
-    } catch (AwsServiceException e) {
-      throw new CfnGeneralServiceException(e);
-    }
-  }
 }
