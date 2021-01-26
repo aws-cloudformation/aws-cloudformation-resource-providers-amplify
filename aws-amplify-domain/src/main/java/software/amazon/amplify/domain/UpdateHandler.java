@@ -1,18 +1,23 @@
 package software.amazon.amplify.domain;
 
-// TODO: replace all usage of SdkClient with your service client type, e.g; YourServiceAsyncClient
-// import software.amazon.awssdk.services.yourservice.YourServiceAsyncClient;
-
-import software.amazon.awssdk.awscore.AwsResponse;
-import software.amazon.awssdk.awscore.exception.AwsServiceException;
-import software.amazon.awssdk.core.SdkClient;
+import software.amazon.amplify.common.utils.ClientWrapper;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
+import software.amazon.awssdk.services.amplify.model.DomainAssociation;
+import software.amazon.awssdk.services.amplify.model.DomainStatus;
+import software.amazon.awssdk.services.amplify.model.GetDomainAssociationRequest;
+import software.amazon.awssdk.services.amplify.model.GetDomainAssociationResponse;
+import software.amazon.awssdk.services.amplify.model.UpdateDomainAssociationResponse;
 import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
+import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
+import software.amazon.cloudformation.exceptions.CfnNotStabilizedException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ProxyClient;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
+import software.amazon.cloudformation.proxy.delay.Constant;
+
+import java.time.Duration;
 
 public class UpdateHandler extends BaseHandlerStd {
     private Logger logger;
@@ -25,117 +30,71 @@ public class UpdateHandler extends BaseHandlerStd {
         final Logger logger) {
 
         this.logger = logger;
+        final ResourceModel model = request.getDesiredResourceState();
 
-        // TODO: Adjust Progress Chain according to your implementation
-        // https://github.com/aws-cloudformation/cloudformation-cli-java-plugin/blob/master/src/main/java/software/amazon/cloudformation/proxy/CallChain.java
+        if (hasReadOnlyProperties(model)) {
+            throw new CfnInvalidRequestException("Create request includes at least one read-only property.");
+        }
 
         return ProgressEvent.progress(request.getDesiredResourceState(), callbackContext)
-
-            // STEP 1 [check if resource already exists]
-            // for more information -> https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/resource-type-test-contract.html
-            // if target API does not support 'ResourceNotFoundException' then following check is required
             .then(progress ->
-                // STEP 1.0 [initialize a proxy context]
-                // If your service API does not return ResourceNotFoundException on update requests against some identifier (e.g; resource Name)
-                // and instead returns a 200 even though a resource does not exist, you must first check if the resource exists here
-                // NOTE: If your service API throws 'ResourceNotFoundException' for update requests this method is not necessary
-                proxy.initiate("AWS-Amplify-Domain::Update::PreUpdateCheck", proxyClient, progress.getResourceModel(), progress.getCallbackContext())
+                proxy.initiate("AWS-Amplify-Domain::Update", proxyClient, model, progress.getCallbackContext())
+                    .translateToServiceRequest(Translator::translateToUpdateRequest)
+                    .makeServiceCall((updateDomainAssociationRequest, proxyInvocation) -> (UpdateDomainAssociationResponse) ClientWrapper.execute(
+                        proxy,
+                        updateDomainAssociationRequest,
+                        proxyInvocation.client()::updateDomainAssociation,
+                        ResourceModel.TYPE_NAME,
+                        model.getArn(),
+                        logger
+                    ))
+                    .stabilize((awsRequest, awsResponse, client, resourceModel, context) -> isStabilized(proxy, proxyClient,
+                            resourceModel, logger))
+                    .done(updateDomainAssociationResponse -> ProgressEvent.defaultSuccessHandler(handleUpdateResponse(updateDomainAssociationResponse, model)))
+            );
+    }
 
-                    // STEP 1.1 [initialize a proxy context]
-                    .translateToServiceRequest(Translator::translateToReadRequest)
+    private boolean isStabilized(final AmazonWebServicesClientProxy proxy,
+                                 final ProxyClient<AmplifyClient> proxyClient,
+                                 final ResourceModel model,
+                                 final Logger logger) {
+        final GetDomainAssociationRequest getDomainAssociationRequest = GetDomainAssociationRequest.builder()
+                .appId(model.getAppId())
+                .domainName(model.getDomainName())
+                .build();
+        final GetDomainAssociationResponse getDomainAssociationResponse = (GetDomainAssociationResponse) ClientWrapper.execute(
+                proxy,
+                getDomainAssociationRequest,
+                proxyClient.client()::getDomainAssociation,
+                ResourceModel.TYPE_NAME,
+                model.getArn(),
+                logger);
 
-                    // STEP 1.2 [TODO: make an api call]
-                    .makeServiceCall((awsRequest, client) -> {
-                        AwsResponse awsResponse = null;
+        final String domainInfo = String.format("%s - %s", model.getAppId(), model.getDomainName());
+        final DomainAssociation domainAssociation = getDomainAssociationResponse.domainAssociation();
+        final DomainStatus domainStatus = domainAssociation.domainStatus();
 
-                        // TODO: add custom read resource logic
-                        // If describe request does not return ResourceNotFoundException, you must throw ResourceNotFoundException based on
-                        // awsResponse values
+        switch (domainStatus) {
+            // domainDO status can only be UPDATING post update call, or AVAILABLE once cloudfront update is successful
+            case UPDATING:
+                logger.log(String.format("%s UPDATE stabilization domainStatus: %s", domainInfo, domainStatus));
+                return false;
+            case AVAILABLE:
+                logger.log(String.format("%s UPDATE has been stabilized.", domainInfo));
+                return true;
+            case FAILED:
+                final String FAILURE_REASON = domainAssociation.statusReason();
+                logger.log(String.format("%s UPDATE stabilization failed: %s", domainInfo, FAILURE_REASON));
+                throw new CfnNotStabilizedException(ResourceModel.TYPE_NAME, model.getArn(), new CfnGeneralServiceException(FAILURE_REASON));
+            default:
+                logger.log(String.format("%s UPDATE stabilization failed thrown due to invalid status: %s", domainInfo, domainStatus));
+                throw new CfnNotStabilizedException(ResourceModel.TYPE_NAME, model.getArn());
+        }
+    }
 
-                        logger.log(String.format("%s has successfully been read.", ResourceModel.TYPE_NAME));
-                        return awsResponse;
-                    })
-                    .progress()
-            )
-
-            // STEP 2 [first update/stabilize progress chain - required for resource update]
-            .then(progress ->
-                // STEP 2.0 [initialize a proxy context]
-                // Implement client invocation of the update request through the proxyClient, which is already initialised with
-                // caller credentials, correct region and retry settings
-                proxy.initiate("AWS-Amplify-Domain::Update::first", proxyClient, progress.getResourceModel(), progress.getCallbackContext())
-
-                    // STEP 2.1 [TODO: construct a body of a request]
-                    .translateToServiceRequest(Translator::translateToFirstUpdateRequest)
-
-                    // STEP 2.2 [TODO: make an api call]
-                    .makeServiceCall((awsRequest, client) -> {
-                        AwsResponse awsResponse = null;
-                        try {
-
-                            // TODO: put your update resource code here
-
-                        } catch (final AwsServiceException e) {
-                            /*
-                            * While the handler contract states that the handler must always return a progress event,
-                            * you may throw any instance of BaseHandlerException, as the wrapper map it to a progress event.
-                            * Each BaseHandlerException maps to a specific error code, and you should map service exceptions as closely as possible
-                            * to more specific error codes
-                            */
-                            throw new CfnGeneralServiceException(ResourceModel.TYPE_NAME, e);
-                        }
-
-                        logger.log(String.format("%s has successfully been updated.", ResourceModel.TYPE_NAME));
-                        return awsResponse;
-                    })
-
-                    // STEP 2.3 [TODO: stabilize step is not necessarily required but typically involves describing the resource until it is in a certain status, though it can take many forms]
-                    // stabilization step may or may not be needed after each API call
-                    // for more information -> https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/resource-type-test-contract.html
-                    .stabilize((awsRequest, awsResponse, client, model, context) -> {
-                        // TODO: put your stabilization code here
-
-                        final boolean stabilized = true;
-
-                        logger.log(String.format("%s [%s] update has stabilized: %s", ResourceModel.TYPE_NAME, model.getPrimaryIdentifier(), stabilized));
-                        return stabilized;
-                    })
-                    .progress())
-
-            // If your resource is provisioned through multiple API calls, then the following pattern is required (and might take as many postUpdate callbacks as necessary)
-            // STEP 3 [second update/stabilize progress chain]
-            .then(progress ->
-                    // STEP 3.0 [initialize a proxy context]
-                    // If your resource is provisioned through multiple API calls, you will need to apply each subsequent update
-                    // step in a discrete call/stabilize chain to ensure the entire resource is provisioned as intended.
-                    proxy.initiate("AWS-Amplify-Domain::Update::second", proxyClient, progress.getResourceModel(), progress.getCallbackContext())
-
-                    // STEP 3.1 [TODO: construct a body of a request]
-                    .translateToServiceRequest(Translator::translateToSecondUpdateRequest)
-
-                    // STEP 3.2 [TODO: make an api call]
-                    .makeServiceCall((awsRequest, client) -> {
-                        AwsResponse awsResponse = null;
-                        try {
-
-                            // TODO: put your post update resource code here
-
-                        } catch (final AwsServiceException e) {
-                            /*
-                            * While the handler contract states that the handler must always return a progress event,
-                            * you may throw any instance of BaseHandlerException, as the wrapper map it to a progress event.
-                            * Each BaseHandlerException maps to a specific error code, and you should map service exceptions as closely as possible
-                            * to more specific error codes
-                            */
-                            throw new CfnGeneralServiceException(ResourceModel.TYPE_NAME, e);
-                        }
-
-                        logger.log(String.format("%s has successfully been updated.", ResourceModel.TYPE_NAME));
-                        return awsResponse;
-                    })
-                    .progress())
-
-            // STEP 4 [TODO: describe call/chain to return the resource model]
-            .then(progress -> new ReadHandler().handleRequest(proxy, request, callbackContext, proxyClient, logger));
+    private ResourceModel handleUpdateResponse(final UpdateDomainAssociationResponse updateDomainAssociationResponse,
+                                               final ResourceModel model) {
+        setResourceModelId(model, updateDomainAssociationResponse.domainAssociation());
+        return model;
     }
 }

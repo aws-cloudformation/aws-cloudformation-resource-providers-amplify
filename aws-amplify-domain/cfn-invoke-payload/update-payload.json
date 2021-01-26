@@ -1,7 +1,7 @@
 {
   "desiredResourceState": {
     "AppId": "replacewithrealappid",
-    "DomainName": "replacewithrealdomainassociationname",
+    "DomainName": "replacewithrealdomainassociationnamewithavailablestatus",
     "AutoSubDomainIAMRole": "arn:aws:iam::000000000000:role/DummyRoleUpdate",
     "AutoSubDomainCreationPatterns": [
       "/featureupdate*",
