@@ -1,6 +1,7 @@
 package software.amazon.amplify.app;
 
 import lombok.NonNull;
+import org.apache.commons.lang3.ObjectUtils;
 import software.amazon.awssdk.awscore.AwsRequest;
 import software.amazon.awssdk.awscore.AwsResponse;
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
@@ -41,15 +42,20 @@ public abstract class BaseHandlerStd extends BaseHandler<CallbackContext> {
     );
   }
 
+  protected abstract ProgressEvent<ResourceModel, CallbackContext> handleRequest(
+          final AmazonWebServicesClientProxy proxy,
+          final ResourceHandlerRequest<ResourceModel> request,
+          final CallbackContext callbackContext,
+          final ProxyClient<AmplifyClient> proxyClient,
+          final Logger logger);
+
+  public boolean hasReadOnlyProperties(final ResourceModel model) {
+    return ObjectUtils.anyNotNull(model.getAppId(),
+            model.getAppName(), model.getArn(), model.getDefaultDomain());
+  }
+
   public void setResourceModelId(@NonNull final ResourceModel model, @NonNull final App app) {
     model.setAppId(app.appId());
     model.setArn(app.appArn());
   }
-
-  protected abstract ProgressEvent<ResourceModel, CallbackContext> handleRequest(
-    final AmazonWebServicesClientProxy proxy,
-    final ResourceHandlerRequest<ResourceModel> request,
-    final CallbackContext callbackContext,
-    final ProxyClient<AmplifyClient> proxyClient,
-    final Logger logger);
 }
