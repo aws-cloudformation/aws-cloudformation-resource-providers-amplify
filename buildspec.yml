@@ -9,6 +9,8 @@ phases:
   build:
     commands:
       - pre-commit run --all-files
+      - cd "$CODEBUILD_SRC_DIR/common"
+      - mvn clean verify install --no-transfer-progress
       - cd "$CODEBUILD_SRC_DIR/aws-amplify-app"
       - mvn clean verify --no-transfer-progress
       - cd "$CODEBUILD_SRC_DIR/aws-amplify-branch"
