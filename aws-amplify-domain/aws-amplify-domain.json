@@ -1,104 +1,113 @@
 {
   "typeName": "AWS::Amplify::Domain",
-  "description": "An example resource schema demonstrating some basic constructs and validation rules.",
-  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
-  "definitions": {
-    "InitechDateFormat": {
-      "$comment": "Use the `definitions` block to provide shared resource property schemas",
-      "type": "string",
-      "format": "date-time"
-    },
-    "Memo": {
-      "type": "object",
-      "properties": {
-        "Heading": {
-          "type": "string"
-        },
-        "Body": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false
-    }
-  },
+  "description": "Resource Type definition for AWS::Amplify::Domain",
+  "additionalProperties": false,
   "properties": {
-    "TPSCode": {
-      "description": "A TPS Code is automatically generated on creation and assigned as the unique identifier.",
-      "type": "string",
-      "pattern": "^[A-Z]{3,5}[0-9]{8}-[0-9]{4}$"
+    "AppId": {
+      "type": "string"
     },
-    "Title": {
-      "description": "The title of the TPS report is a mandatory element.",
-      "type": "string",
-      "minLength": 20,
-      "maxLength": 250
+    "Arn": {
+      "type": "string"
     },
-    "CoverSheetIncluded": {
-      "description": "Required for all TPS Reports submitted after 2/19/1999",
-      "type": "boolean"
-    },
-    "DueDate": {
-      "$ref": "#/definitions/InitechDateFormat"
-    },
-    "ApprovalDate": {
-      "$ref": "#/definitions/InitechDateFormat"
-    },
-    "Memo": {
-      "$ref": "#/definitions/Memo"
-    },
-    "SecondCopyOfMemo": {
-      "description": "In case you didn't get the first one.",
-      "$ref": "#/definitions/Memo"
-    },
-    "TestCode": {
-      "type": "string",
-      "enum": [
-        "NOT_STARTED",
-        "CANCELLED"
-      ]
-    },
-    "Authors": {
+    "AutoSubDomainCreationPatterns": {
       "type": "array",
+      "uniqueItems": false,
       "items": {
         "type": "string"
       }
+    },
+    "AutoSubDomainIAMRole": {
+      "type": "string"
+    },
+    "CertificateRecord": {
+      "type": "string"
+    },
+    "DomainName": {
+      "type": "string"
+    },
+    "DomainStatus": {
+      "type": "string"
+    },
+    "EnableAutoSubDomain": {
+      "type": "boolean"
+    },
+    "StatusReason": {
+      "type": "string"
+    },
+    "SubDomainSettings": {
+      "type": "array",
+      "uniqueItems": false,
+      "items": {
+        "$ref": "#/definitions/SubDomainSetting"
+      }
     }
   },
-  "additionalProperties": false,
+  "definitions": {
+    "SubDomainSetting": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Prefix": {
+          "type": "string"
+        },
+        "BranchName": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "Prefix",
+        "BranchName"
+      ]
+    }
+  },
   "required": [
-    "TestCode",
-    "Title"
+    "AppId",
+    "DomainName",
+    "SubDomainSettings"
   ],
-  "readOnlyProperties": [
-    "/properties/TPSCode"
+  "createOnlyProperties": [
+    "/properties/AppId",
+    "/properties/DomainName"
   ],
   "primaryIdentifier": [
-    "/properties/TPSCode"
+    "/properties/Arn"
+  ],
+  "readOnlyProperties": [
+    "/properties/Arn",
+    "/properties/CertificateRecord",
+    "/properties/DomainStatus",
+    "/properties/StatusReason"
   ],
   "handlers": {
     "create": {
       "permissions": [
-        "initech:CreateReport"
-      ]
-    },
-    "read": {
-      "permissions": [
-        "initech:DescribeReport"
-      ]
-    },
-    "update": {
-      "permissions": [
-        "initech:UpdateReport"
+        "amplify:CreateBranch",
+        "amplify:TagResource"
       ]
     },
     "delete": {
       "permissions": [
-        "initech:DeleteReport"
+        "amplify:DeleteBranch"
       ]
     },
     "list": {
       "permissions": [
-        "initech:ListReports"
+        "amplify:ListBranches",
+        "amplify:ListTagsForResource"
+      ]
+    },
+    "read": {
+      "permissions": [
+        "amplify:GetBranch",
+        "amplify:ListTagsForResource"
+      ]
+    },
+    "update": {
+      "permissions": [
+        "amplify:UpdateBranch",
+        "amplify:ListTagsForResource",
+        "amplify:TagResource",
+        "amplify:UntagResource"
       ]
     }
   }

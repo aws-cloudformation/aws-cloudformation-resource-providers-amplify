@@ -22,6 +22,7 @@ public class CreateHandler extends BaseHandlerStd {
 
         this.logger = logger;
         final ResourceModel model = request.getDesiredResourceState();
+
         if (model.getArn() != null) {
             throw new CfnInvalidRequestException("Create request includes at least one read-only property.");
         }

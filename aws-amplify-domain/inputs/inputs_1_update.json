@@ -1,0 +1,17 @@
+{
+  "BranchName": "CfnInvokeTestOriginalName",
+  "BasicAuthConfig": {
+    "EnableBasicAuth": true,
+    "Username": "userupdate",
+    "Password": "passupdate"
+  },
+  "Description": "dummyDescriptionUpdate",
+  "DisplayName": "dummydisplaynameupdate",
+  "EnableAutoBuild": false,
+  "EnableNotification": false,
+  "EnablePerformanceMode": false,
+  "EnablePullRequestPreview": false,
+  "Framework": "dummyFrameworkUpdate",
+  "PullRequestEnvironmentName": "pr-update",
+  "Stage": "DEVELOPMENT"
+}

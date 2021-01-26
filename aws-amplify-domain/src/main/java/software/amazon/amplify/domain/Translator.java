@@ -1,9 +1,14 @@
 package software.amazon.amplify.domain;
 
 import com.google.common.collect.Lists;
+import org.apache.commons.collections.CollectionUtils;
 import software.amazon.awssdk.awscore.AwsRequest;
 import software.amazon.awssdk.awscore.AwsResponse;
+import software.amazon.awssdk.services.amplify.model.CreateBranchRequest;
+import software.amazon.awssdk.services.amplify.model.CreateDomainAssociationRequest;
+import software.amazon.awssdk.services.amplify.model.SubDomain;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -22,13 +27,30 @@ public class Translator {
   /**
    * Request to create a resource
    * @param model resource model
-   * @return awsRequest the aws service request to create a resource
+   * @return createDomainAssociationRequest the aws service request to create a resource
    */
-  static AwsRequest translateToCreateRequest(final ResourceModel model) {
-    final AwsRequest awsRequest = null;
-    // TODO: construct a request
-    // e.g. https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-logs/blob/2077c92299aeb9a68ae8f4418b5e932b12a8b186/aws-logs-loggroup/src/main/java/com/aws/logs/loggroup/Translator.java#L39-L43
-    return awsRequest;
+  static CreateDomainAssociationRequest translateToCreateRequest(final ResourceModel model) {
+    final CreateDomainAssociationRequest.Builder createDomainAssociationRequest = CreateDomainAssociationRequest.builder()
+            .appId(model.getAppId())
+            .domainName(model.getDomainName())
+            .enableAutoSubDomain(model.getEnableAutoSubDomain())
+            .autoSubDomainCreationPatterns(model.getAutoSubDomainCreationPatterns())
+            .autoSubDomainIAMRole(model.getAutoSubDomainIAMRole());
+
+    List<SubDomainSetting> subDomainSettingsCFN = model.getSubDomainSettings();
+    if (CollectionUtils.isNotEmpty(subDomainSettingsCFN)) {
+      List<software.amazon.awssdk.services.amplify.model.SubDomainSetting> subDomainSettingsSDK = new ArrayList<>();
+      for (final SubDomainSetting subDomainSettingCFN : subDomainSettingsCFN) {
+        software.amazon.awssdk.services.amplify.model.SubDomainSetting subDomainSettingSDK =
+                software.amazon.awssdk.services.amplify.model.SubDomainSetting.builder()
+                  .prefix(subDomainSettingCFN.getPrefix())
+                  .branchName(subDomainSettingCFN.getBranchName())
+                  .build();
+        subDomainSettingsSDK.add(subDomainSettingSDK);
+      }
+      createDomainAssociationRequest.subDomainSettings(subDomainSettingsSDK);
+    }
+    return createDomainAssociationRequest.build();
   }
 
   /**

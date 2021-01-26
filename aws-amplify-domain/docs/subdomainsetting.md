@@ -1,4 +1,4 @@
-# AWS::Amplify::Domain Memo
+# AWS::Amplify::Domain SubDomainSetting
 
 ## Syntax
 
@@ -8,31 +8,31 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "<a href="#heading" title="Heading">Heading</a>" : <i>String</i>,
-    "<a href="#body" title="Body">Body</a>" : <i>String</i>
+    "<a href="#prefix" title="Prefix">Prefix</a>" : <i>String</i>,
+    "<a href="#branchname" title="BranchName">BranchName</a>" : <i>String</i>
 }
 </pre>
 
 ### YAML
 
 <pre>
-<a href="#heading" title="Heading">Heading</a>: <i>String</i>
-<a href="#body" title="Body">Body</a>: <i>String</i>
+<a href="#prefix" title="Prefix">Prefix</a>: <i>String</i>
+<a href="#branchname" title="BranchName">BranchName</a>: <i>String</i>
 </pre>
 
 ## Properties
 
-#### Heading
+#### Prefix
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### Body
+#### BranchName
 
-_Required_: No
+_Required_: Yes
 
 _Type_: String
 
