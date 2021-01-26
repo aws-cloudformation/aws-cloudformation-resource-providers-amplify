@@ -33,6 +33,9 @@ import java.util.stream.Stream;
  */
 
 public class Translator {
+  private static final int ARN_SPLIT_LENGTH = 2;
+  private static final int APP_ID_APP_SPLIT_INDEX = 1;
+  private static final int APP_ID_BRANCH_SPLIT_INDEX = 0;
 
   /**
    * Request to create a resource
@@ -212,8 +215,8 @@ public class Translator {
     final String APP_SPLIT_KEY = "apps/";
     final String BRANCH_SPLIT_KEY = "/branches/";
     final String[] arnSplit = branchArn.split(APP_SPLIT_KEY);
-    if (arnSplit.length == 2) {
-      return arnSplit[1].split(BRANCH_SPLIT_KEY)[0];
+    if (arnSplit.length == ARN_SPLIT_LENGTH) {
+      return arnSplit[APP_ID_APP_SPLIT_INDEX].split(BRANCH_SPLIT_KEY)[APP_ID_BRANCH_SPLIT_INDEX];
     } else {
       throw new CfnInvalidRequestException("Invalid arn: " + branchArn);
     }
