@@ -34,29 +34,34 @@ public class CreateHandler extends BaseHandlerStd {
         final ResourceModel model = request.getDesiredResourceState();
         // ~99.9% ACM certs issue within 5m, and largely within the first 10-20s: https://tt.amazon.com/0305154373
         final Constant CONSTANT = Constant.of().timeout(Duration.ofMinutes(5L)).delay(Duration.ofSeconds(10L)).build();
-
         if (hasReadOnlyProperties(model)) {
             throw new CfnInvalidRequestException("Create request includes at least one read-only property.");
         }
 
         return ProgressEvent.progress(model, callbackContext)
-            .then(progress ->
-                proxy.initiate("AWS-Amplify-Domain::Create", proxyClient,progress.getResourceModel(),
-                        progress.getCallbackContext())
-                    .translateToServiceRequest(Translator::translateToCreateRequest)
-                    .backoffDelay(CONSTANT)
-                    .makeServiceCall((createBranchRequest, proxyInvocation) -> (CreateDomainAssociationResponse) ClientWrapper.execute(
-                        proxy,
-                        createBranchRequest,
-                        proxyInvocation.client()::createDomainAssociation,
-                        ResourceModel.TYPE_NAME,
-                        model.getArn(),
-                        logger
-                    ))
-                    .stabilize((awsRequest, awsResponse, client, resourceModel, context) -> isStabilized(proxy, proxyClient,
-                            resourceModel, logger))
-                    .done(createDomainAssociationResponse -> ProgressEvent.defaultSuccessHandler(handleCreateResponse(createDomainAssociationResponse, model)))
-                );
+                .then(progress ->
+                    proxy.initiate("AWS-Amplify-Test::Create::PreExistanceCheck", proxyClient, model, progress.getCallbackContext())
+                            .translateToServiceRequest(Translator::translateToReadRequest)
+                            .makeServiceCall((getDomainAssociationRequest, client) -> checkIfResourceExists(getDomainAssociationRequest, client, logger))
+                            .progress()
+                )
+                .then(progress ->
+                    proxy.initiate("AWS-Amplify-Domain::Create", proxyClient,progress.getResourceModel(),
+                            progress.getCallbackContext())
+                        .translateToServiceRequest(Translator::translateToCreateRequest)
+                        .backoffDelay(CONSTANT)
+                        .makeServiceCall((createDomainAssociationRequest, proxyInvocation) -> (CreateDomainAssociationResponse) ClientWrapper.execute(
+                            proxy,
+                            createDomainAssociationRequest,
+                            proxyInvocation.client()::createDomainAssociation,
+                            ResourceModel.TYPE_NAME,
+                            model.getArn(),
+                            logger
+                        ))
+                        .stabilize((awsRequest, awsResponse, client, resourceModel, context) -> isStabilized(proxy, proxyClient,
+                                model, logger))
+                        .progress())
+                .then(progress -> new ReadHandler().handleRequest(proxy, request, callbackContext, proxyClient, logger));
     }
 
     private boolean isStabilized(final AmazonWebServicesClientProxy proxy,
@@ -90,6 +95,7 @@ public class CreateHandler extends BaseHandlerStd {
             case AVAILABLE:
             case UPDATING:
                 logger.log(String.format("%s CREATE has been stabilized.", domainInfo));
+                Translator.translateFromCreateOrUpdateResponse(model, getDomainAssociationResponse.domainAssociation());
                 return true;
             case FAILED:
                 final String FAILURE_REASON = domainAssociation.statusReason();
@@ -99,11 +105,5 @@ public class CreateHandler extends BaseHandlerStd {
                 logger.log(String.format("%s CREATE stabilization failed thrown due to invalid status: %s", domainInfo, domainStatus));
                 throw new CfnNotStabilizedException(ResourceModel.TYPE_NAME, model.getArn());
         }
-    }
-
-    private ResourceModel handleCreateResponse(final CreateDomainAssociationResponse createDomainAssociationResponse,
-                                               final ResourceModel model) {
-        setResourceModelId(model, createDomainAssociationResponse.domainAssociation());
-        return model;
     }
 }

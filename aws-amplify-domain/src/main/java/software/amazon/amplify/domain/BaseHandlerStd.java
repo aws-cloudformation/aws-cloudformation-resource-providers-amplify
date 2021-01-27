@@ -1,9 +1,12 @@
 package software.amazon.amplify.domain;
 
-import lombok.NonNull;
 import org.apache.commons.lang3.ObjectUtils;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
-import software.amazon.awssdk.services.amplify.model.DomainAssociation;
+import software.amazon.awssdk.services.amplify.model.GetDomainAssociationRequest;
+import software.amazon.awssdk.services.amplify.model.GetDomainAssociationResponse;
+import software.amazon.awssdk.services.amplify.model.NotFoundException;
+import software.amazon.cloudformation.exceptions.CfnAlreadyExistsException;
+import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.ProgressEvent;
@@ -38,7 +41,22 @@ public abstract class BaseHandlerStd extends BaseHandler<CallbackContext> {
             model.getStatusReason());
   }
 
-  protected void setResourceModelId(@NonNull final ResourceModel model, @NonNull final DomainAssociation domain) {
-    model.setArn(domain.domainAssociationArn());
+  protected GetDomainAssociationResponse checkIfResourceExists(GetDomainAssociationRequest getDomainAssociationRequest,
+                                                               ProxyClient<AmplifyClient> client,
+                                                               Logger logger) {
+    GetDomainAssociationResponse response = null;
+    try {
+      logger.log(String.format("Checking if DomainAssociation already exists for request: " + getDomainAssociationRequest));
+      response = client.injectCredentialsAndInvokeV2(getDomainAssociationRequest, client.client()::getDomainAssociation);
+    } catch (final NotFoundException e) {
+      // proceed
+    } catch (final Exception e) {
+      throw new CfnGeneralServiceException(ResourceModel.TYPE_NAME, e);
+    }
+    logger.log(String.format("%s has successfully been read.", ResourceModel.TYPE_NAME));
+    if (response != null) {
+      throw new CfnAlreadyExistsException(ResourceModel.TYPE_NAME, getDomainAssociationRequest.domainName());
+    }
+    return response;
   }
 }

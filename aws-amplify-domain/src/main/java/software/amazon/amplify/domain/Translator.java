@@ -57,6 +57,13 @@ public class Translator {
     return createDomainAssociationRequest.build();
   }
 
+  static ResourceModel translateFromCreateOrUpdateResponse(final ResourceModel model, final DomainAssociation domainAssociation) {
+    model.setArn(domainAssociation.domainAssociationArn());
+    model.setCertificateRecord(domainAssociation.certificateVerificationDNSRecord());
+    model.setDomainStatus(domainAssociation.domainStatusAsString());
+    return model;
+  }
+
   /**
    * Request to read a resource
    * @param model resource model
@@ -163,6 +170,7 @@ public class Translator {
     return streamOfOrEmpty(listDomainAssociationsResponse.domainAssociations())
         .map(resource -> ResourceModel.builder()
             .arn(resource.domainAssociationArn())
+            .domainName(resource.domainName())
             .build())
         .collect(Collectors.toList());
   }

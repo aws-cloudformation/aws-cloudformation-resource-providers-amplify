@@ -6,6 +6,7 @@ import software.amazon.awssdk.services.amplify.model.DomainAssociation;
 import software.amazon.awssdk.services.amplify.model.DomainStatus;
 import software.amazon.awssdk.services.amplify.model.GetDomainAssociationRequest;
 import software.amazon.awssdk.services.amplify.model.GetDomainAssociationResponse;
+import software.amazon.awssdk.services.amplify.model.NotFoundException;
 import software.amazon.awssdk.services.amplify.model.UpdateDomainAssociationRequest;
 import software.amazon.awssdk.services.amplify.model.UpdateDomainAssociationResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
@@ -74,6 +75,7 @@ public class UpdateHandlerTest extends AbstractTestBase {
                 .appId(APP_ID)
                 .arn(DOMAIN_ASSOCIATION_ARN)
                 .domainName(DOMAIN_NAME)
+                .domainStatus(DomainStatus.AVAILABLE.toString())
                 .build();
 
         assertThat(response).isNotNull();
@@ -95,6 +97,7 @@ public class UpdateHandlerTest extends AbstractTestBase {
                                 .build())
                         .build());
         when(proxyClient.client().getDomainAssociation(any(GetDomainAssociationRequest.class)))
+                .thenThrow(NotFoundException.builder().build())
                 .thenReturn(GetDomainAssociationResponse.builder()
                         .domainAssociation(DomainAssociation.builder()
                                 .domainAssociationArn(DOMAIN_ASSOCIATION_ARN)

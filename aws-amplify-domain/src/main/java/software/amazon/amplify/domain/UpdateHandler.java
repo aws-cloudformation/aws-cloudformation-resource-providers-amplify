@@ -35,6 +35,12 @@ public class UpdateHandler extends BaseHandlerStd {
 
         return ProgressEvent.progress(request.getDesiredResourceState(), callbackContext)
             .then(progress ->
+                proxy.initiate("AWS-Amplify-Test::Create::PreExistenceCheck", proxyClient, model, progress.getCallbackContext())
+                        .translateToServiceRequest(Translator::translateToReadRequest)
+                        .makeServiceCall((getDomainAssociationRequest, client) -> checkIfResourceExists(getDomainAssociationRequest, client, logger))
+                        .progress()
+            )
+            .then(progress ->
                 proxy.initiate("AWS-Amplify-Domain::Update", proxyClient, model, progress.getCallbackContext())
                     .translateToServiceRequest(Translator::translateToUpdateRequest)
                     .makeServiceCall((updateDomainAssociationRequest, proxyInvocation) -> (UpdateDomainAssociationResponse) ClientWrapper.execute(
@@ -47,8 +53,8 @@ public class UpdateHandler extends BaseHandlerStd {
                     ))
                     .stabilize((awsRequest, awsResponse, client, resourceModel, context) -> isStabilized(proxy, proxyClient,
                             resourceModel, logger))
-                    .done(updateDomainAssociationResponse -> ProgressEvent.defaultSuccessHandler(handleUpdateResponse(updateDomainAssociationResponse, model)))
-            );
+                    .progress())
+                .then(progress -> new ReadHandler().handleRequest(proxy, request, callbackContext, proxyClient, logger));
     }
 
     private boolean isStabilized(final AmazonWebServicesClientProxy proxy,
@@ -78,6 +84,7 @@ public class UpdateHandler extends BaseHandlerStd {
                 return false;
             case AVAILABLE:
                 logger.log(String.format("%s UPDATE has been stabilized.", domainInfo));
+                Translator.translateFromCreateOrUpdateResponse(model, domainAssociation);
                 return true;
             case FAILED:
                 final String FAILURE_REASON = domainAssociation.statusReason();
@@ -87,11 +94,5 @@ public class UpdateHandler extends BaseHandlerStd {
                 logger.log(String.format("%s UPDATE stabilization failed thrown due to invalid status: %s", domainInfo, domainStatus));
                 throw new CfnNotStabilizedException(ResourceModel.TYPE_NAME, model.getArn());
         }
-    }
-
-    private ResourceModel handleUpdateResponse(final UpdateDomainAssociationResponse updateDomainAssociationResponse,
-                                               final ResourceModel model) {
-        setResourceModelId(model, updateDomainAssociationResponse.domainAssociation());
-        return model;
     }
 }
