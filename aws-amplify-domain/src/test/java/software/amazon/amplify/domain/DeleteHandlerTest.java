@@ -2,8 +2,6 @@ package software.amazon.amplify.domain;
 
 import java.time.Duration;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
-import software.amazon.awssdk.services.amplify.model.DeleteBranchRequest;
-import software.amazon.awssdk.services.amplify.model.DeleteBranchResponse;
 import software.amazon.awssdk.services.amplify.model.DeleteDomainAssociationRequest;
 import software.amazon.awssdk.services.amplify.model.DeleteDomainAssociationResponse;
 import software.amazon.awssdk.services.amplify.model.DomainAssociation;

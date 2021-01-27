@@ -1,16 +1,14 @@
 package software.amazon.amplify.domain;
 
-import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import software.amazon.amplify.common.utils.ArnUtils;
-import software.amazon.awssdk.awscore.AwsRequest;
-import software.amazon.awssdk.awscore.AwsResponse;
 import software.amazon.awssdk.services.amplify.model.CreateDomainAssociationRequest;
-import software.amazon.awssdk.services.amplify.model.DeleteBranchRequest;
 import software.amazon.awssdk.services.amplify.model.DeleteDomainAssociationRequest;
 import software.amazon.awssdk.services.amplify.model.DomainAssociation;
 import software.amazon.awssdk.services.amplify.model.GetDomainAssociationRequest;
 import software.amazon.awssdk.services.amplify.model.GetDomainAssociationResponse;
+import software.amazon.awssdk.services.amplify.model.ListDomainAssociationsRequest;
+import software.amazon.awssdk.services.amplify.model.ListDomainAssociationsResponse;
 import software.amazon.awssdk.services.amplify.model.SubDomain;
 import software.amazon.awssdk.services.amplify.model.UpdateDomainAssociationRequest;
 
@@ -146,25 +144,25 @@ public class Translator {
   /**
    * Request to list resources
    * @param nextToken token passed to the aws service list resources request
-   * @return awsRequest the aws service request to list resources within aws account
+   * @return listDomainAssociationsRequest the aws service request to list resources within aws account
    */
-  static AwsRequest translateToListRequest(final String nextToken) {
-    final AwsRequest awsRequest = null;
-    // TODO: construct a request
-    // e.g. https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-logs/blob/2077c92299aeb9a68ae8f4418b5e932b12a8b186/aws-logs-loggroup/src/main/java/com/aws/logs/loggroup/Translator.java#L26-L31
-    return awsRequest;
+  static ListDomainAssociationsRequest translateToListRequest(final ResourceModel model, String nextToken) {
+    return ListDomainAssociationsRequest.builder()
+            .appId(model.getAppId())
+            .nextToken(nextToken)
+            .build();
   }
 
   /**
    * Translates resource objects from sdk into a resource model (primary identifier only)
-   * @param awsResponse the aws service describe resource response
+   * @param listDomainAssociationsResponse the aws service describe resource response
    * @return list of resource models
    */
-  static List<ResourceModel> translateFromListRequest(final AwsResponse awsResponse) {
+  static List<ResourceModel> translateFromListRequest(final ListDomainAssociationsResponse listDomainAssociationsResponse) {
     // e.g. https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-logs/blob/2077c92299aeb9a68ae8f4418b5e932b12a8b186/aws-logs-loggroup/src/main/java/com/aws/logs/loggroup/Translator.java#L75-L82
-    return streamOfOrEmpty(Lists.newArrayList())
+    return streamOfOrEmpty(listDomainAssociationsResponse.domainAssociations())
         .map(resource -> ResourceModel.builder()
-            // include only primary identifier
+            .arn(resource.domainAssociationArn())
             .build())
         .collect(Collectors.toList());
   }

@@ -47,6 +47,7 @@ public class ListHandlerTest extends AbstractTestBase {
         final ListHandler handler = new ListHandler();
 
         final ResourceModel model = ResourceModel.builder()
+                .appId(APP_ID)
                 .build();
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()

@@ -5,7 +5,6 @@ import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
 import software.amazon.awssdk.services.amplify.model.DeleteDomainAssociationResponse;
 import software.amazon.awssdk.services.amplify.model.GetDomainAssociationRequest;
-import software.amazon.awssdk.services.amplify.model.NotFoundException;
 import software.amazon.cloudformation.exceptions.CfnNotFoundException;
 import software.amazon.cloudformation.exceptions.CfnNotStabilizedException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
