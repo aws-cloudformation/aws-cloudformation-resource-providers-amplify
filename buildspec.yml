@@ -15,6 +15,9 @@ phases:
       - mvn clean verify --no-transfer-progress
       - cd "$CODEBUILD_SRC_DIR/aws-amplify-branch"
       - mvn clean verify --no-transfer-progress
+      - cd "$CODEBUILD_SRC_DIR/aws-amplify-domain"
+      - mvn clean verify --no-transfer-progress
     finally:
       - cat "$CODEBUILD_SRC_DIR/aws-amplify-app/rpdk.log"
       - cat "$CODEBUILD_SRC_DIR/aws-amplify-branch/rpdk.log"
+      - cat "$CODEBUILD_SRC_DIR/aws-amplify-domain/rpdk.log"
