@@ -1,10 +1,10 @@
 {
-  "DomainName": "cfncontracttest.donkahn-amplify-test.com",
+  "DomainName": "replacewithrealdomainassociationname",
   "AutoSubDomainIAMRole": "arn:aws:iam::000000000000:role/DummyRoleUpdate",
   "EnableAutoSubDomain": true,
   "SubDomainSettings": [
     {
-      "BranchName": "test",
+      "BranchName": "replacewithrealbranchname",
       "Prefix": "testupdate"
     }
   ]

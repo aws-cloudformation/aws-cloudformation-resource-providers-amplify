@@ -1,11 +1,11 @@
 {
-  "AppId": "dggzgi0o4wjmx",
-  "DomainName": "cfncontracttest.donkahn-amplify-test.com",
+  "AppId": "replacewithrealappid",
+  "DomainName": "anydomainyouown.com",
   "AutoSubDomainIAMRole": "arn:aws:iam::000000000000:role/DummyRole",
   "EnableAutoSubDomain": false,
   "SubDomainSettings": [
     {
-      "BranchName": "test",
+      "BranchName": "replacewithrealbranchname",
       "Prefix": "test"
     }
   ]

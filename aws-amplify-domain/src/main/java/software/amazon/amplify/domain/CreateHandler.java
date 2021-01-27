@@ -32,15 +32,13 @@ public class CreateHandler extends BaseHandlerStd {
 
         this.logger = logger;
         final ResourceModel model = request.getDesiredResourceState();
-        // ~99.9% ACM certs issue within 5m, and largely within the first 10-20s: https://tt.amazon.com/0305154373
-        final Constant CONSTANT = Constant.of().timeout(Duration.ofMinutes(5L)).delay(Duration.ofSeconds(10L)).build();
         if (hasReadOnlyProperties(model)) {
             throw new CfnInvalidRequestException("Create request includes at least one read-only property.");
         }
 
         return ProgressEvent.progress(model, callbackContext)
                 .then(progress ->
-                    proxy.initiate("AWS-Amplify-Test::Create::PreExistanceCheck", proxyClient, model, progress.getCallbackContext())
+                    proxy.initiate("AWS-Amplify-Domain::Create::PreExistenceCheck", proxyClient, model, progress.getCallbackContext())
                             .translateToServiceRequest(Translator::translateToReadRequest)
                             .makeServiceCall((getDomainAssociationRequest, client) -> checkIfResourceExists(getDomainAssociationRequest, client, logger))
                             .progress()
@@ -49,7 +47,6 @@ public class CreateHandler extends BaseHandlerStd {
                     proxy.initiate("AWS-Amplify-Domain::Create", proxyClient,progress.getResourceModel(),
                             progress.getCallbackContext())
                         .translateToServiceRequest(Translator::translateToCreateRequest)
-                        .backoffDelay(CONSTANT)
                         .makeServiceCall((createDomainAssociationRequest, proxyInvocation) -> (CreateDomainAssociationResponse) ClientWrapper.execute(
                             proxy,
                             createDomainAssociationRequest,

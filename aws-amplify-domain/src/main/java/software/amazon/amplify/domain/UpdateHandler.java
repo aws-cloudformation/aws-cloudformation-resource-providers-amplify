@@ -35,7 +35,7 @@ public class UpdateHandler extends BaseHandlerStd {
 
         return ProgressEvent.progress(request.getDesiredResourceState(), callbackContext)
             .then(progress ->
-                proxy.initiate("AWS-Amplify-Test::Create::PreExistenceCheck", proxyClient, model, progress.getCallbackContext())
+                proxy.initiate("AWS-Amplify-Domain::Create::PreExistenceCheck", proxyClient, model, progress.getCallbackContext())
                         .translateToServiceRequest(Translator::translateToReadRequest)
                         .makeServiceCall((getDomainAssociationRequest, client) -> checkIfResourceExists(getDomainAssociationRequest, client, logger))
                         .progress()
