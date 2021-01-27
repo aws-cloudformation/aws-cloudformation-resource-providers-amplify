@@ -70,10 +70,9 @@
     "/properties/DomainName"
   ],
   "primaryIdentifier": [
-    "/properties/Arn"
+    "/properties/DomainName"
   ],
   "readOnlyProperties": [
-    "/properties/Arn",
     "/properties/CertificateRecord",
     "/properties/DomainStatus",
     "/properties/StatusReason"

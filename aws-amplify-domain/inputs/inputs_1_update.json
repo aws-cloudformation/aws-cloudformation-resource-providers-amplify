@@ -1,17 +1,11 @@
 {
-  "BranchName": "CfnInvokeTestOriginalName",
-  "BasicAuthConfig": {
-    "EnableBasicAuth": true,
-    "Username": "userupdate",
-    "Password": "passupdate"
-  },
-  "Description": "dummyDescriptionUpdate",
-  "DisplayName": "dummydisplaynameupdate",
-  "EnableAutoBuild": false,
-  "EnableNotification": false,
-  "EnablePerformanceMode": false,
-  "EnablePullRequestPreview": false,
-  "Framework": "dummyFrameworkUpdate",
-  "PullRequestEnvironmentName": "pr-update",
-  "Stage": "DEVELOPMENT"
+  "DomainName": "cfncontracttest.donkahn-amplify-test.com",
+  "AutoSubDomainIAMRole": "arn:aws:iam::000000000000:role/DummyRoleUpdate",
+  "EnableAutoSubDomain": true,
+  "SubDomainSettings": [
+    {
+      "BranchName": "test",
+      "Prefix": "testupdate"
+    }
+  ]
 }

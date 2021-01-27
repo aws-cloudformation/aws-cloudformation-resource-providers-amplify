@@ -7,7 +7,7 @@
       "/featureupdate*",
       "/devupdate*"
     ],
-    "EnableAutoSubDomain": false,
+    "EnableAutoSubDomain": true,
     "SubDomainSettings": [
       {
         "BranchName": "replacewithrealbranchname",
