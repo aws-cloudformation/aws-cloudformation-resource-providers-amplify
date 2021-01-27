@@ -76,9 +76,6 @@ public class UpdateHandlerTest extends AbstractTestBase {
                 .domainName(DOMAIN_NAME)
                 .build();
 
-        System.out.println("***[DEV] response: " + response);
-        System.out.println("***[DEV] expected: " + expected);
-
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
         assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);

@@ -62,7 +62,8 @@ public class DeleteHandlerTest extends AbstractTestBase {
             .desiredResourceState(model)
             .build();
 
-        when(proxyClient.client().deleteBranch(any(DeleteBranchRequest.class))).thenReturn(DeleteBranchResponse.builder().build());
+        when(proxyClient.client().deleteBranch(any(DeleteBranchRequest.class)))
+                .thenReturn(DeleteBranchResponse.builder().build());
 
         final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(proxy, request,
                 new CallbackContext(), proxyClient, logger);
