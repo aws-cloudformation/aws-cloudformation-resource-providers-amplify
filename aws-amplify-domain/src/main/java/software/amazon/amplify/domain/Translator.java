@@ -59,7 +59,6 @@ public class Translator {
 
   static ResourceModel translateFromCreateOrUpdateResponse(final ResourceModel model, final DomainAssociation domainAssociation) {
     model.setArn(domainAssociation.domainAssociationArn());
-    model.setCertificateRecord(domainAssociation.certificateVerificationDNSRecord());
     model.setDomainStatus(domainAssociation.domainStatusAsString());
     return model;
   }
@@ -92,8 +91,7 @@ public class Translator {
             .enableAutoSubDomain(domainAssociation.enableAutoSubDomain())
             .autoSubDomainIAMRole(domainAssociation.autoSubDomainIAMRole())
             .domainStatus(domainAssociation.domainStatusAsString())
-            .statusReason(domainAssociation.statusReason())
-            .certificateRecord(domainAssociation.certificateVerificationDNSRecord());
+            .statusReason(domainAssociation.statusReason());
 
     List<String> autoSubDomainCreationPatterns = domainAssociation.autoSubDomainCreationPatterns();
     if (CollectionUtils.isNotEmpty(autoSubDomainCreationPatterns)) {

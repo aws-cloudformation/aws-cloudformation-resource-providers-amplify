@@ -37,7 +37,7 @@ public abstract class BaseHandlerStd extends BaseHandler<CallbackContext> {
     final Logger logger);
 
   protected boolean hasReadOnlyProperties(final ResourceModel model) {
-    return ObjectUtils.anyNotNull(model.getArn(), model.getCertificateRecord(), model.getDomainStatus(),
+    return ObjectUtils.anyNotNull(model.getArn(), model.getDomainStatus(),
             model.getStatusReason());
   }
 

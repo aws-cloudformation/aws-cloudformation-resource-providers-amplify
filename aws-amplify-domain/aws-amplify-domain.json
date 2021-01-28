@@ -19,9 +19,6 @@
     "AutoSubDomainIAMRole": {
       "type": "string"
     },
-    "CertificateRecord": {
-      "type": "string"
-    },
     "DomainName": {
       "type": "string"
     },
@@ -73,7 +70,6 @@
     "/properties/DomainName"
   ],
   "readOnlyProperties": [
-    "/properties/CertificateRecord",
     "/properties/DomainStatus",
     "/properties/StatusReason"
   ],
