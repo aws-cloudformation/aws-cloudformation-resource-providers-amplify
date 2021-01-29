@@ -23,14 +23,11 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                - "amplify:CreateBranch"
-                - "amplify:DeleteBranch"
-                - "amplify:GetBranch"
-                - "amplify:ListBranches"
-                - "amplify:ListTagsForResource"
-                - "amplify:TagResource"
-                - "amplify:UntagResource"
-                - "amplify:UpdateBranch"
+                - "amplify:CreateDomainAssociation"
+                - "amplify:DeleteDomainAssociation"
+                - "amplify:GetDomainAssociation"
+                - "amplify:ListDomainAssociations"
+                - "amplify:UpdateDomainAssociation"
                 Resource: "*"
 Outputs:
   ExecutionRoleArn:
