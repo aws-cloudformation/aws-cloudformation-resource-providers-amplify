@@ -22,5 +22,8 @@ rpdk.log
 # contains credentials
 sam-tests/
 
-#pyenv
+#misc
 pyenv*
+*.zip
+build
+.gradle
