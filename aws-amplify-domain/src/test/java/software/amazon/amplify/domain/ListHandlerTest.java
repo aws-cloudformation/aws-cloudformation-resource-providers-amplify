@@ -1,10 +1,10 @@
-package software.amazon.amplify.branch;
+package software.amazon.amplify.domain;
 
 import com.google.common.collect.ImmutableList;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
-import software.amazon.awssdk.services.amplify.model.Branch;
-import software.amazon.awssdk.services.amplify.model.ListBranchesRequest;
-import software.amazon.awssdk.services.amplify.model.ListBranchesResponse;
+import software.amazon.awssdk.services.amplify.model.DomainAssociation;
+import software.amazon.awssdk.services.amplify.model.ListDomainAssociationsRequest;
+import software.amazon.awssdk.services.amplify.model.ListDomainAssociationsResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.OperationStatus;
 import software.amazon.cloudformation.proxy.ProgressEvent;
@@ -19,9 +19,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
 public class ListHandlerTest extends AbstractTestBase {
@@ -51,22 +51,22 @@ public class ListHandlerTest extends AbstractTestBase {
                 .build();
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
-                .desiredResourceState(model)
-                .build();
+            .desiredResourceState(model)
+            .build();
 
-        final ListBranchesResponse listBranchesResponse = ListBranchesResponse.builder()
-                .branches(ImmutableList.of(Branch.builder()
-                        .branchArn(BRANCH_ARN)
-                        .branchName(BRANCH_NAME)
+        final ListDomainAssociationsResponse listDomainAssociationsResponse = ListDomainAssociationsResponse.builder()
+                .domainAssociations(ImmutableList.of(DomainAssociation.builder()
+                        .domainAssociationArn(DOMAIN_ASSOCIATION_ARN)
+                        .domainName(DOMAIN_NAME)
                         .build()))
                 .nextToken("token2")
                 .build();
 
-        when(proxyClient.client().listBranches(any(ListBranchesRequest.class)))
-                .thenReturn(listBranchesResponse);
+        when(proxyClient.client().listDomainAssociations(any(ListDomainAssociationsRequest.class)))
+                .thenReturn(listDomainAssociationsResponse);
 
         final ProgressEvent<ResourceModel, CallbackContext> response =
-                handler.handleRequest(proxy, request, new CallbackContext(), proxyClient, logger);
+            handler.handleRequest(proxy, request, new CallbackContext(), proxyClient, logger);
 
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);

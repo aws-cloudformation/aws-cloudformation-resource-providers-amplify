@@ -218,7 +218,8 @@
   "writeOnlyProperties": [
     "/properties/AccessToken",
     "/properties/BasicAuthConfig",
-    "/properties/OauthToken"
+    "/properties/OauthToken",
+    "/properties/AutoBranchCreationConfig"
   ],
   "handlers": {
     "create": {

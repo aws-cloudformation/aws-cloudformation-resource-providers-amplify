@@ -9,6 +9,7 @@ import software.amazon.awssdk.services.amplify.model.ListTagsForResourceResponse
 import software.amazon.awssdk.services.amplify.model.TagResourceRequest;
 import software.amazon.awssdk.services.amplify.model.UntagResourceRequest;
 import software.amazon.awssdk.services.amplify.model.UpdateBranchResponse;
+import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.ProgressEvent;
@@ -33,6 +34,10 @@ public class UpdateHandler extends BaseHandlerStd {
 
         this.logger = logger;
         final ResourceModel model = request.getDesiredResourceState();
+
+        if (model.getArn() != null) {
+            throw new CfnInvalidRequestException("Update request includes at least one read-only property.");
+        }
 
         return ProgressEvent.progress(model, callbackContext)
             .then(progress ->

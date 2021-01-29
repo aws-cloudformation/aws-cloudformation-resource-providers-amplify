@@ -3,6 +3,7 @@ package software.amazon.amplify.branch;
 import lombok.NonNull;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import software.amazon.amplify.common.utils.ArnUtils;
 import software.amazon.awssdk.services.amplify.model.Branch;
 import software.amazon.awssdk.services.amplify.model.CreateBranchRequest;
 import software.amazon.awssdk.services.amplify.model.DeleteBranchRequest;
@@ -12,7 +13,6 @@ import software.amazon.awssdk.services.amplify.model.ListBranchesRequest;
 import software.amazon.awssdk.services.amplify.model.ListBranchesResponse;
 import software.amazon.awssdk.services.amplify.model.ListTagsForResourceRequest;
 import software.amazon.awssdk.services.amplify.model.UpdateBranchRequest;
-import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -33,10 +33,6 @@ import java.util.stream.Stream;
  */
 
 public class Translator {
-  private static final int ARN_SPLIT_LENGTH = 2;
-  private static final int APP_ID_APP_SPLIT_INDEX = 1;
-  private static final int APP_ID_BRANCH_SPLIT_INDEX = 0;
-
   /**
    * Request to create a resource
    * @param model resource model
@@ -95,10 +91,11 @@ public class Translator {
    * @return model resource model
    */
   static ResourceModel translateFromReadResponse(final GetBranchResponse getBranchResponse) {
-    Branch branch = getBranchResponse.branch();
+    final Branch branch = getBranchResponse.branch();
+    final String SPLIT_KEY = "/branches/";
 
     ResourceModel.ResourceModelBuilder branchModelBuilder = ResourceModel.builder()
-            .appId(getAppId(branch.branchArn()))
+            .appId(ArnUtils.getAppId(branch.branchArn(), SPLIT_KEY))
             .arn(branch.branchArn())
             .branchName(branch.branchName())
             .buildSpec(branch.buildSpec())
@@ -210,17 +207,6 @@ public class Translator {
   /*
    * Helpers
    */
-
-  private static String getAppId(String branchArn) {
-    final String APP_SPLIT_KEY = "apps/";
-    final String BRANCH_SPLIT_KEY = "/branches/";
-    final String[] arnSplit = branchArn.split(APP_SPLIT_KEY);
-    if (arnSplit.length == ARN_SPLIT_LENGTH) {
-      return arnSplit[APP_ID_APP_SPLIT_INDEX].split(BRANCH_SPLIT_KEY)[APP_ID_BRANCH_SPLIT_INDEX];
-    } else {
-      throw new CfnInvalidRequestException("Invalid arn: " + branchArn);
-    }
-  }
 
   private static List<EnvironmentVariable> getEnvironmentVariablesCFN(@NonNull final Map<String, String> envVars) {
     List<EnvironmentVariable> envVarsCFN = new ArrayList<>();

@@ -1,0 +1,20 @@
+{
+  "desiredResourceState": {
+    "AppId": "replacewithrealappid",
+    "DomainName": "replacewithrealdomainassociationnamewithavailablestatus",
+    "AutoSubDomainIAMRole": "arn:aws:iam::000000000000:role/DummyRoleUpdate",
+    "AutoSubDomainCreationPatterns": [
+      "/featureupdate*",
+      "/devupdate*"
+    ],
+    "EnableAutoSubDomain": true,
+    "SubDomainSettings": [
+      {
+        "BranchName": "replacewithrealbranchname",
+        "Prefix": "testupdate"
+      }
+    ]
+  },
+  "previousResourceState": {},
+  "logicalResourceIdentifier": "testId"
+}

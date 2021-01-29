@@ -1,0 +1,11 @@
+{
+  "Arn": "this property is read only",
+  "AppId": "dnonexistent",
+  "DomainName": "CfnInvokeTestInvalid",
+  "SubDomainSettings": [
+    {
+      "BranchName": "nonexistent",
+      "Prefix": "test"
+    }
+  ]
+}

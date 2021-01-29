@@ -1,9 +1,14 @@
-package software.amazon.amplify.branch;
+package software.amazon.amplify.domain;
 
 import java.time.Duration;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
-import software.amazon.awssdk.services.amplify.model.DeleteBranchRequest;
-import software.amazon.awssdk.services.amplify.model.DeleteBranchResponse;
+import software.amazon.awssdk.services.amplify.model.CreateDomainAssociationRequest;
+import software.amazon.awssdk.services.amplify.model.CreateDomainAssociationResponse;
+import software.amazon.awssdk.services.amplify.model.DomainAssociation;
+import software.amazon.awssdk.services.amplify.model.DomainStatus;
+import software.amazon.awssdk.services.amplify.model.GetDomainAssociationRequest;
+import software.amazon.awssdk.services.amplify.model.GetDomainAssociationResponse;
+import software.amazon.awssdk.services.amplify.model.NotFoundException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.OperationStatus;
 import software.amazon.cloudformation.proxy.ProgressEvent;
@@ -25,7 +30,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class DeleteHandlerTest extends AbstractTestBase {
+public class CreateHandlerTest extends AbstractTestBase {
 
     @Mock
     private AmazonWebServicesClientProxy proxy;
@@ -51,29 +56,54 @@ public class DeleteHandlerTest extends AbstractTestBase {
 
     @Test
     public void handleRequest_SimpleSuccess() {
-        final DeleteHandler handler = new DeleteHandler();
+        stubProxyClient();
+        final CreateHandler handler = new CreateHandler();
 
         final ResourceModel model = ResourceModel.builder()
                 .appId(APP_ID)
-                .branchName(BRANCH_NAME)
+                .domainName(DOMAIN_NAME)
                 .build();
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
             .desiredResourceState(model)
             .build();
 
-        when(proxyClient.client().deleteBranch(any(DeleteBranchRequest.class)))
-                .thenReturn(DeleteBranchResponse.builder().build());
-
         final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(proxy, request,
                 new CallbackContext(), proxyClient, logger);
+
+        final ResourceModel expected = ResourceModel.builder()
+                .appId(APP_ID)
+                .arn(DOMAIN_ASSOCIATION_ARN)
+                .domainName(DOMAIN_NAME)
+                .domainStatus(DomainStatus.AVAILABLE.toString())
+                .build();
 
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
         assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
-        assertThat(response.getResourceModel()).isNull();
+        assertThat(response.getResourceModel()).isEqualTo(expected);
         assertThat(response.getResourceModels()).isNull();
         assertThat(response.getMessage()).isNull();
         assertThat(response.getErrorCode()).isNull();
+    }
+
+    private void stubProxyClient() {
+        when(proxyClient.client().createDomainAssociation(any(CreateDomainAssociationRequest.class)))
+                .thenReturn(CreateDomainAssociationResponse.builder()
+                        .domainAssociation(DomainAssociation.builder()
+                                .domainAssociationArn(DOMAIN_ASSOCIATION_ARN)
+                                .domainName(DOMAIN_NAME)
+                                .domainStatus(DomainStatus.CREATING)
+                                .build())
+                        .build());
+        when(proxyClient.client().getDomainAssociation(any(GetDomainAssociationRequest.class)))
+                .thenThrow(NotFoundException.builder().build())
+                .thenReturn(GetDomainAssociationResponse.builder()
+                        .domainAssociation(DomainAssociation.builder()
+                                .domainAssociationArn(DOMAIN_ASSOCIATION_ARN)
+                                .domainName(DOMAIN_NAME)
+                                .domainStatus(DomainStatus.AVAILABLE)
+                                .build())
+                        .build());
     }
 }

@@ -1,9 +1,12 @@
-package software.amazon.amplify.branch;
+package software.amazon.amplify.domain;
 
 import java.time.Duration;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
-import software.amazon.awssdk.services.amplify.model.DeleteBranchRequest;
-import software.amazon.awssdk.services.amplify.model.DeleteBranchResponse;
+import software.amazon.awssdk.services.amplify.model.DeleteDomainAssociationRequest;
+import software.amazon.awssdk.services.amplify.model.DeleteDomainAssociationResponse;
+import software.amazon.awssdk.services.amplify.model.DomainAssociation;
+import software.amazon.awssdk.services.amplify.model.GetDomainAssociationRequest;
+import software.amazon.awssdk.services.amplify.model.NotFoundException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.OperationStatus;
 import software.amazon.cloudformation.proxy.ProgressEvent;
@@ -51,19 +54,18 @@ public class DeleteHandlerTest extends AbstractTestBase {
 
     @Test
     public void handleRequest_SimpleSuccess() {
+        stubProxyClient();
         final DeleteHandler handler = new DeleteHandler();
 
         final ResourceModel model = ResourceModel.builder()
                 .appId(APP_ID)
-                .branchName(BRANCH_NAME)
+                .arn(DOMAIN_ASSOCIATION_ARN)
+                .domainName(DOMAIN_NAME)
                 .build();
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
             .desiredResourceState(model)
             .build();
-
-        when(proxyClient.client().deleteBranch(any(DeleteBranchRequest.class)))
-                .thenReturn(DeleteBranchResponse.builder().build());
 
         final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(proxy, request,
                 new CallbackContext(), proxyClient, logger);
@@ -75,5 +77,17 @@ public class DeleteHandlerTest extends AbstractTestBase {
         assertThat(response.getResourceModels()).isNull();
         assertThat(response.getMessage()).isNull();
         assertThat(response.getErrorCode()).isNull();
+    }
+
+    private void stubProxyClient() {
+        when(proxyClient.client().deleteDomainAssociation(any(DeleteDomainAssociationRequest.class)))
+                .thenReturn(DeleteDomainAssociationResponse.builder()
+                        .domainAssociation(DomainAssociation.builder()
+                                .domainAssociationArn(DOMAIN_ASSOCIATION_ARN)
+                                .domainName(DOMAIN_NAME)
+                                .build())
+                        .build());
+        when(proxyClient.client().getDomainAssociation(any(GetDomainAssociationRequest.class)))
+                .thenThrow(NotFoundException.builder().message("Resource Not Found").build());
     }
 }

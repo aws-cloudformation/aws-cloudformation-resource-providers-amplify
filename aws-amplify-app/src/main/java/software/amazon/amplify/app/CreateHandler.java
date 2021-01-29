@@ -43,11 +43,6 @@ public class CreateHandler extends BaseHandlerStd {
                 );
     }
 
-    private boolean hasReadOnlyProperties(final ResourceModel model) {
-        return ObjectUtils.anyNotNull(model.getAppId(),
-                model.getAppName(), model.getArn(), model.getDefaultDomain());
-    }
-
     private ResourceModel handleCreateResponse(final CreateAppResponse createAppResponse,
                                                final ResourceModel model) {
         setResourceModelId(model, createAppResponse.app());

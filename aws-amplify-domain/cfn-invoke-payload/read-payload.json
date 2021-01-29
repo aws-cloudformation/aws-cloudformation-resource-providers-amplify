@@ -1,6 +1,7 @@
 {
   "desiredResourceState": {
-    "AppId": "replacewithrealappid"
+    "AppId": "replacewithrealappid",
+    "DomainName": "replacewithrealdomainassociationname"
   },
   "previousResourceState": {},
   "logicalResourceIdentifier": "testId"

@@ -1,0 +1,11 @@
+{
+  "DomainName": "replacewithrealdomainassociationname",
+  "AutoSubDomainIAMRole": "arn:aws:iam::000000000000:role/DummyRoleUpdate",
+  "EnableAutoSubDomain": true,
+  "SubDomainSettings": [
+    {
+      "BranchName": "replacewithrealbranchname",
+      "Prefix": "testupdate"
+    }
+  ]
+}
