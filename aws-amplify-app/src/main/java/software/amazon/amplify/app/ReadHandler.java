@@ -34,8 +34,9 @@ public class ReadHandler extends BaseHandlerStd {
                     logger
             ))
             .done(getAppResponse -> {
-                logger.log("INFO: returning model: " + model);
-                return ProgressEvent.defaultSuccessHandler(Translator.translateFromReadResponse(getAppResponse));
+                ResourceModel modelRet = Translator.translateFromReadResponse(getAppResponse);
+                logger.log("INFO: returning model: " + modelRet);
+                return ProgressEvent.defaultSuccessHandler(modelRet);
             });
     }
 }
