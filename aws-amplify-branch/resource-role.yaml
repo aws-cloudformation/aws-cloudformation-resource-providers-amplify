@@ -31,6 +31,7 @@ Resources:
                 - "amplify:TagResource"
                 - "amplify:UntagResource"
                 - "amplify:UpdateBranch"
+                - "iam:PassRole"
                 Resource: "*"
 Outputs:
   ExecutionRoleArn:

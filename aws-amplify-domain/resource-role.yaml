@@ -28,6 +28,7 @@ Resources:
                 - "amplify:GetDomainAssociation"
                 - "amplify:ListDomainAssociations"
                 - "amplify:UpdateDomainAssociation"
+                - "iam:PassRole"
                 Resource: "*"
 Outputs:
   ExecutionRoleArn:

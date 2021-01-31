@@ -247,24 +247,28 @@
     "create": {
       "permissions": [
         "amplify:CreateApp",
-        "amplify:TagResource"
+        "amplify:TagResource",
+        "iam:PassRole"
       ]
     },
     "delete": {
       "permissions": [
-        "amplify:DeleteApp"
+        "amplify:DeleteApp",
+        "iam:PassRole"
       ]
     },
     "list": {
       "permissions": [
         "amplify:ListApps",
-        "amplify:ListTagsForResource"
+        "amplify:ListTagsForResource",
+        "iam:PassRole"
       ]
     },
     "read": {
       "permissions": [
         "amplify:GetApp",
-        "amplify:ListTagsForResource"
+        "amplify:ListTagsForResource",
+        "iam:PassRole"
       ]
     },
     "update": {
@@ -272,7 +276,8 @@
         "amplify:UpdateApp",
         "amplify:ListTagsForResource",
         "amplify:TagResource",
-        "amplify:UntagResource"
+        "amplify:UntagResource",
+        "iam:PassRole"
       ]
     }
   }

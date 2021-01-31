@@ -146,24 +146,28 @@
     "create": {
       "permissions": [
         "amplify:CreateBranch",
-        "amplify:TagResource"
+        "amplify:TagResource",
+        "iam:PassRole"
       ]
     },
     "delete": {
       "permissions": [
-        "amplify:DeleteBranch"
+        "amplify:DeleteBranch",
+        "iam:PassRole"
       ]
     },
     "list": {
       "permissions": [
         "amplify:ListBranches",
-        "amplify:ListTagsForResource"
+        "amplify:ListTagsForResource",
+        "iam:PassRole"
       ]
     },
     "read": {
       "permissions": [
         "amplify:GetBranch",
-        "amplify:ListTagsForResource"
+        "amplify:ListTagsForResource",
+        "iam:PassRole"
       ]
     },
     "update": {
@@ -171,7 +175,8 @@
         "amplify:UpdateBranch",
         "amplify:ListTagsForResource",
         "amplify:TagResource",
-        "amplify:UntagResource"
+        "amplify:UntagResource",
+        "iam:PassRole"
       ]
     }
   }
