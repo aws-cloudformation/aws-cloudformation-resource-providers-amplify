@@ -1,11 +1,9 @@
 package software.amazon.amplify.app;
 
 import java.time.Duration;
-import software.amazon.awssdk.core.SdkClient;
+
 import software.amazon.awssdk.services.amplify.AmplifyClient;
 import software.amazon.awssdk.services.amplify.model.App;
-import software.amazon.awssdk.services.amplify.model.CreateAppRequest;
-import software.amazon.awssdk.services.amplify.model.CreateAppResponse;
 import software.amazon.awssdk.services.amplify.model.GetAppRequest;
 import software.amazon.awssdk.services.amplify.model.GetAppResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
@@ -66,6 +64,13 @@ public class ReadHandlerTest extends AbstractTestBase {
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
             .desiredResourceState(model)
             .build();
+        final ResourceModel expected = ResourceModel.builder()
+                .arn(APP_ARN)
+                .appId(APP_ID)
+                .name(APP_NAME)
+                .customRules(CUSTOM_RULES_CFN)
+                .tags(TAGS_CFN)
+                .build();
 
         when(proxyClient.client().getApp(any(GetAppRequest.class)))
                 .thenReturn(GetAppResponse.builder()
@@ -73,16 +78,20 @@ public class ReadHandlerTest extends AbstractTestBase {
                                 .appArn(APP_ARN)
                                 .appId(APP_ID)
                                 .name(APP_NAME)
+                                .autoBranchCreationPatterns(AUTO_BRANCH_CREATION_PATTERNS)
+                                .customRules(Translator.getCustomRulesSDK(CUSTOM_RULES_CFN))
+                                .tags(Translator.getTagsSDK(TAGS_CFN))
                                 .build())
                         .build());
 
         final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(proxy, request,
                 new CallbackContext(), proxyClient, logger);
+        System.out.println("***[DEV] response: " + response);
 
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
         assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
-        assertThat(response.getResourceModel()).isEqualTo(request.getDesiredResourceState());
+        assertThat(response.getResourceModel()).isEqualTo(expected);
         assertThat(response.getResourceModels()).isNull();
         assertThat(response.getMessage()).isNull();
         assertThat(response.getErrorCode()).isNull();

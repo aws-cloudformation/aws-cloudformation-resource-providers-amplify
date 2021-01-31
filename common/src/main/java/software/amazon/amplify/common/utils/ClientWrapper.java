@@ -36,12 +36,15 @@ public final class ClientWrapper {
             final String resourceTypeName,
             final String resourceTypeId,
             final Logger logger) {
+        System.out.println("***[DEV] execute with request: " + request.toString());
         try {
             logger.log("Invoking with request: " + request.toString());
             return clientProxy.injectCredentialsAndInvokeV2(request, requestFunction);
         } catch (NotFoundException e) {
             throw new CfnNotFoundException(resourceTypeName, resourceTypeId);
         } catch (InternalFailureException e) {
+            System.out.println("***[DEV] internal failure exception: " + e);
+            e.printStackTrace();
             throw new CfnInternalFailureException(e);
         } catch (LimitExceededException e) {
             throw new CfnServiceLimitExceededException(resourceTypeName, e.getMessage());

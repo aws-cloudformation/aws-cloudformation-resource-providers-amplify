@@ -1,7 +1,7 @@
 {
   "desiredResourceState": {
-    "AppId": "replacewithrealappid",
-    "DomainName": "replacewithrealdomainassociationname"
+    "AppId": "dggzgi0o4wjmx",
+    "DomainName": "cfn.donkahn-amplify-test.com"
   },
   "previousResourceState": {},
   "logicalResourceIdentifier": "testId"
