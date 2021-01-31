@@ -21,6 +21,7 @@ public class ReadHandler extends BaseHandlerStd {
 
         this.logger = logger;
         final ResourceModel model = request.getDesiredResourceState();
+        logger.log("INFO: requesting with model: " + model);
 
         return proxy.initiate("AWS-Amplify-App::Read", proxyClient, model, callbackContext)
             .translateToServiceRequest(Translator::translateToReadRequest)
@@ -32,6 +33,9 @@ public class ReadHandler extends BaseHandlerStd {
                     model.getAppId(),
                     logger
             ))
-            .done(getAppResponse -> ProgressEvent.defaultSuccessHandler(Translator.translateFromReadResponse(getAppResponse)));
+            .done(getAppResponse -> {
+                logger.log("INFO: returning model: " + model);
+                return ProgressEvent.defaultSuccessHandler(Translator.translateFromReadResponse(getAppResponse));
+            });
     }
 }

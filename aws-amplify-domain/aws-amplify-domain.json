@@ -62,47 +62,49 @@
     "DomainName",
     "SubDomainSettings"
   ],
-  "createOnlyProperties": [
+  "primaryIdentifier": [
     "/properties/AppId",
     "/properties/DomainName"
   ],
-  "primaryIdentifier": [
-    "/properties/DomainName"
-  ],
   "readOnlyProperties": [
+    "/properties/Arn",
     "/properties/DomainStatus",
     "/properties/StatusReason"
   ],
   "handlers": {
     "create": {
       "permissions": [
-        "amplify:CreateBranch",
-        "amplify:TagResource"
+        "amplify:CreateDomainAssociation",
+        "route53:ListHostedZones",
+        "route53:ChangeResourceRecordSets",
+        "iam:PassRole"
       ]
     },
     "delete": {
       "permissions": [
-        "amplify:DeleteBranch"
+        "amplify:DeleteDomainAssociation",
+        "iam:PassRole"
       ]
     },
     "list": {
       "permissions": [
-        "amplify:ListBranches",
-        "amplify:ListTagsForResource"
+        "amplify:ListDomainAssociations",
+        "iam:PassRole"
       ]
     },
     "read": {
       "permissions": [
-        "amplify:GetBranch",
-        "amplify:ListTagsForResource"
+        "amplify:GetDomainAssociation",
+        "route53:ListHostedZones",
+        "iam:PassRole"
       ]
     },
     "update": {
       "permissions": [
-        "amplify:UpdateBranch",
-        "amplify:ListTagsForResource",
-        "amplify:TagResource",
-        "amplify:UntagResource"
+        "amplify:UpdateDomainAssociation",
+        "route53:ListHostedZones",
+        "route53:ChangeResourceRecordSets",
+        "iam:PassRole"
       ]
     }
   }

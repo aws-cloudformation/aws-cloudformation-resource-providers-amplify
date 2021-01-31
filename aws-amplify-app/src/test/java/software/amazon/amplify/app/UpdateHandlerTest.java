@@ -63,6 +63,7 @@ public class UpdateHandlerTest extends AbstractTestBase {
         final UpdateHandler handler = new UpdateHandler();
 
         final ResourceModel model = ResourceModel.builder()
+                .appId(APP_ID)
                 .name(APP_NAME)
                 .tags(TAGS)
                 .build();

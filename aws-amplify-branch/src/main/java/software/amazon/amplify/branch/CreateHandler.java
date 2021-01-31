@@ -22,10 +22,7 @@ public class CreateHandler extends BaseHandlerStd {
 
         this.logger = logger;
         final ResourceModel model = request.getDesiredResourceState();
-
-        if (model.getArn() != null) {
-            throw new CfnInvalidRequestException("Create request includes at least one read-only property.");
-        }
+        logger.log("INFO: requesting with model: " + model);
 
         return ProgressEvent.progress(request.getDesiredResourceState(), callbackContext)
             .then(progress ->
@@ -46,6 +43,7 @@ public class CreateHandler extends BaseHandlerStd {
     private ResourceModel handleCreateResponse(final CreateBranchResponse createBranchResponse,
                                                final ResourceModel model) {
         setResourceModelId(model, createBranchResponse.branch());
+        logger.log("INFO: returning model: " + model);
         return model;
     }
 }

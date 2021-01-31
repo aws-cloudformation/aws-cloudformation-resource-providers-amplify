@@ -28,10 +28,7 @@ public class UpdateHandler extends BaseHandlerStd {
 
         this.logger = logger;
         final ResourceModel model = request.getDesiredResourceState();
-
-        if (hasReadOnlyProperties(model)) {
-            throw new CfnInvalidRequestException("Create request includes at least one read-only property.");
-        }
+        logger.log("INFO: requesting with model: " + model);
 
         return ProgressEvent.progress(request.getDesiredResourceState(), callbackContext)
             .then(progress ->
