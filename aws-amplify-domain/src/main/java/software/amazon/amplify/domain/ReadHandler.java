@@ -34,8 +34,9 @@ public class ReadHandler extends BaseHandlerStd {
                     logger
             ))
             .done(getDomainAssociationResponse -> {
-                logger.log("INFO: returning model: " + model);
-                return ProgressEvent.defaultSuccessHandler(Translator.translateFromReadResponse(getDomainAssociationResponse));
+                ResourceModel modelRet = Translator.translateFromReadResponse(getDomainAssociationResponse);
+                logger.log("INFO: returning model: " + modelRet);
+                return ProgressEvent.defaultSuccessHandler(modelRet);
             });
     }
 }
