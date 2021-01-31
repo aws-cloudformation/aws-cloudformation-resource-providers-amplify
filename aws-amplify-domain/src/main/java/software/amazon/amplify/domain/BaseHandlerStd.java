@@ -41,13 +41,14 @@ public abstract class BaseHandlerStd extends BaseHandler<CallbackContext> {
             model.getStatusReason());
   }
 
-  protected GetDomainAssociationResponse checkIfResourceExists(GetDomainAssociationRequest getDomainAssociationRequest,
+  protected GetDomainAssociationResponse checkIfResourceExists(ResourceModel model,
                                                                ProxyClient<AmplifyClient> client,
                                                                Logger logger) {
     GetDomainAssociationResponse response = null;
     try {
-      logger.log(String.format("Checking if DomainAssociation already exists for request: " + getDomainAssociationRequest));
-      response = client.injectCredentialsAndInvokeV2(getDomainAssociationRequest, client.client()::getDomainAssociation);
+      logger.log(String.format("Checking if %s already exists for appId: %s, domainName: %s",
+              ResourceModel.TYPE_NAME, model.getAppId(), model.getDomainName()));
+      response = client.injectCredentialsAndInvokeV2(Translator.translateToReadRequest(model), client.client()::getDomainAssociation);
     } catch (final NotFoundException e) {
       // proceed
     } catch (final Exception e) {
@@ -55,8 +56,9 @@ public abstract class BaseHandlerStd extends BaseHandler<CallbackContext> {
     }
     logger.log(String.format("%s has successfully been read.", ResourceModel.TYPE_NAME));
     if (response != null) {
-      throw new CfnAlreadyExistsException(ResourceModel.TYPE_NAME, getDomainAssociationRequest.domainName());
+      throw new CfnAlreadyExistsException(ResourceModel.TYPE_NAME, model.getDomainName());
     }
+    // should always be null
     return response;
   }
 }

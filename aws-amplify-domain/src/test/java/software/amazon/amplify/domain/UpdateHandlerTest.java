@@ -67,7 +67,6 @@ public class UpdateHandlerTest extends AbstractTestBase {
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
             .desiredResourceState(model)
             .build();
-
         final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(proxy, request,
                 new CallbackContext(), proxyClient, logger);
 
@@ -97,7 +96,6 @@ public class UpdateHandlerTest extends AbstractTestBase {
                                 .build())
                         .build());
         when(proxyClient.client().getDomainAssociation(any(GetDomainAssociationRequest.class)))
-                .thenThrow(NotFoundException.builder().build())
                 .thenReturn(GetDomainAssociationResponse.builder()
                         .domainAssociation(DomainAssociation.builder()
                                 .domainAssociationArn(DOMAIN_ASSOCIATION_ARN)
