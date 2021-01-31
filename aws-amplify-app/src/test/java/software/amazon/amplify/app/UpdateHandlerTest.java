@@ -65,7 +65,7 @@ public class UpdateHandlerTest extends AbstractTestBase {
         final ResourceModel model = ResourceModel.builder()
                 .appId(APP_ID)
                 .name(APP_NAME)
-                .tags(TAGS)
+                .tags(TAGS_CFN)
                 .build();
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -78,7 +78,7 @@ public class UpdateHandlerTest extends AbstractTestBase {
                 .arn(APP_ARN)
                 .appId(APP_ID)
                 .name(APP_NAME)
-                .tags(TAGS)
+                .tags(TAGS_CFN)
                 .build();
 
         assertThat(response).isNotNull();
@@ -100,7 +100,7 @@ public class UpdateHandlerTest extends AbstractTestBase {
                                 .appArn(APP_ARN)
                                 .appId(APP_ID)
                                 .name(APP_NAME)
-                                .tags(Translator.getTags(TAGS))
+                                .tags(Translator.getTagsSDK(TAGS_CFN))
                                 .build())
                         .build());
         when(proxyClient.client().listTagsForResource(any(ListTagsForResourceRequest.class)))

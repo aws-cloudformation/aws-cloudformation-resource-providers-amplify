@@ -56,6 +56,11 @@ public class CreateHandlerTest extends AbstractTestBase {
 
         final ResourceModel model = ResourceModel.builder()
                 .name(APP_NAME)
+                .customRules(CUSTOM_RULES_CFN)
+                .environmentVariables(ENV_VARS_CFN)
+                .basicAuthConfig(BASIC_AUTH_CONFIG)
+                .autoBranchCreationConfig(AUTO_BRANCH_CREATION_CONFIG)
+                .tags(TAGS_CFN)
                 .build();
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -68,6 +73,12 @@ public class CreateHandlerTest extends AbstractTestBase {
                                 .appArn(APP_ARN)
                                 .appId(APP_ID)
                                 .name(APP_NAME)
+                                .customRules(Translator.getCustomRulesSDK(CUSTOM_RULES_CFN))
+                                .environmentVariables(Translator.getEnvironmentVariablesSDK(ENV_VARS_CFN))
+                                .basicAuthCredentials(Translator.getBasicAuthCredentialsSDK(BASIC_AUTH_CONFIG))
+                                .autoBranchCreationConfig(Translator.getAutoBranchCreationConfigSDK(AUTO_BRANCH_CREATION_CONFIG))
+                                .autoBranchCreationPatterns(AUTO_BRANCH_CREATION_CONFIG.getAutoBranchCreationPatterns())
+                                .tags(Translator.getTagsSDK(TAGS_CFN))
                                 .build())
                         .build());
 
@@ -77,6 +88,11 @@ public class CreateHandlerTest extends AbstractTestBase {
                 .arn(APP_ARN)
                 .appId(APP_ID)
                 .name(APP_NAME)
+                .customRules(CUSTOM_RULES_CFN)
+                .environmentVariables(ENV_VARS_CFN)
+                .basicAuthConfig(BASIC_AUTH_CONFIG)
+                .autoBranchCreationConfig(AUTO_BRANCH_CREATION_CONFIG)
+                .tags(TAGS_CFN)
                 .build();
 
         assertThat(response).isNotNull();

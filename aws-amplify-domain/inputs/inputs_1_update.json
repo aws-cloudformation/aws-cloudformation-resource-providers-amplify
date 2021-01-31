@@ -1,10 +1,11 @@
 {
-  "DomainName": "replacewithrealdomainassociationname",
+  "AppId": "dggzgi0o4wjmx",
+  "DomainName": "cfn.donkahn-amplify-test.com",
   "AutoSubDomainIAMRole": "arn:aws:iam::000000000000:role/DummyRoleUpdate",
   "EnableAutoSubDomain": true,
   "SubDomainSettings": [
     {
-      "BranchName": "replacewithrealbranchname",
+      "BranchName": "test",
       "Prefix": "testupdate"
     }
   ]
