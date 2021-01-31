@@ -62,14 +62,12 @@
     "DomainName",
     "SubDomainSettings"
   ],
-  "createOnlyProperties": [
+  "primaryIdentifier": [
     "/properties/AppId",
     "/properties/DomainName"
   ],
-  "primaryIdentifier": [
-    "/properties/DomainName"
-  ],
   "readOnlyProperties": [
+    "/properties/Arn",
     "/properties/DomainStatus",
     "/properties/StatusReason"
   ],

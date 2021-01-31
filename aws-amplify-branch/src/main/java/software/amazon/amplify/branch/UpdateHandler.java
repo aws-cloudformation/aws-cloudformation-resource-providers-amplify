@@ -36,10 +36,6 @@ public class UpdateHandler extends BaseHandlerStd {
         final ResourceModel model = request.getDesiredResourceState();
         logger.log("INFO: requesting with model: " + model);
 
-        if (model.getArn() != null) {
-            throw new CfnInvalidRequestException("Update request includes at least one read-only property.");
-        }
-
         return ProgressEvent.progress(model, callbackContext)
             .then(progress ->
                 proxy.initiate("AWS-Amplify-Branch::Update", proxyClient, model, progress.getCallbackContext())

@@ -24,10 +24,6 @@ public class CreateHandler extends BaseHandlerStd {
         final ResourceModel model = request.getDesiredResourceState();
         logger.log("INFO: requesting with model: " + model);
 
-        if (model.getArn() != null) {
-            throw new CfnInvalidRequestException("Create request includes at least one read-only property.");
-        }
-
         return ProgressEvent.progress(request.getDesiredResourceState(), callbackContext)
             .then(progress ->
                 proxy.initiate("AWS-Amplify-Branch::Create", proxyClient, model, callbackContext)

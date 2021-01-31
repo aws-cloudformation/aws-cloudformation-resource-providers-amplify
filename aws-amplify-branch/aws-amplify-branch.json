@@ -130,11 +130,13 @@
     "AppId",
     "BranchName"
   ],
-  "createOnlyProperties": [
+  "primaryIdentifier": [
+    "/properties/AppId",
     "/properties/BranchName"
   ],
-  "primaryIdentifier": [
-    "/properties/Arn"
+  "createOnlyProperties": [
+    "/properties/AppId",
+    "/properties/BranchName"
   ],
   "readOnlyProperties": [
     "/properties/Arn"

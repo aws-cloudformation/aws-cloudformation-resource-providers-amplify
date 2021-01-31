@@ -36,11 +36,6 @@ public abstract class BaseHandlerStd extends BaseHandler<CallbackContext> {
     final ProxyClient<AmplifyClient> proxyClient,
     final Logger logger);
 
-  protected boolean hasReadOnlyProperties(final ResourceModel model) {
-    return ObjectUtils.anyNotNull(model.getArn(), model.getDomainStatus(),
-            model.getStatusReason());
-  }
-
   protected GetDomainAssociationResponse checkIfResourceExists(ResourceModel model,
                                                                ProxyClient<AmplifyClient> client,
                                                                Logger logger) {

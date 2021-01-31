@@ -13,7 +13,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Type" : "AWS::Amplify::Domain",
     "Properties" : {
         "<a href="#appid" title="AppId">AppId</a>" : <i>String</i>,
-        "<a href="#arn" title="Arn">Arn</a>" : <i>String</i>,
         "<a href="#autosubdomaincreationpatterns" title="AutoSubDomainCreationPatterns">AutoSubDomainCreationPatterns</a>" : <i>[ String, ... ]</i>,
         "<a href="#autosubdomainiamrole" title="AutoSubDomainIAMRole">AutoSubDomainIAMRole</a>" : <i>String</i>,
         "<a href="#domainname" title="DomainName">DomainName</a>" : <i>String</i>,
@@ -29,7 +28,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 Type: AWS::Amplify::Domain
 Properties:
     <a href="#appid" title="AppId">AppId</a>: <i>String</i>
-    <a href="#arn" title="Arn">Arn</a>: <i>String</i>
     <a href="#autosubdomaincreationpatterns" title="AutoSubDomainCreationPatterns">AutoSubDomainCreationPatterns</a>: <i>
       - String</i>
     <a href="#autosubdomainiamrole" title="AutoSubDomainIAMRole">AutoSubDomainIAMRole</a>: <i>String</i>
@@ -44,14 +42,6 @@ Properties:
 #### AppId
 
 _Required_: Yes
-
-_Type_: String
-
-_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
-
-#### Arn
-
-_Required_: No
 
 _Type_: String
 
@@ -79,7 +69,7 @@ _Required_: Yes
 
 _Type_: String
 
-_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### EnableAutoSubDomain
 
@@ -99,15 +89,15 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 ## Return Values
 
-### Ref
-
-When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the DomainName.
-
 ### Fn::GetAtt
 
 The `Fn::GetAtt` intrinsic function returns a value for a specified attribute of this type. The following are the available attributes and sample return values.
 
 For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::GetAtt](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-getatt.html).
+
+#### Arn
+
+Returns the <code>Arn</code> value.
 
 #### DomainStatus
 
