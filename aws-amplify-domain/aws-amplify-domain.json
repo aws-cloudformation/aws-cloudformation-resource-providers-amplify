@@ -77,6 +77,8 @@
     "create": {
       "permissions": [
         "amplify:CreateDomainAssociation",
+        "route53:ListHostedZones",
+        "route53:ChangeResourceRecordSets",
         "iam:PassRole"
       ]
     },
@@ -95,12 +97,15 @@
     "read": {
       "permissions": [
         "amplify:GetDomainAssociation",
+        "route53:ListHostedZones",
         "iam:PassRole"
       ]
     },
     "update": {
       "permissions": [
         "amplify:UpdateDomainAssociation",
+        "route53:ListHostedZones",
+        "route53:ChangeResourceRecordSets",
         "iam:PassRole"
       ]
     }

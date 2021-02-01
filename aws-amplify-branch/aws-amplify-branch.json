@@ -147,12 +147,24 @@
       "permissions": [
         "amplify:CreateBranch",
         "amplify:TagResource",
+        "codecommit:GetRepository",
+        "codecommit:PutRepositoryTriggers",
+        "codecommit:GetRepositoryTriggers",
+        "s3:GetObject",
+        "s3:GetObjectAcl",
+        "s3:PutObject",
+        "s3:PutObjectAcl",
+        "sns:CreateTopic",
+        "sns:Subscribe",
         "iam:PassRole"
       ]
     },
     "delete": {
       "permissions": [
         "amplify:DeleteBranch",
+        "codecommit:GetRepository",
+        "codecommit:GetRepositoryTriggers",
+        "sns:Unsubscribe",
         "iam:PassRole"
       ]
     },
@@ -167,6 +179,10 @@
       "permissions": [
         "amplify:GetBranch",
         "amplify:ListTagsForResource",
+        "codecommit:GetRepository",
+        "codecommit:GetRepositoryTriggers",
+        "s3:GetObject",
+        "s3:GetObjectAcl",
         "iam:PassRole"
       ]
     },
@@ -176,6 +192,16 @@
         "amplify:ListTagsForResource",
         "amplify:TagResource",
         "amplify:UntagResource",
+        "codecommit:GetRepository",
+        "codecommit:PutRepositoryTriggers",
+        "codecommit:GetRepositoryTriggers",
+        "s3:GetObject",
+        "s3:GetObjectAcl",
+        "s3:PutObject",
+        "s3:PutObjectAcl",
+        "sns:CreateTopic",
+        "sns:Subscribe",
+        "sns:Unsubscribe",
         "iam:PassRole"
       ]
     }
