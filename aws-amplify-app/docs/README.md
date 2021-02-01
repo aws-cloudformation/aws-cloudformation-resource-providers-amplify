@@ -13,7 +13,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Type" : "AWS::Amplify::App",
     "Properties" : {
         "<a href="#accesstoken" title="AccessToken">AccessToken</a>" : <i>String</i>,
-        "<a href="#appid" title="AppId">AppId</a>" : <i>String</i>,
         "<a href="#autobranchcreationconfig" title="AutoBranchCreationConfig">AutoBranchCreationConfig</a>" : <i><a href="autobranchcreationconfig.md">AutoBranchCreationConfig</a></i>,
         "<a href="#basicauthconfig" title="BasicAuthConfig">BasicAuthConfig</a>" : <i><a href="basicauthconfig.md">BasicAuthConfig</a></i>,
         "<a href="#buildspec" title="BuildSpec">BuildSpec</a>" : <i>String</i>,
@@ -37,7 +36,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 Type: AWS::Amplify::App
 Properties:
     <a href="#accesstoken" title="AccessToken">AccessToken</a>: <i>String</i>
-    <a href="#appid" title="AppId">AppId</a>: <i>String</i>
     <a href="#autobranchcreationconfig" title="AutoBranchCreationConfig">AutoBranchCreationConfig</a>: <i><a href="autobranchcreationconfig.md">AutoBranchCreationConfig</a></i>
     <a href="#basicauthconfig" title="BasicAuthConfig">BasicAuthConfig</a>: <i><a href="basicauthconfig.md">BasicAuthConfig</a></i>
     <a href="#buildspec" title="BuildSpec">BuildSpec</a>: <i>String</i>
@@ -67,14 +65,6 @@ _Type_: String
 _Minimum_: <code>1</code>
 
 _Maximum_: <code>255</code>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### AppId
-
-_Required_: No
-
-_Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -205,6 +195,10 @@ When you pass the logical ID of this resource to the intrinsic `Ref` function, R
 The `Fn::GetAtt` intrinsic function returns a value for a specified attribute of this type. The following are the available attributes and sample return values.
 
 For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::GetAtt](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-getatt.html).
+
+#### AppId
+
+Returns the <code>AppId</code> value.
 
 #### AppName
 

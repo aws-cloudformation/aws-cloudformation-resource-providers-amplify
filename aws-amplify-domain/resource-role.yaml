@@ -29,6 +29,8 @@ Resources:
                 - "amplify:ListDomainAssociations"
                 - "amplify:UpdateDomainAssociation"
                 - "iam:PassRole"
+                - "route53:ChangeResourceRecordSets"
+                - "route53:ListHostedZones"
                 Resource: "*"
 Outputs:
   ExecutionRoleArn:
