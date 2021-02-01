@@ -23,6 +23,7 @@ public class CreateHandler extends BaseHandlerStd {
 
         this.logger = logger;
         final ResourceModel model = request.getDesiredResourceState();
+        logger.log("INFO: requesting with model: " + model);
 
         if (hasReadOnlyProperties(model)) {
             throw new CfnInvalidRequestException("Create request includes at least one read-only property.");
@@ -46,6 +47,7 @@ public class CreateHandler extends BaseHandlerStd {
     private ResourceModel handleCreateResponse(final CreateAppResponse createAppResponse,
                                                final ResourceModel model) {
         setResourceModelId(model, createAppResponse.app());
+        logger.log("INFO: returning model: " + model);
         return model;
     }
 }

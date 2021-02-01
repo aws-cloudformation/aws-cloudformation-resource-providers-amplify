@@ -35,6 +35,7 @@ public class UpdateHandler extends BaseHandlerStd {
 
         this.logger = logger;
         final ResourceModel model = request.getDesiredResourceState();
+        logger.log("INFO: requesting with model: " + model);
 
         if (hasReadOnlyProperties(model)) {
             throw new CfnInvalidRequestException("Update request includes at least one read-only property.");
@@ -64,6 +65,7 @@ public class UpdateHandler extends BaseHandlerStd {
     ) {
         setResourceModelId(model, createAppResponse.app());
         updateTags(proxy, proxyClient, model, convertToResourceTags(model.getTags()));
+        logger.log("INFO: returning model: " + model);
         return model;
     }
 
