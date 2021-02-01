@@ -247,12 +247,20 @@
       "permissions": [
         "amplify:CreateApp",
         "amplify:TagResource",
+        "codecommit:GetRepository",
+        "codecommit:PutRepositoryTriggers",
+        "codecommit:GetRepositoryTriggers",
+        "sns:CreateTopic",
+        "sns:Subscribe",
         "iam:PassRole"
       ]
     },
     "delete": {
       "permissions": [
         "amplify:DeleteApp",
+        "codecommit:GetRepository",
+        "codecommit:GetRepositoryTriggers",
+        "sns:Unsubscribe",
         "iam:PassRole"
       ]
     },
@@ -267,6 +275,8 @@
       "permissions": [
         "amplify:GetApp",
         "amplify:ListTagsForResource",
+        "codecommit:GetRepository",
+        "codecommit:GetRepositoryTriggers",
         "iam:PassRole"
       ]
     },
@@ -276,6 +286,12 @@
         "amplify:ListTagsForResource",
         "amplify:TagResource",
         "amplify:UntagResource",
+        "codecommit:GetRepository",
+        "codecommit:PutRepositoryTriggers",
+        "codecommit:GetRepositoryTriggers",
+        "sns:CreateTopic",
+        "sns:Subscribe",
+        "sns:Unsubscribe",
         "iam:PassRole"
       ]
     }
