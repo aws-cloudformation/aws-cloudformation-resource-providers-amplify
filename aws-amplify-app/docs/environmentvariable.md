@@ -28,6 +28,8 @@ _Required_: Yes
 
 _Type_: String
 
+_Maximum_: <code>5500</code>
+
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### Name
@@ -35,5 +37,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 _Required_: Yes
 
 _Type_: String
+
+_Maximum_: <code>255</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)

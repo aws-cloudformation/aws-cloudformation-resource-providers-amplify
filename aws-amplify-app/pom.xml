@@ -89,6 +89,11 @@
             <artifactId>amplify</artifactId>
             <version>2.15.26</version>
         </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>arns</artifactId>
+            <version>2.15.26</version>
+        </dependency>
     </dependencies>
 
     <build>

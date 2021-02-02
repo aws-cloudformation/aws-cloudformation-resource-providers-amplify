@@ -34,8 +34,7 @@ public abstract class BaseHandlerStd extends BaseHandler<CallbackContext> {
           final Logger logger);
 
   public boolean hasReadOnlyProperties(final ResourceModel model) {
-    return ObjectUtils.anyNotNull(model.getAppId(),
-            model.getAppName(), model.getArn(), model.getDefaultDomain());
+    return ObjectUtils.anyNotNull(model.getAppName(), model.getArn(), model.getDefaultDomain());
   }
 
   public void setResourceModelId(@NonNull final ResourceModel model, @NonNull final App app) {

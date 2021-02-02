@@ -28,6 +28,7 @@ public class UpdateHandler extends BaseHandlerStd {
 
         this.logger = logger;
         final ResourceModel model = request.getDesiredResourceState();
+        logger.log("INFO: requesting with model: " + model);
 
         if (hasReadOnlyProperties(model)) {
             throw new CfnInvalidRequestException("Create request includes at least one read-only property.");
@@ -35,22 +36,18 @@ public class UpdateHandler extends BaseHandlerStd {
 
         return ProgressEvent.progress(request.getDesiredResourceState(), callbackContext)
             .then(progress ->
-                proxy.initiate("AWS-Amplify-Domain::Create::PreExistenceCheck", proxyClient, model, progress.getCallbackContext())
-                        .translateToServiceRequest(Translator::translateToReadRequest)
-                        .makeServiceCall((getDomainAssociationRequest, client) -> checkIfResourceExists(getDomainAssociationRequest, client, logger))
-                        .progress()
-            )
-            .then(progress ->
                 proxy.initiate("AWS-Amplify-Domain::Update", proxyClient, model, progress.getCallbackContext())
                     .translateToServiceRequest(Translator::translateToUpdateRequest)
-                    .makeServiceCall((updateDomainAssociationRequest, proxyInvocation) -> (UpdateDomainAssociationResponse) ClientWrapper.execute(
-                        proxy,
-                        updateDomainAssociationRequest,
-                        proxyInvocation.client()::updateDomainAssociation,
-                        ResourceModel.TYPE_NAME,
-                        model.getArn(),
-                        logger
-                    ))
+                    .makeServiceCall((updateDomainAssociationRequest, proxyInvocation) -> {
+                        return (UpdateDomainAssociationResponse) ClientWrapper.execute(
+                                proxy,
+                                updateDomainAssociationRequest,
+                                proxyInvocation.client()::updateDomainAssociation,
+                                ResourceModel.TYPE_NAME,
+                                model.getArn(),
+                                logger
+                        );
+                    })
                     .stabilize((awsRequest, awsResponse, client, resourceModel, context) -> isStabilized(proxy, proxyClient,
                             resourceModel, logger))
                     .progress())
@@ -70,7 +67,7 @@ public class UpdateHandler extends BaseHandlerStd {
                 getDomainAssociationRequest,
                 proxyClient.client()::getDomainAssociation,
                 ResourceModel.TYPE_NAME,
-                model.getArn(),
+                model.getDomainName(),
                 logger);
 
         final String domainInfo = String.format("%s - %s", model.getAppId(), model.getDomainName());

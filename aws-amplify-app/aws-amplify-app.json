@@ -87,7 +87,9 @@
           "type": "array",
           "uniqueItems": false,
           "items": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
           }
         },
         "BasicAuthConfig": {
@@ -118,7 +120,8 @@
           }
         },
         "PullRequestEnvironmentName": {
-          "type": "string"
+          "type": "string",
+          "maxLength": 20
         },
         "Stage": {
           "type": "string",
@@ -137,13 +140,17 @@
       "additionalProperties": false,
       "properties": {
         "Username": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
         },
         "EnableBasicAuth": {
           "type": "boolean"
         },
         "Password": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
         }
       }
     },
@@ -152,16 +159,24 @@
       "additionalProperties": false,
       "properties": {
         "Condition": {
-          "type": "string"
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 2048
         },
         "Status": {
-          "type": "string"
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 7
         },
         "Target": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
         },
         "Source": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048
         }
       },
       "required": [
@@ -174,10 +189,12 @@
       "additionalProperties": false,
       "properties": {
         "Value": {
-          "type": "string"
+          "type": "string",
+          "maxLength": 5500
         },
         "Name": {
-          "type": "string"
+          "type": "string",
+          "maxLength": 255
         }
       },
       "required": [
@@ -191,10 +208,15 @@
       "insertionOrder": false,
       "properties": {
         "Key": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^(?!aws:)[a-zA-Z+-=._:/]+$"
         },
         "Value": {
-          "type": "string"
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 256
         }
       },
       "required": [
@@ -207,7 +229,7 @@
     "Name"
   ],
   "primaryIdentifier": [
-    "/properties/Arn"
+    "/properties/AppId"
   ],
   "readOnlyProperties": [
     "/properties/AppId",
@@ -225,24 +247,38 @@
     "create": {
       "permissions": [
         "amplify:CreateApp",
-        "amplify:TagResource"
+        "amplify:TagResource",
+        "codecommit:GetRepository",
+        "codecommit:PutRepositoryTriggers",
+        "codecommit:GetRepositoryTriggers",
+        "sns:CreateTopic",
+        "sns:Subscribe",
+        "iam:PassRole"
       ]
     },
     "delete": {
       "permissions": [
-        "amplify:DeleteApp"
+        "amplify:DeleteApp",
+        "codecommit:GetRepository",
+        "codecommit:GetRepositoryTriggers",
+        "sns:Unsubscribe",
+        "iam:PassRole"
       ]
     },
     "list": {
       "permissions": [
         "amplify:ListApps",
-        "amplify:ListTagsForResource"
+        "amplify:ListTagsForResource",
+        "iam:PassRole"
       ]
     },
     "read": {
       "permissions": [
         "amplify:GetApp",
-        "amplify:ListTagsForResource"
+        "amplify:ListTagsForResource",
+        "codecommit:GetRepository",
+        "codecommit:GetRepositoryTriggers",
+        "iam:PassRole"
       ]
     },
     "update": {
@@ -250,7 +286,14 @@
         "amplify:UpdateApp",
         "amplify:ListTagsForResource",
         "amplify:TagResource",
-        "amplify:UntagResource"
+        "amplify:UntagResource",
+        "codecommit:GetRepository",
+        "codecommit:PutRepositoryTriggers",
+        "codecommit:GetRepositoryTriggers",
+        "sns:CreateTopic",
+        "sns:Subscribe",
+        "sns:Unsubscribe",
+        "iam:PassRole"
       ]
     }
   }

@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import lombok.NonNull;
+import software.amazon.awssdk.arns.Arn;
 import software.amazon.awssdk.services.amplify.model.DeleteAppRequest;
 import software.amazon.awssdk.services.amplify.model.GetAppRequest;
 import software.amazon.awssdk.services.amplify.model.GetAppResponse;
@@ -27,6 +28,7 @@ import software.amazon.awssdk.services.amplify.model.ListAppsRequest;
 import software.amazon.awssdk.services.amplify.model.ListAppsResponse;
 import software.amazon.awssdk.services.amplify.model.ListTagsForResourceRequest;
 import software.amazon.awssdk.services.amplify.model.UpdateAppRequest;
+import software.amazon.cloudformation.exceptions.CfnNotFoundException;
 
 /**
  * This class is a centralized placeholder for
@@ -91,6 +93,7 @@ public class Translator {
    * @return getAppRequest the aws service request to describe a resource
    */
   static GetAppRequest translateToReadRequest(final ResourceModel model) {
+    initializeModel(model);
     return GetAppRequest.builder()
             .appId(model.getAppId())
             .build();
@@ -167,6 +170,7 @@ public class Translator {
    * @return deleteAppRequest the aws service request to delete a resource
    */
   static DeleteAppRequest translateToDeleteRequest(final ResourceModel model) {
+    initializeModel(model);
     return DeleteAppRequest.builder()
             .appId(model.getAppId())
             .build();
@@ -178,6 +182,7 @@ public class Translator {
    * @return updateAppRequest the aws service request to modify a resource
    */
   static UpdateAppRequest translateToUpdateRequest(final ResourceModel model) {
+    initializeModel(model);
     final UpdateAppRequest.Builder updateAppRequest = UpdateAppRequest.builder()
             .appId(model.getAppId())
             .name(model.getName())
@@ -244,6 +249,16 @@ public class Translator {
   /*
    * Helpers
    */
+    private static void initializeModel(final ResourceModel model) {
+      if (model.getAppId() == null) {
+        if (model.getArn() == null) {
+          throw new CfnNotFoundException(ResourceModel.TYPE_NAME, null);
+        }
+        final Arn arn = Arn.fromString(model.getArn());
+        model.setAppId(arn.resource().resource());
+      }
+    }
+
   public static Map<String, String> getTags(@NonNull final List<Tag> tags) {
     Map<String, String> tagMap = new HashMap<>();
     for (Tag tag : tags) {

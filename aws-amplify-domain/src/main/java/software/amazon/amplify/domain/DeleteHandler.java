@@ -26,6 +26,7 @@ public class DeleteHandler extends BaseHandlerStd {
         this.logger = logger;
 
         final ResourceModel model = request.getDesiredResourceState();
+        logger.log("INFO: requesting with model: " + model);
 
         return ProgressEvent.progress(model, callbackContext)
             .then(progress ->

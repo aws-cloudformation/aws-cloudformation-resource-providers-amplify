@@ -15,10 +15,6 @@ import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ProxyClient;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
-import software.amazon.cloudformation.proxy.delay.Constant;
-
-import java.time.Duration;
-
 
 public class CreateHandler extends BaseHandlerStd {
     private Logger logger;
@@ -32,29 +28,28 @@ public class CreateHandler extends BaseHandlerStd {
 
         this.logger = logger;
         final ResourceModel model = request.getDesiredResourceState();
+        logger.log("INFO: requesting with model: " + model);
+
         if (hasReadOnlyProperties(model)) {
             throw new CfnInvalidRequestException("Create request includes at least one read-only property.");
         }
 
         return ProgressEvent.progress(model, callbackContext)
                 .then(progress ->
-                    proxy.initiate("AWS-Amplify-Domain::Create::PreExistenceCheck", proxyClient, model, progress.getCallbackContext())
-                            .translateToServiceRequest(Translator::translateToReadRequest)
-                            .makeServiceCall((getDomainAssociationRequest, client) -> checkIfResourceExists(getDomainAssociationRequest, client, logger))
-                            .progress()
-                )
-                .then(progress ->
                     proxy.initiate("AWS-Amplify-Domain::Create", proxyClient,progress.getResourceModel(),
                             progress.getCallbackContext())
                         .translateToServiceRequest(Translator::translateToCreateRequest)
-                        .makeServiceCall((createDomainAssociationRequest, proxyInvocation) -> (CreateDomainAssociationResponse) ClientWrapper.execute(
-                            proxy,
-                            createDomainAssociationRequest,
-                            proxyInvocation.client()::createDomainAssociation,
-                            ResourceModel.TYPE_NAME,
-                            model.getArn(),
-                            logger
-                        ))
+                        .makeServiceCall((createDomainAssociationRequest, proxyInvocation) -> {
+                            checkIfResourceExists(model, proxyClient, logger);
+                            return (CreateDomainAssociationResponse) ClientWrapper.execute(
+                                    proxy,
+                                    createDomainAssociationRequest,
+                                    proxyInvocation.client()::createDomainAssociation,
+                                    ResourceModel.TYPE_NAME,
+                                    model.getArn(),
+                                    logger
+                            );
+                        })
                         .stabilize((awsRequest, awsResponse, client, resourceModel, context) -> isStabilized(proxy, proxyClient,
                                 model, logger))
                         .progress())

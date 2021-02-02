@@ -31,6 +31,13 @@ Resources:
                 - "amplify:TagResource"
                 - "amplify:UntagResource"
                 - "amplify:UpdateApp"
+                - "codecommit:GetRepository"
+                - "codecommit:GetRepositoryTriggers"
+                - "codecommit:PutRepositoryTriggers"
+                - "iam:PassRole"
+                - "sns:CreateTopic"
+                - "sns:Subscribe"
+                - "sns:Unsubscribe"
                 Resource: "*"
 Outputs:
   ExecutionRoleArn:
