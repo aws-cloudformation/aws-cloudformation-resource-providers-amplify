@@ -13,14 +13,19 @@
       "type": "array",
       "uniqueItems": false,
       "items": {
-        "type": "string"
+        "type": "string",
+        "pattern": "(?s).+"
       }
     },
     "AutoSubDomainIAMRole": {
-      "type": "string"
+      "type": "string",
+      "pattern": "^$|^arn:aws:iam::\\d{12}:role.+",
+      "maxLength": 1000
     },
     "DomainName": {
-      "type": "string"
+      "type": "string",
+      "pattern": "^(((?!-)[A-Za-z0-9-]{0,62}[A-Za-z0-9])\\.)+((?!-)[A-Za-z0-9-]{1,62}[A-Za-z0-9])(\\.)?$",
+      "maxLength": 255
     },
     "DomainStatus": {
       "type": "string"
@@ -36,7 +41,8 @@
       "uniqueItems": false,
       "items": {
         "$ref": "#/definitions/SubDomainSetting"
-      }
+      },
+      "maxItems": 255
     }
   },
   "definitions": {
@@ -45,10 +51,13 @@
       "additionalProperties": false,
       "properties": {
         "Prefix": {
-          "type": "string"
+          "type": "string",
+          "pattern": "(?s).*",
+          "maxLength": 255
         },
         "BranchName": {
-          "type": "string"
+          "type": "string",
+          "maxLength": 255
         }
       },
       "required": [
