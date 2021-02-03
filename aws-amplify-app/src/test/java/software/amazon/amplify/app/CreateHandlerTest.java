@@ -63,7 +63,6 @@ public class CreateHandlerTest extends AbstractTestBase {
         final CreateHandler handler = new CreateHandler();
 
         final ResourceModel model = ResourceModel.builder()
-                .appId(APP_ID)
                 .name(APP_NAME)
                 .customRules(CUSTOM_RULES_CFN)
                 .environmentVariables(ENV_VARS_CFN)
@@ -84,6 +83,7 @@ public class CreateHandlerTest extends AbstractTestBase {
                 .appName(APP_NAME)
                 .customRules(CUSTOM_RULES_CFN)
                 .environmentVariables(ENV_VARS_CFN)
+                .name(APP_NAME)
                 .tags(TAGS_CFN)
                 .build();
 

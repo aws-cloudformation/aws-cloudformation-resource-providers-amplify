@@ -124,6 +124,7 @@ public class Translator {
               .defaultDomain(app.defaultDomain())
               .enableBranchAutoDeletion(app.enableBranchAutoDeletion())
               .iAMServiceRole(app.iamServiceRoleArn())
+              .name(app.name())
               .repository(app.repository());
 
       Map<String, String> appEnvVars = app.environmentVariables();

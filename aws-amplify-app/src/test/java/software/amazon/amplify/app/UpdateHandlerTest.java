@@ -80,6 +80,7 @@ public class UpdateHandlerTest extends AbstractTestBase {
                 .arn(APP_ARN)
                 .appId(APP_ID)
                 .appName(APP_NAME)
+                .name(APP_NAME)
                 .tags(TAGS_CFN)
                 .build();
 

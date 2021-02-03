@@ -69,6 +69,7 @@ public class ReadHandlerTest extends AbstractTestBase {
                 .appId(APP_ID)
                 .appName(APP_NAME)
                 .customRules(CUSTOM_RULES_CFN)
+                .name(APP_NAME)
                 .tags(TAGS_CFN)
                 .build();
 
