@@ -11,6 +11,8 @@ import software.amazon.awssdk.services.amplify.model.ListDomainAssociationsReque
 import software.amazon.awssdk.services.amplify.model.ListDomainAssociationsResponse;
 import software.amazon.awssdk.services.amplify.model.SubDomain;
 import software.amazon.awssdk.services.amplify.model.UpdateDomainAssociationRequest;
+import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
+import software.amazon.cloudformation.exceptions.CfnNotFoundException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,6 +29,7 @@ import java.util.stream.Stream;
  */
 
 public class Translator {
+  private static final String ARN_SPLIT_KEY = "/domains/";
 
   /**
    * Request to create a resource
@@ -69,6 +72,7 @@ public class Translator {
    * @return getDomainAssociationRequest the aws service request to describe a resource
    */
   static GetDomainAssociationRequest translateToReadRequest(final ResourceModel model) {
+    initializeModel(model);
     return GetDomainAssociationRequest.builder()
             .appId(model.getAppId())
             .domainName(model.getDomainName())
@@ -82,10 +86,9 @@ public class Translator {
    */
   static ResourceModel translateFromReadResponse(final GetDomainAssociationResponse getDomainAssociationResponse) {
     final DomainAssociation domainAssociation = getDomainAssociationResponse.domainAssociation();
-    final String SPLIT_KEY = "/domains/";
 
     ResourceModel.ResourceModelBuilder domainAssociationModelBuilder = ResourceModel.builder()
-            .appId(ArnUtils.getAppId(domainAssociation.domainAssociationArn(), SPLIT_KEY))
+            .appId(ArnUtils.getAppId(domainAssociation.domainAssociationArn(), ARN_SPLIT_KEY))
             .arn(domainAssociation.domainAssociationArn())
             .certificateRecord(domainAssociation.certificateVerificationDNSRecord())
             .domainName(domainAssociation.domainName())
@@ -112,6 +115,7 @@ public class Translator {
    * @return deleteDomainAssociationRequest the aws service request to delete a resource
    */
   static DeleteDomainAssociationRequest translateToDeleteRequest(final ResourceModel model) {
+    initializeModel(model);
     return DeleteDomainAssociationRequest.builder()
             .appId(model.getAppId())
             .domainName(model.getDomainName())
@@ -124,6 +128,7 @@ public class Translator {
    * @return updateDomainAssociationRequest the aws service request to modify a resource
    */
   static UpdateDomainAssociationRequest translateToUpdateRequest(final ResourceModel model) {
+    initializeModel(model);
     final UpdateDomainAssociationRequest.Builder updateDomainAssociationRequest = UpdateDomainAssociationRequest.builder()
             .appId(model.getAppId())
             .domainName(model.getDomainName())
@@ -177,6 +182,21 @@ public class Translator {
   /*
    * Helpers
    */
+  private static void initializeModel(final ResourceModel model) {
+    if (model.getAppId() == null || model.getDomainName() == null) {
+      String arn = model.getArn();
+      if (arn == null) {
+        throw new CfnNotFoundException(ResourceModel.TYPE_NAME, null);
+      }
+      try {
+        model.setAppId(ArnUtils.getAppId(arn, ARN_SPLIT_KEY));
+        model.setDomainName(ArnUtils.getResourceName(arn, ARN_SPLIT_KEY));
+      } catch (Exception e) {
+        throw new CfnGeneralServiceException(ResourceModel.TYPE_NAME, e);
+      }
+    }
+  }
+
   private static List<SubDomainSetting> getSubDomainSettingsCFN(List<SubDomain> subDomainsSDK) {
     List<SubDomainSetting> subDomainSettingsCFN = new ArrayList<>();
     for (SubDomain subDomain : subDomainsSDK) {
