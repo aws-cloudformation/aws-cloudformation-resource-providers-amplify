@@ -1,7 +1,11 @@
 package software.amazon.amplify.domain;
 
+import lombok.NonNull;
 import org.apache.commons.lang3.ObjectUtils;
+import software.amazon.amplify.common.utils.ArnUtils;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
+import software.amazon.awssdk.services.amplify.model.Branch;
+import software.amazon.awssdk.services.amplify.model.DomainAssociation;
 import software.amazon.awssdk.services.amplify.model.GetDomainAssociationRequest;
 import software.amazon.awssdk.services.amplify.model.GetDomainAssociationResponse;
 import software.amazon.awssdk.services.amplify.model.NotFoundException;
@@ -55,5 +59,12 @@ public abstract class BaseHandlerStd extends BaseHandler<CallbackContext> {
     }
     // should always be null
     return response;
+  }
+
+  protected void setResourceModelId(@NonNull final ResourceModel model, @NonNull final DomainAssociation domainAssociation) {
+    final String SPLIT_KEY = "/domains/";
+    model.setArn(domainAssociation.domainAssociationArn());
+    model.setAppId(ArnUtils.getAppId(domainAssociation.domainAssociationArn(), SPLIT_KEY));
+    model.setDomainName(domainAssociation.domainName());
   }
 }

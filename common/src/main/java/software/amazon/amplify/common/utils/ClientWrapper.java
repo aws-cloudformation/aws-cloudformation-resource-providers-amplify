@@ -36,23 +36,26 @@ public final class ClientWrapper {
             final String resourceTypeName,
             final String resourceTypeId,
             final Logger logger) {
-        System.out.println("***[DEV] execute with request: " + request.toString());
         try {
             logger.log("Invoking with request: " + request.toString());
             return clientProxy.injectCredentialsAndInvokeV2(request, requestFunction);
         } catch (NotFoundException e) {
+            logger.log("ERROR: " + e.getMessage());
             throw new CfnNotFoundException(resourceTypeName, resourceTypeId);
         } catch (InternalFailureException e) {
-            System.out.println("***[DEV] internal failure exception: " + e);
-            e.printStackTrace();
+            logger.log("ERROR: " + e.getMessage());
             throw new CfnInternalFailureException(e);
         } catch (LimitExceededException e) {
+            logger.log("ERROR: " + e.getMessage());
             throw new CfnServiceLimitExceededException(resourceTypeName, e.getMessage());
         } catch (BadRequestException e) {
+            logger.log("ERROR: " + e.getMessage());
             throw new CfnInvalidRequestException(e.getMessage(), e);
         } catch (UnauthorizedException e) {
+            logger.log("ERROR: " + e.getMessage());
             throw new CfnAccessDeniedException(e);
         } catch (AwsServiceException e) {
+            logger.log("ERROR: " + e.getMessage());
             throw new CfnGeneralServiceException(e);
         }
     }

@@ -67,7 +67,7 @@ public class ReadHandlerTest extends AbstractTestBase {
         final ResourceModel expected = ResourceModel.builder()
                 .arn(APP_ARN)
                 .appId(APP_ID)
-                .name(APP_NAME)
+                .appName(APP_NAME)
                 .customRules(CUSTOM_RULES_CFN)
                 .tags(TAGS_CFN)
                 .build();
@@ -86,7 +86,6 @@ public class ReadHandlerTest extends AbstractTestBase {
 
         final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(proxy, request,
                 new CallbackContext(), proxyClient, logger);
-        System.out.println("***[DEV] response: " + response);
 
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);

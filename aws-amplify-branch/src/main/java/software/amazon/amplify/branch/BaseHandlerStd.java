@@ -42,7 +42,7 @@ public abstract class BaseHandlerStd extends BaseHandler<CallbackContext> {
     );
   }
 
-  public void setResourceModelId(@NonNull final ResourceModel model, @NonNull final Branch branch) {
+  protected void setResourceModelId(@NonNull final ResourceModel model, @NonNull final Branch branch) {
     model.setArn(branch.branchArn());
     model.setBranchName(branch.branchName());
   }

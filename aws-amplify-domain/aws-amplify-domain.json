@@ -22,6 +22,9 @@
       "pattern": "^$|^arn:aws:iam::\\d{12}:role.+",
       "maxLength": 1000
     },
+    "CertificateRecord": {
+      "type": "string"
+    },
     "DomainName": {
       "type": "string",
       "pattern": "^(((?!-)[A-Za-z0-9-]{0,62}[A-Za-z0-9])\\.)+((?!-)[A-Za-z0-9-]{1,62}[A-Za-z0-9])(\\.)?$",
@@ -72,13 +75,14 @@
     "SubDomainSettings"
   ],
   "primaryIdentifier": [
-    "/properties/AppId",
-    "/properties/DomainName"
+    "/properties/Arn"
   ],
   "readOnlyProperties": [
     "/properties/Arn",
+    "/properties/DomainName",
     "/properties/DomainStatus",
-    "/properties/StatusReason"
+    "/properties/StatusReason",
+    "/properties/CertificateRecord"
   ],
   "handlers": {
     "create": {

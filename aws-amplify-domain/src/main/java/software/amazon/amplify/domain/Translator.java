@@ -87,6 +87,7 @@ public class Translator {
     ResourceModel.ResourceModelBuilder domainAssociationModelBuilder = ResourceModel.builder()
             .appId(ArnUtils.getAppId(domainAssociation.domainAssociationArn(), SPLIT_KEY))
             .arn(domainAssociation.domainAssociationArn())
+            .certificateRecord(domainAssociation.certificateVerificationDNSRecord())
             .domainName(domainAssociation.domainName())
             .enableAutoSubDomain(domainAssociation.enableAutoSubDomain())
             .autoSubDomainIAMRole(domainAssociation.autoSubDomainIAMRole())
