@@ -5,6 +5,15 @@ import software.amazon.awssdk.services.amplify.AmplifyClient;
 import software.amazon.awssdk.services.amplify.model.Branch;
 import software.amazon.awssdk.services.amplify.model.CreateBranchRequest;
 import software.amazon.awssdk.services.amplify.model.CreateBranchResponse;
+import software.amazon.awssdk.services.amplify.model.CreateDomainAssociationRequest;
+import software.amazon.awssdk.services.amplify.model.CreateDomainAssociationResponse;
+import software.amazon.awssdk.services.amplify.model.DomainAssociation;
+import software.amazon.awssdk.services.amplify.model.DomainStatus;
+import software.amazon.awssdk.services.amplify.model.GetBranchRequest;
+import software.amazon.awssdk.services.amplify.model.GetBranchResponse;
+import software.amazon.awssdk.services.amplify.model.GetDomainAssociationRequest;
+import software.amazon.awssdk.services.amplify.model.GetDomainAssociationResponse;
+import software.amazon.awssdk.services.amplify.model.NotFoundException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.OperationStatus;
 import software.amazon.cloudformation.proxy.ProgressEvent;
@@ -52,6 +61,7 @@ public class CreateHandlerTest extends AbstractTestBase {
 
     @Test
     public void handleRequest_SimpleSuccess() {
+        stubProxyClient();
         final CreateHandler handler = new CreateHandler();
 
         final ResourceModel model = ResourceModel.builder()
@@ -62,14 +72,6 @@ public class CreateHandlerTest extends AbstractTestBase {
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
             .desiredResourceState(model)
             .build();
-
-        when(proxyClient.client().createBranch(any(CreateBranchRequest.class)))
-                .thenReturn(CreateBranchResponse.builder()
-                        .branch(Branch.builder()
-                                .branchArn(BRANCH_ARN)
-                                .branchName(BRANCH_NAME)
-                                .build())
-                        .build());
 
         final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(proxy, request,
                 new CallbackContext(), proxyClient, logger);
@@ -86,5 +88,22 @@ public class CreateHandlerTest extends AbstractTestBase {
         assertThat(response.getResourceModels()).isNull();
         assertThat(response.getMessage()).isNull();
         assertThat(response.getErrorCode()).isNull();
+    }
+
+    private void stubProxyClient() {
+        when(proxyClient.client().createBranch(any(CreateBranchRequest.class)))
+                .thenReturn(CreateBranchResponse.builder()
+                        .branch(Branch.builder()
+                                .branchArn(BRANCH_ARN)
+                                .branchName(BRANCH_NAME)
+                                .build())
+                        .build());
+        when(proxyClient.client().getBranch(any(GetBranchRequest.class)))
+                .thenReturn(GetBranchResponse.builder()
+                        .branch(Branch.builder()
+                                .branchArn(BRANCH_ARN)
+                                .branchName(BRANCH_NAME)
+                                .build())
+                        .build());
     }
 }
