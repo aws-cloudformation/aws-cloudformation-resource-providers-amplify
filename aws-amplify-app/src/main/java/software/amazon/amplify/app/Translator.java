@@ -4,6 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import software.amazon.amplify.common.utils.ArnUtils;
 import software.amazon.awssdk.services.amplify.model.App;
 import software.amazon.awssdk.services.amplify.model.CreateAppRequest;
 import software.amazon.awssdk.services.amplify.model.CustomRule;
@@ -22,7 +23,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import lombok.NonNull;
-import software.amazon.awssdk.arns.Arn;
 import software.amazon.awssdk.services.amplify.model.DeleteAppRequest;
 import software.amazon.awssdk.services.amplify.model.GetAppRequest;
 import software.amazon.awssdk.services.amplify.model.GetAppResponse;
@@ -42,6 +42,7 @@ import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
  */
 
 public class Translator {
+  private static final String ARN_SPLIT_KEY = " ";
   /**
    * Request to create a resource
    * @param model resource model
@@ -243,12 +244,12 @@ public class Translator {
    */
   private static void initializeModel(final ResourceModel model) {
     if (model.getAppId() == null) {
-      if (model.getArn() == null) {
+      String arn = model.getArn();
+      if (arn == null) {
         throw new CfnNotFoundException(ResourceModel.TYPE_NAME, null);
       }
       try {
-        final Arn arn = Arn.fromString(model.getArn());
-        model.setAppId(arn.resource().resource());
+        model.setAppId(ArnUtils.getAppId(arn, ARN_SPLIT_KEY));
       } catch (Exception e) {
         throw new CfnGeneralServiceException(ResourceModel.TYPE_NAME, e);
       }
