@@ -3,10 +3,15 @@ package software.amazon.amplify.app;
 import java.time.Duration;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
 import software.amazon.awssdk.services.amplify.model.App;
+import software.amazon.awssdk.services.amplify.model.Branch;
 import software.amazon.awssdk.services.amplify.model.CreateAppRequest;
 import software.amazon.awssdk.services.amplify.model.CreateAppResponse;
+import software.amazon.awssdk.services.amplify.model.CreateBranchRequest;
+import software.amazon.awssdk.services.amplify.model.CreateBranchResponse;
 import software.amazon.awssdk.services.amplify.model.GetAppRequest;
 import software.amazon.awssdk.services.amplify.model.GetAppResponse;
+import software.amazon.awssdk.services.amplify.model.GetBranchRequest;
+import software.amazon.awssdk.services.amplify.model.GetBranchResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.OperationStatus;
 import software.amazon.cloudformation.proxy.ProgressEvent;
@@ -54,6 +59,7 @@ public class CreateHandlerTest extends AbstractTestBase {
 
     @Test
     public void handleRequest_SimpleSuccess() {
+        stubProxyClient();
         final CreateHandler handler = new CreateHandler();
 
         final ResourceModel model = ResourceModel.builder()
@@ -69,36 +75,6 @@ public class CreateHandlerTest extends AbstractTestBase {
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
             .desiredResourceState(model)
             .build();
-
-        when(proxyClient.client().createApp(any(CreateAppRequest.class)))
-                .thenReturn(CreateAppResponse.builder()
-                        .app(App.builder()
-                            .appArn(APP_ARN)
-                            .appId(APP_ID)
-                            .name(APP_NAME)
-                            .customRules(Translator.getCustomRulesSDK(CUSTOM_RULES_CFN))
-                            .environmentVariables(Translator.getEnvironmentVariablesSDK(ENV_VARS_CFN))
-                            .basicAuthCredentials(Translator.getBasicAuthCredentialsSDK(BASIC_AUTH_CONFIG))
-                            .autoBranchCreationConfig(Translator.getAutoBranchCreationConfigSDK(AUTO_BRANCH_CREATION_CONFIG))
-                            .autoBranchCreationPatterns(AUTO_BRANCH_CREATION_CONFIG.getAutoBranchCreationPatterns())
-                            .tags(Translator.getTagsSDK(TAGS_CFN))
-                            .build())
-                        .build());
-
-        when(proxyClient.client().getApp(any(GetAppRequest.class)))
-                .thenReturn(GetAppResponse.builder()
-                        .app(App.builder()
-                                .appArn(APP_ARN)
-                                .appId(APP_ID)
-                                .name(APP_NAME)
-                                .customRules(Translator.getCustomRulesSDK(CUSTOM_RULES_CFN))
-                                .environmentVariables(Translator.getEnvironmentVariablesSDK(ENV_VARS_CFN))
-                                .basicAuthCredentials(Translator.getBasicAuthCredentialsSDK(BASIC_AUTH_CONFIG))
-                                .autoBranchCreationConfig(Translator.getAutoBranchCreationConfigSDK(AUTO_BRANCH_CREATION_CONFIG))
-                                .autoBranchCreationPatterns(AUTO_BRANCH_CREATION_CONFIG.getAutoBranchCreationPatterns())
-                                .tags(Translator.getTagsSDK(TAGS_CFN))
-                                .build())
-                        .build());
 
         final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(proxy, request,
                 new CallbackContext(), proxyClient, logger);
@@ -118,5 +94,37 @@ public class CreateHandlerTest extends AbstractTestBase {
         assertThat(response.getResourceModels()).isNull();
         assertThat(response.getMessage()).isNull();
         assertThat(response.getErrorCode()).isNull();
+    }
+
+    private void stubProxyClient() {
+        when(proxyClient.client().createApp(any(CreateAppRequest.class)))
+                .thenReturn(CreateAppResponse.builder()
+                        .app(App.builder()
+                                .appArn(APP_ARN)
+                                .appId(APP_ID)
+                                .name(APP_NAME)
+                                .customRules(Translator.getCustomRulesSDK(CUSTOM_RULES_CFN))
+                                .environmentVariables(Translator.getEnvironmentVariablesSDK(ENV_VARS_CFN))
+                                .basicAuthCredentials(Translator.getBasicAuthCredentialsSDK(BASIC_AUTH_CONFIG))
+                                .autoBranchCreationConfig(Translator.getAutoBranchCreationConfigSDK(AUTO_BRANCH_CREATION_CONFIG))
+                                .autoBranchCreationPatterns(AUTO_BRANCH_CREATION_CONFIG.getAutoBranchCreationPatterns())
+                                .tags(Translator.getTagsSDK(TAGS_CFN))
+                                .build())
+                        .build());
+
+        when(proxyClient.client().getApp(any(GetAppRequest.class)))
+                .thenReturn(GetAppResponse.builder()
+                        .app(App.builder()
+                                .appArn(APP_ARN)
+                                .appId(APP_ID)
+                                .name(APP_NAME)
+                                .customRules(Translator.getCustomRulesSDK(CUSTOM_RULES_CFN))
+                                .environmentVariables(Translator.getEnvironmentVariablesSDK(ENV_VARS_CFN))
+                                .basicAuthCredentials(Translator.getBasicAuthCredentialsSDK(BASIC_AUTH_CONFIG))
+                                .autoBranchCreationConfig(Translator.getAutoBranchCreationConfigSDK(AUTO_BRANCH_CREATION_CONFIG))
+                                .autoBranchCreationPatterns(AUTO_BRANCH_CREATION_CONFIG.getAutoBranchCreationPatterns())
+                                .tags(Translator.getTagsSDK(TAGS_CFN))
+                                .build())
+                        .build());
     }
 }

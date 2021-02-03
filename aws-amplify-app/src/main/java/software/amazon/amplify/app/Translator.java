@@ -30,6 +30,7 @@ import software.amazon.awssdk.services.amplify.model.ListAppsRequest;
 import software.amazon.awssdk.services.amplify.model.ListAppsResponse;
 import software.amazon.awssdk.services.amplify.model.ListTagsForResourceRequest;
 import software.amazon.awssdk.services.amplify.model.UpdateAppRequest;
+import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnNotFoundException;
 import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
 
@@ -96,7 +97,7 @@ public class Translator {
    * @return getAppRequest the aws service request to describe a resource
    */
   static GetAppRequest translateToReadRequest(final ResourceModel model) {
-//    initializeModel(model);
+    initializeModel(model);
     return GetAppRequest.builder()
             .appId(model.getAppId())
             .build();
@@ -161,7 +162,7 @@ public class Translator {
    * @return deleteAppRequest the aws service request to delete a resource
    */
   static DeleteAppRequest translateToDeleteRequest(final ResourceModel model) {
-//    initializeModel(model);
+    initializeModel(model);
     return DeleteAppRequest.builder()
             .appId(model.getAppId())
             .build();
@@ -173,7 +174,7 @@ public class Translator {
    * @return updateAppRequest the aws service request to modify a resource
    */
   static UpdateAppRequest translateToUpdateRequest(final ResourceModel model) {
-//    initializeModel(model);
+    initializeModel(model);
     final UpdateAppRequest.Builder updateAppRequest = UpdateAppRequest.builder()
             .appId(model.getAppId())
             .name(model.getName())
@@ -240,15 +241,21 @@ public class Translator {
   /*
    * Helpers
    */
-//  private static void initializeModel(final ResourceModel model) {
-//    if (model.getAppId() == null) {
-//      if (model.getArn() == null) {
-//        throw new CfnNotFoundException(ResourceModel.TYPE_NAME, null);
-//      }
-//      final Arn arn = Arn.fromString(model.getArn());
-//      model.setAppId(arn.resource().resource());
-//    }
-//  }
+  // When create/update handlers also invoke read handler, cfn only passes the primaryIdentifier (arn)
+  // so we need to ensure the model has the appId for those subsequent requests
+  private static void initializeModel(final ResourceModel model) {
+    if (model.getAppId() == null) {
+      if (model.getArn() == null) {
+        throw new CfnNotFoundException(ResourceModel.TYPE_NAME, null);
+      }
+      try {
+        final Arn arn = Arn.fromString(model.getArn());
+        model.setAppId(arn.resource().resource());
+      } catch (Exception e) {
+        throw new CfnGeneralServiceException(ResourceModel.TYPE_NAME, e);
+      }
+    }
+  }
 
   public static Map<String, String> getTagsSDK(@NonNull final List<Tag> tags) {
     Map<String, String> tagMap = new HashMap<>();
