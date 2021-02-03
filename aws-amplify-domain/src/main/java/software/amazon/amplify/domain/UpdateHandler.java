@@ -35,7 +35,7 @@ public class UpdateHandler extends BaseHandlerStd {
                 proxy.initiate("AWS-Amplify-Domain::Update", proxyClient, model, progress.getCallbackContext())
                     .translateToServiceRequest(Translator::translateToUpdateRequest)
                     .makeServiceCall((updateDomainAssociationRequest, proxyInvocation) -> {
-                        return (UpdateDomainAssociationResponse) ClientWrapper.execute(
+                        UpdateDomainAssociationResponse updateDomainAssociationResponse = (UpdateDomainAssociationResponse) ClientWrapper.execute(
                                 proxy,
                                 updateDomainAssociationRequest,
                                 proxyInvocation.client()::updateDomainAssociation,
@@ -43,6 +43,8 @@ public class UpdateHandler extends BaseHandlerStd {
                                 model.getArn(),
                                 logger
                         );
+                        setResourceModelId(model, updateDomainAssociationResponse.domainAssociation());
+                        return updateDomainAssociationResponse;
                     })
                     .stabilize((awsRequest, awsResponse, client, resourceModel, context) -> isStabilized(proxy, proxyClient,
                             resourceModel, logger))

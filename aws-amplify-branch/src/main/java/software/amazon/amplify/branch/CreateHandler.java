@@ -28,22 +28,20 @@ public class CreateHandler extends BaseHandlerStd {
             .then(progress ->
                 proxy.initiate("AWS-Amplify-Branch::Create", proxyClient, model, callbackContext)
                     .translateToServiceRequest(Translator::translateToCreateRequest)
-                    .makeServiceCall((createBranchRequest, proxyInvocation) -> (CreateBranchResponse) ClientWrapper.execute(
-                            proxy,
-                            createBranchRequest,
-                            proxyInvocation.client()::createBranch,
-                            ResourceModel.TYPE_NAME,
-                            model.getArn(),
-                            logger
-                    ))
-                    .done(createBranchResponse -> ProgressEvent.defaultSuccessHandler(handleCreateResponse(createBranchResponse, model)))
-               );
-    }
-
-    private ResourceModel handleCreateResponse(final CreateBranchResponse createBranchResponse,
-                                               final ResourceModel model) {
-        setResourceModelId(model, createBranchResponse.branch());
-        logger.log("INFO: returning model: " + model);
-        return model;
+                    .makeServiceCall((createBranchRequest, proxyInvocation) -> {
+                        CreateBranchResponse createBranchResponse = (CreateBranchResponse) ClientWrapper.execute(
+                                proxy,
+                                createBranchRequest,
+                                proxyInvocation.client()::createBranch,
+                                ResourceModel.TYPE_NAME,
+                                model.getArn(),
+                                logger
+                        );
+                        setResourceModelId(model, createBranchResponse.branch());
+                        return createBranchResponse;
+                    })
+                    .progress()
+               )
+                .then(progress -> new ReadHandler().handleRequest(proxy, request, callbackContext, proxyClient, logger));
     }
 }

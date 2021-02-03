@@ -131,15 +131,15 @@
     "BranchName"
   ],
   "primaryIdentifier": [
-    "/properties/AppId",
-    "/properties/BranchName"
+    "/properties/Arn"
   ],
   "createOnlyProperties": [
     "/properties/AppId",
     "/properties/BranchName"
   ],
   "readOnlyProperties": [
-    "/properties/Arn"
+    "/properties/Arn",
+    "/properties/BranchName"
   ],
   "writeOnlyProperties": [
     "/properties/BasicAuthConfig"

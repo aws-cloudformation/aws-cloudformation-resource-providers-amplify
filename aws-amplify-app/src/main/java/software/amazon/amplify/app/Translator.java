@@ -96,8 +96,7 @@ public class Translator {
    * @return getAppRequest the aws service request to describe a resource
    */
   static GetAppRequest translateToReadRequest(final ResourceModel model) {
-    initializeModel(model);
-    System.out.println("***[DEV] translateToReadRequest model: " + model);
+//    initializeModel(model);
     return GetAppRequest.builder()
             .appId(model.getAppId())
             .build();
@@ -112,10 +111,10 @@ public class Translator {
     ResourceModel.ResourceModelBuilder appModelBuilder = ResourceModel.builder();
     try {
       App app = getAppResponse.app();
-      System.out.println("***[DEV] translateFromReadResponse app: " + app);
 
       appModelBuilder
               .appId(app.appId())
+              .appName(app.name())
               .arn(app.appArn())
               .buildSpec(app.buildSpec())
               .customHeaders(app.customHeaders())
@@ -123,7 +122,6 @@ public class Translator {
               .defaultDomain(app.defaultDomain())
               .enableBranchAutoDeletion(app.enableBranchAutoDeletion())
               .iAMServiceRole(app.iamServiceRoleArn())
-              .name(app.name())
               .repository(app.repository());
 
       Map<String, String> appEnvVars = app.environmentVariables();
@@ -148,7 +146,6 @@ public class Translator {
       if (MapUtils.isNotEmpty(appTags)) {
         appModelBuilder.tags(getTagsCFN(appTags));
       }
-      System.out.println("***[DEV] translateFromReadResponse appModel: " + appModelBuilder.build().toString());
       return appModelBuilder.build();
     } catch (final Exception e ) {
       System.out.println("*** [DEV] unhandled exception : " + e);
@@ -164,7 +161,7 @@ public class Translator {
    * @return deleteAppRequest the aws service request to delete a resource
    */
   static DeleteAppRequest translateToDeleteRequest(final ResourceModel model) {
-    initializeModel(model);
+//    initializeModel(model);
     return DeleteAppRequest.builder()
             .appId(model.getAppId())
             .build();
@@ -176,7 +173,7 @@ public class Translator {
    * @return updateAppRequest the aws service request to modify a resource
    */
   static UpdateAppRequest translateToUpdateRequest(final ResourceModel model) {
-    initializeModel(model);
+//    initializeModel(model);
     final UpdateAppRequest.Builder updateAppRequest = UpdateAppRequest.builder()
             .appId(model.getAppId())
             .name(model.getName())
@@ -243,15 +240,15 @@ public class Translator {
   /*
    * Helpers
    */
-    private static void initializeModel(final ResourceModel model) {
-      if (model.getAppId() == null) {
-        if (model.getArn() == null) {
-          throw new CfnNotFoundException(ResourceModel.TYPE_NAME, null);
-        }
-        final Arn arn = Arn.fromString(model.getArn());
-        model.setAppId(arn.resource().resource());
-      }
-    }
+//  private static void initializeModel(final ResourceModel model) {
+//    if (model.getAppId() == null) {
+//      if (model.getArn() == null) {
+//        throw new CfnNotFoundException(ResourceModel.TYPE_NAME, null);
+//      }
+//      final Arn arn = Arn.fromString(model.getArn());
+//      model.setAppId(arn.resource().resource());
+//    }
+//  }
 
   public static Map<String, String> getTagsSDK(@NonNull final List<Tag> tags) {
     Map<String, String> tagMap = new HashMap<>();
@@ -307,7 +304,7 @@ public class Translator {
 
   @VisibleForTesting
   static String getBasicAuthCredentialsSDK(@NonNull BasicAuthConfig basicAuthConfig) {
-    if (basicAuthConfig.getEnableBasicAuth() == false) {
+    if (basicAuthConfig.getEnableBasicAuth() == null || basicAuthConfig.getEnableBasicAuth() == false) {
       return null;
     }
     if (StringUtils.isEmpty(basicAuthConfig.getUsername()) ||
@@ -332,7 +329,6 @@ public class Translator {
 
   @VisibleForTesting
   static AutoBranchCreationConfig getAutoBranchCreationConfigSDK(@NonNull final software.amazon.amplify.app.AutoBranchCreationConfig autoBranchCreationConfigCFN) {
-    System.out.println("***[DEV] getAutoBranchCreationConfigSDK translating from: " + autoBranchCreationConfigCFN);
     AutoBranchCreationConfig.Builder autoBranchCreationConfig = AutoBranchCreationConfig.builder()
             .buildSpec(autoBranchCreationConfigCFN.getBuildSpec())
             .stage(autoBranchCreationConfigCFN.getStage())
@@ -347,11 +343,9 @@ public class Translator {
     }
     BasicAuthConfig basicAuthConfig = autoBranchCreationConfigCFN.getBasicAuthConfig();
     if (basicAuthConfig != null) {
-      System.out.println("***[DEV] getAutoBranchCreationConfigSDK, basicAuthConfig: " + basicAuthConfig);
       autoBranchCreationConfig.enableBasicAuth(basicAuthConfig.getEnableBasicAuth())
               .basicAuthCredentials(getBasicAuthCredentialsSDK(basicAuthConfig));
     }
-    System.out.println("***[DEV] getAutoBranchCreationConfigSDK result: " + autoBranchCreationConfig.build().toString());
     return autoBranchCreationConfig.build();
   }
 

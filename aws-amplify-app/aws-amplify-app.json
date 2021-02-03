@@ -229,7 +229,7 @@
     "Name"
   ],
   "primaryIdentifier": [
-    "/properties/AppId"
+    "/properties/Arn"
   ],
   "readOnlyProperties": [
     "/properties/AppId",

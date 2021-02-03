@@ -33,8 +33,8 @@ public abstract class BaseHandlerStd extends BaseHandler<CallbackContext> {
           final ProxyClient<AmplifyClient> proxyClient,
           final Logger logger);
 
-  public void setResourceModelId(@NonNull final ResourceModel model, @NonNull final App app) {
-    model.setAppId(app.appId());
+  protected void setResourceModelId(@NonNull final ResourceModel model, @NonNull final App app) {
     model.setArn(app.appArn());
+    model.setAppId(app.appId());
   }
 }

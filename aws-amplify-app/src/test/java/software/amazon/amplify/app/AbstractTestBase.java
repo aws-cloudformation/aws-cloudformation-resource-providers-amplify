@@ -41,6 +41,7 @@ public class AbstractTestBase {
           .build();
   protected static AutoBranchCreationConfig AUTO_BRANCH_CREATION_CONFIG = AutoBranchCreationConfig.builder()
           .autoBranchCreationPatterns(ImmutableList.of("/feature*", "/dev*"))
+          .enableAutoBranchCreation(true)
           .build();
 //  protected static Map<String, String> TAGS_SDK = ImmutableMap.of("foo", "bar");
   protected static List<Tag> TAGS_CFN = ImmutableList.of(Tag.builder().key("foo").value("bar").build());

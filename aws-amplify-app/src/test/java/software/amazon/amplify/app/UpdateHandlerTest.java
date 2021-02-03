@@ -3,6 +3,8 @@ package software.amazon.amplify.app;
 import java.time.Duration;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
 import software.amazon.awssdk.services.amplify.model.App;
+import software.amazon.awssdk.services.amplify.model.GetAppRequest;
+import software.amazon.awssdk.services.amplify.model.GetAppResponse;
 import software.amazon.awssdk.services.amplify.model.ListTagsForResourceRequest;
 import software.amazon.awssdk.services.amplify.model.ListTagsForResourceResponse;
 import software.amazon.awssdk.services.amplify.model.TagResourceRequest;
@@ -77,7 +79,7 @@ public class UpdateHandlerTest extends AbstractTestBase {
         final ResourceModel expected = ResourceModel.builder()
                 .arn(APP_ARN)
                 .appId(APP_ID)
-                .name(APP_NAME)
+                .appName(APP_NAME)
                 .tags(TAGS_CFN)
                 .build();
 
@@ -96,6 +98,14 @@ public class UpdateHandlerTest extends AbstractTestBase {
     private void stubProxyClient() {
         when(proxyClient.client().updateApp(any(UpdateAppRequest.class)))
                 .thenReturn(UpdateAppResponse.builder()
+                        .app(App.builder()
+                                .appArn(APP_ARN)
+                                .appId(APP_ID)
+                                .name(APP_NAME)
+                                .build())
+                        .build());
+        when(proxyClient.client().getApp(any(GetAppRequest.class)))
+                .thenReturn(GetAppResponse.builder()
                         .app(App.builder()
                                 .appArn(APP_ARN)
                                 .appId(APP_ID)

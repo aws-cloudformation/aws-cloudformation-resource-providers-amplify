@@ -37,7 +37,7 @@ public class CreateHandler extends BaseHandlerStd {
                         .translateToServiceRequest(Translator::translateToCreateRequest)
                         .makeServiceCall((createDomainAssociationRequest, proxyInvocation) -> {
                             checkIfResourceExists(model, proxyClient, logger);
-                            return (CreateDomainAssociationResponse) ClientWrapper.execute(
+                            CreateDomainAssociationResponse createDomainAssociationResponse = (CreateDomainAssociationResponse) ClientWrapper.execute(
                                     proxy,
                                     createDomainAssociationRequest,
                                     proxyInvocation.client()::createDomainAssociation,
@@ -45,6 +45,8 @@ public class CreateHandler extends BaseHandlerStd {
                                     model.getArn(),
                                     logger
                             );
+                            setResourceModelId(model, createDomainAssociationResponse.domainAssociation());
+                            return createDomainAssociationResponse;
                         })
                         .stabilize((awsRequest, awsResponse, client, resourceModel, context) -> isStabilized(proxy, proxyClient,
                                 model, logger))
