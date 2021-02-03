@@ -34,7 +34,7 @@ public class CreateHandler extends BaseHandlerStd {
                                 proxy,
                                 createAppRequest,
                                 proxyInvocation.client()::createApp,
-                                ResourceModel.TYPE_NAME, model.getAppId(),
+                                ResourceModel.TYPE_NAME, model.getArn(),
                                 logger
                         );
                         setResourceModelId(model, createAppResponse.app());

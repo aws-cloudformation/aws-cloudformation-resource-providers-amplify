@@ -30,7 +30,7 @@ public class ReadHandler extends BaseHandlerStd {
                     getAppRequest,
                     proxyInvocation.client()::getApp,
                     ResourceModel.TYPE_NAME,
-                    model.getAppId(),
+                    model.getArn(),
                     logger
             ))
             .done(getAppResponse -> {

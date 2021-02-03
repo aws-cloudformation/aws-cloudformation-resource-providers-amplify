@@ -33,7 +33,7 @@ public class DeleteHandler extends BaseHandlerStd {
                             deleteAppRequest,
                             proxyInvocation.client()::deleteApp,
                             ResourceModel.TYPE_NAME,
-                            model.getAppId(),
+                            model.getArn(),
                             logger
                     ))
                     .progress()

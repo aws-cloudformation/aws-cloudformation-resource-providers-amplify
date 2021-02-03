@@ -46,7 +46,7 @@ public class UpdateHandler extends BaseHandlerStd {
                                 updateAppRequest,
                                 proxyInvocation.client()::updateApp,
                                 ResourceModel.TYPE_NAME,
-                                model.getAppId(),
+                                model.getArn(),
                                 logger
                         );
                         setResourceModelId(model, updateAppResponse.app());
