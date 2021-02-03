@@ -241,8 +241,6 @@ public class Translator {
   /*
    * Helpers
    */
-  // When create/update handlers also invoke read handler, cfn only passes the primaryIdentifier (arn)
-  // so we need to ensure the model has the appId for those subsequent requests
   private static void initializeModel(final ResourceModel model) {
     if (model.getAppId() == null) {
       if (model.getArn() == null) {
