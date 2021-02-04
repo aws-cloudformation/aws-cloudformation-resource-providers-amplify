@@ -1,7 +1,7 @@
 {
-  "Arn": "this property is read only",
+  "Arn": "Providing this value results in an exception being thrown",
   "AppId": "dnonexistent",
-  "DomainName": "CfnInvokeTestInvalid",
+  "DomainName": "contracttestinvalid.amplifyapp.com",
   "SubDomainSettings": [
     {
       "BranchName": "nonexistent",

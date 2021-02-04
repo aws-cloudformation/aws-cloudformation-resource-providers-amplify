@@ -1,5 +1,6 @@
 {
-  "BranchName": "CfnInvokeTestOriginalName",
+  "AppId": "replacewithrealappid",
+  "BranchName": "ContractTest",
   "BasicAuthConfig": {
     "EnableBasicAuth": true,
     "Username": "userupdate",

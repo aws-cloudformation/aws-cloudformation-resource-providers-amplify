@@ -1,5 +1,6 @@
 package software.amazon.amplify.branch;
 
+import org.apache.commons.lang3.ObjectUtils;
 import software.amazon.amplify.common.utils.ClientWrapper;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
 import software.amazon.awssdk.services.amplify.model.CreateBranchResponse;
@@ -23,6 +24,10 @@ public class CreateHandler extends BaseHandlerStd {
         this.logger = logger;
         final ResourceModel model = request.getDesiredResourceState();
         logger.log("INFO: requesting with model: " + model);
+
+        if (model.getArn() != null) {
+            throw new CfnInvalidRequestException(String.format("Attempted to provide value to a read-only property: %s", model.getArn()));
+        }
 
         return ProgressEvent.progress(request.getDesiredResourceState(), callbackContext)
             .then(progress ->
