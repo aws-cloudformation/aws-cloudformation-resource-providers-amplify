@@ -1,5 +1,6 @@
 package software.amazon.amplify.domain;
 
+import lombok.NonNull;
 import org.apache.commons.collections.CollectionUtils;
 import software.amazon.amplify.common.utils.ArnUtils;
 import software.amazon.awssdk.services.amplify.model.CreateDomainAssociationRequest;
@@ -182,7 +183,7 @@ public class Translator {
   /*
    * Helpers
    */
-  private static void initializeModel(final ResourceModel model) {
+  private static void initializeModel(@NonNull ResourceModel model) {
     if (model.getAppId() == null || model.getDomainName() == null) {
       String arn = model.getArn();
       if (arn == null) {

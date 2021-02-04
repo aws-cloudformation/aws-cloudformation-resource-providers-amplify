@@ -213,7 +213,7 @@ public class Translator {
   /*
    * Helpers
    */
-  private static void initializeModel(final ResourceModel model) {
+  private static void initializeModel(@NonNull ResourceModel model) {
     if (model.getAppId() == null || model.getBranchName() == null) {
       String arn = model.getArn();
       if (arn == null) {
