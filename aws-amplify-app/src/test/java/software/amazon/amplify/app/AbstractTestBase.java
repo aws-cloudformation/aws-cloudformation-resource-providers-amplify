@@ -7,7 +7,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 import com.google.common.collect.ImmutableList;
-import lombok.NonNull;
 import software.amazon.awssdk.awscore.AwsRequest;
 import software.amazon.awssdk.awscore.AwsResponse;
 import software.amazon.awssdk.core.ResponseBytes;
@@ -25,7 +24,27 @@ public class AbstractTestBase {
   protected static String APP_NAME = "dummyName";
   protected static String APP_ID = "dummyId";
   protected static String APP_ARN = String.format("arn:aws:amplify:region:accountId:apps/%s", APP_ID);
-  protected static List<Tag> TAGS = ImmutableList.of(Tag.builder().key("foo").value("bar").build());
+  protected static List<String> AUTO_BRANCH_CREATION_PATTERNS = ImmutableList.of("/feature*", "/test*");
+  protected static List<EnvironmentVariable> ENV_VARS_CFN = ImmutableList.of(EnvironmentVariable.builder()
+          .name("foo")
+          .value("bar")
+          .build());
+  protected static List<CustomRule> CUSTOM_RULES_CFN = ImmutableList.of(
+          CustomRule.builder()
+            .source("/source")
+            .target("/target")
+            .status("200")
+            .build());
+  protected static BasicAuthConfig BASIC_AUTH_CONFIG = BasicAuthConfig.builder()
+          .username("dummyUser")
+          .password("dummyPass")
+          .build();
+  protected static AutoBranchCreationConfig AUTO_BRANCH_CREATION_CONFIG = AutoBranchCreationConfig.builder()
+          .autoBranchCreationPatterns(ImmutableList.of("/feature*", "/dev*"))
+          .enableAutoBranchCreation(true)
+          .build();
+//  protected static Map<String, String> TAGS_SDK = ImmutableMap.of("foo", "bar");
+  protected static List<Tag> TAGS_CFN = ImmutableList.of(Tag.builder().key("foo").value("bar").build());
 
   static {
     MOCK_CREDENTIALS = new Credentials("accessKey", "secretKey", "token");

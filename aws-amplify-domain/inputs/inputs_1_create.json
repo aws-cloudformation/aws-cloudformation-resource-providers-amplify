@@ -1,6 +1,6 @@
 {
   "AppId": "replacewithrealappid",
-  "DomainName": "anydomainyouown.com",
+  "DomainName": "anydomain.amplifyapp.com",
   "AutoSubDomainIAMRole": "arn:aws:iam::000000000000:role/DummyRole",
   "EnableAutoSubDomain": false,
   "SubDomainSettings": [

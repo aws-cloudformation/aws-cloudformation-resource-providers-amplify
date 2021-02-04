@@ -30,16 +30,12 @@ public class UpdateHandler extends BaseHandlerStd {
         final ResourceModel model = request.getDesiredResourceState();
         logger.log("INFO: requesting with model: " + model);
 
-        if (hasReadOnlyProperties(model)) {
-            throw new CfnInvalidRequestException("Create request includes at least one read-only property.");
-        }
-
         return ProgressEvent.progress(request.getDesiredResourceState(), callbackContext)
             .then(progress ->
                 proxy.initiate("AWS-Amplify-Domain::Update", proxyClient, model, progress.getCallbackContext())
                     .translateToServiceRequest(Translator::translateToUpdateRequest)
                     .makeServiceCall((updateDomainAssociationRequest, proxyInvocation) -> {
-                        return (UpdateDomainAssociationResponse) ClientWrapper.execute(
+                        UpdateDomainAssociationResponse updateDomainAssociationResponse = (UpdateDomainAssociationResponse) ClientWrapper.execute(
                                 proxy,
                                 updateDomainAssociationRequest,
                                 proxyInvocation.client()::updateDomainAssociation,
@@ -47,6 +43,8 @@ public class UpdateHandler extends BaseHandlerStd {
                                 model.getArn(),
                                 logger
                         );
+                        setResourceModelId(model, updateDomainAssociationResponse.domainAssociation());
+                        return updateDomainAssociationResponse;
                     })
                     .stabilize((awsRequest, awsResponse, client, resourceModel, context) -> isStabilized(proxy, proxyClient,
                             resourceModel, logger))

@@ -1,4 +1,4 @@
 {
-  "AppId": "dnonexistent",
-  "Name": "ContractTestInvalid"
+  "Name": "ContractTestInvalid",
+  "DefaultDomain": "Providing this value results in an exception being thrown"
 }

@@ -3,7 +3,6 @@
   "BuildSpec": "dummySpecUpdate",
   "AccessToken": "dummyAccessTokenUpdate",
   "EnableBranchAutoDeletion": false,
-  "Repository": "{{CFNTestCodeCommitCloneUrl}}",
   "CustomRules": [
     {
       "Source": "/sourceUpdate",

@@ -3,6 +3,12 @@ package software.amazon.amplify.branch;
 import java.time.Duration;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
 import software.amazon.awssdk.services.amplify.model.Branch;
+import software.amazon.awssdk.services.amplify.model.DomainAssociation;
+import software.amazon.awssdk.services.amplify.model.DomainStatus;
+import software.amazon.awssdk.services.amplify.model.GetBranchRequest;
+import software.amazon.awssdk.services.amplify.model.GetBranchResponse;
+import software.amazon.awssdk.services.amplify.model.GetDomainAssociationRequest;
+import software.amazon.awssdk.services.amplify.model.GetDomainAssociationResponse;
 import software.amazon.awssdk.services.amplify.model.ListTagsForResourceRequest;
 import software.amazon.awssdk.services.amplify.model.ListTagsForResourceResponse;
 import software.amazon.awssdk.services.amplify.model.TagResourceRequest;
@@ -94,6 +100,13 @@ public class UpdateHandlerTest extends AbstractTestBase {
     private void stubProxyClient() {
         when(proxyClient.client().updateBranch(any(UpdateBranchRequest.class)))
                 .thenReturn(UpdateBranchResponse.builder()
+                        .branch(Branch.builder()
+                                .branchArn(BRANCH_ARN)
+                                .branchName(BRANCH_NAME)
+                                .build())
+                        .build());
+        when(proxyClient.client().getBranch(any(GetBranchRequest.class)))
+                .thenReturn(GetBranchResponse.builder()
                         .branch(Branch.builder()
                                 .branchArn(BRANCH_ARN)
                                 .branchName(BRANCH_NAME)

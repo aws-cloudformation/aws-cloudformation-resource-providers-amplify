@@ -40,16 +40,22 @@ public final class ClientWrapper {
             logger.log("Invoking with request: " + request.toString());
             return clientProxy.injectCredentialsAndInvokeV2(request, requestFunction);
         } catch (NotFoundException e) {
+            logger.log("ERROR: " + e.getMessage());
             throw new CfnNotFoundException(resourceTypeName, resourceTypeId);
         } catch (InternalFailureException e) {
+            logger.log("ERROR: " + e.getMessage());
             throw new CfnInternalFailureException(e);
         } catch (LimitExceededException e) {
+            logger.log("ERROR: " + e.getMessage());
             throw new CfnServiceLimitExceededException(resourceTypeName, e.getMessage());
         } catch (BadRequestException e) {
+            logger.log("ERROR: " + e.getMessage());
             throw new CfnInvalidRequestException(e.getMessage(), e);
         } catch (UnauthorizedException e) {
+            logger.log("ERROR: " + e.getMessage());
             throw new CfnAccessDeniedException(e);
         } catch (AwsServiceException e) {
+            logger.log("ERROR: " + e.getMessage());
             throw new CfnGeneralServiceException(e);
         }
     }

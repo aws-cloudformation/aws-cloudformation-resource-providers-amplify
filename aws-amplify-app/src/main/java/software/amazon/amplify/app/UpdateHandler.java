@@ -10,7 +10,6 @@ import software.amazon.awssdk.services.amplify.model.ListTagsForResourceResponse
 import software.amazon.awssdk.services.amplify.model.TagResourceRequest;
 import software.amazon.awssdk.services.amplify.model.UntagResourceRequest;
 import software.amazon.awssdk.services.amplify.model.UpdateAppResponse;
-import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.ProgressEvent;
@@ -37,36 +36,26 @@ public class UpdateHandler extends BaseHandlerStd {
         final ResourceModel model = request.getDesiredResourceState();
         logger.log("INFO: requesting with model: " + model);
 
-        if (hasReadOnlyProperties(model)) {
-            throw new CfnInvalidRequestException("Update request includes at least one read-only property.");
-        }
-
         return ProgressEvent.progress(model, callbackContext)
             .then(progress ->
                 proxy.initiate("AWS-Amplify-App::Update", proxyClient, model, callbackContext)
                     .translateToServiceRequest(Translator::translateToUpdateRequest)
-                    .makeServiceCall((updateAppRequest, proxyInvocation) -> (UpdateAppResponse) ClientWrapper.execute(
-                            proxy,
-                            updateAppRequest,
-                            proxyInvocation.client()::updateApp,
-                            ResourceModel.TYPE_NAME,
-                            model.getAppId(),
-                            logger
-                    ))
-                    .done(updateAppResponse -> ProgressEvent.defaultSuccessHandler(handleUpdateResponse(updateAppResponse,
-                            model, proxy, proxyClient)))
-            );
-    }
-
-    private ResourceModel handleUpdateResponse(final UpdateAppResponse createAppResponse,
-                                               final ResourceModel model,
-                                               final AmazonWebServicesClientProxy proxy,
-                                               final ProxyClient<AmplifyClient> proxyClient
-    ) {
-        setResourceModelId(model, createAppResponse.app());
-        updateTags(proxy, proxyClient, model, convertToResourceTags(model.getTags()));
-        logger.log("INFO: returning model: " + model);
-        return model;
+                    .makeServiceCall((updateAppRequest, proxyInvocation) -> {
+                        UpdateAppResponse updateAppResponse = (UpdateAppResponse) ClientWrapper.execute(
+                                proxy,
+                                updateAppRequest,
+                                proxyInvocation.client()::updateApp,
+                                ResourceModel.TYPE_NAME,
+                                model.getArn(),
+                                logger
+                        );
+                        setResourceModelId(model, updateAppResponse.app());
+                        updateTags(proxy, proxyClient, model, convertToResourceTags(model.getTags()));
+                        return updateAppResponse;
+                    })
+                    .progress()
+            )
+            .then(progress -> new ReadHandler().handleRequest(proxy, request, callbackContext, proxyClient, logger));
     }
 
     private void updateTags(final AmazonWebServicesClientProxy proxy,

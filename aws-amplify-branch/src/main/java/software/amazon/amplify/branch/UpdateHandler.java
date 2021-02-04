@@ -36,36 +36,26 @@ public class UpdateHandler extends BaseHandlerStd {
         final ResourceModel model = request.getDesiredResourceState();
         logger.log("INFO: requesting with model: " + model);
 
-        if (model.getArn() != null) {
-            throw new CfnInvalidRequestException("Update request includes at least one read-only property.");
-        }
-
         return ProgressEvent.progress(model, callbackContext)
             .then(progress ->
                 proxy.initiate("AWS-Amplify-Branch::Update", proxyClient, model, progress.getCallbackContext())
                     .translateToServiceRequest(Translator::translateToUpdateRequest)
-                    .makeServiceCall((updateBranchRequest, proxyInvocation) -> (UpdateBranchResponse) ClientWrapper.execute(
-                            proxy,
-                            updateBranchRequest,
-                            proxyInvocation.client()::updateBranch,
-                            ResourceModel.TYPE_NAME,
-                            model.getArn(),
-                            logger
-                    ))
-                    .done(updateBranchResponse -> ProgressEvent.defaultSuccessHandler(handleUpdateResponse(updateBranchResponse,
-                            model, proxy, proxyClient)))
-            );
-    }
-
-    private ResourceModel handleUpdateResponse(final UpdateBranchResponse createBranchResponse,
-                                               final ResourceModel model,
-                                               final AmazonWebServicesClientProxy proxy,
-                                               final ProxyClient<AmplifyClient> proxyClient
-    ) {
-        setResourceModelId(model, createBranchResponse.branch());
-        updateTags(proxy, proxyClient, model, convertToResourceTags(model.getTags()));
-        logger.log("INFO: returning model: " + model);
-        return model;
+                    .makeServiceCall((updateBranchRequest, proxyInvocation) -> {
+                        UpdateBranchResponse updateBranchResponse = (UpdateBranchResponse) ClientWrapper.execute(
+                                proxy,
+                                updateBranchRequest,
+                                proxyInvocation.client()::updateBranch,
+                                ResourceModel.TYPE_NAME,
+                                model.getArn(),
+                                logger
+                        );
+                        setResourceModelId(model, updateBranchResponse.branch());
+                        updateTags(proxy, proxyClient, model, convertToResourceTags(model.getTags()));
+                        return updateBranchResponse;
+                    })
+                    .progress()
+            )
+            .then(progress -> new ReadHandler().handleRequest(proxy, request, callbackContext, proxyClient, logger));
     }
 
     private void updateTags(final AmazonWebServicesClientProxy proxy,

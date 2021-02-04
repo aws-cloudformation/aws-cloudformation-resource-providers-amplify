@@ -3,6 +3,8 @@ package software.amazon.amplify.app;
 import java.time.Duration;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
 import software.amazon.awssdk.services.amplify.model.App;
+import software.amazon.awssdk.services.amplify.model.GetAppRequest;
+import software.amazon.awssdk.services.amplify.model.GetAppResponse;
 import software.amazon.awssdk.services.amplify.model.ListTagsForResourceRequest;
 import software.amazon.awssdk.services.amplify.model.ListTagsForResourceResponse;
 import software.amazon.awssdk.services.amplify.model.TagResourceRequest;
@@ -65,7 +67,7 @@ public class UpdateHandlerTest extends AbstractTestBase {
         final ResourceModel model = ResourceModel.builder()
                 .appId(APP_ID)
                 .name(APP_NAME)
-                .tags(TAGS)
+                .tags(TAGS_CFN)
                 .build();
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -77,8 +79,9 @@ public class UpdateHandlerTest extends AbstractTestBase {
         final ResourceModel expected = ResourceModel.builder()
                 .arn(APP_ARN)
                 .appId(APP_ID)
+                .appName(APP_NAME)
                 .name(APP_NAME)
-                .tags(TAGS)
+                .tags(TAGS_CFN)
                 .build();
 
         assertThat(response).isNotNull();
@@ -100,7 +103,15 @@ public class UpdateHandlerTest extends AbstractTestBase {
                                 .appArn(APP_ARN)
                                 .appId(APP_ID)
                                 .name(APP_NAME)
-                                .tags(Translator.getTags(TAGS))
+                                .build())
+                        .build());
+        when(proxyClient.client().getApp(any(GetAppRequest.class)))
+                .thenReturn(GetAppResponse.builder()
+                        .app(App.builder()
+                                .appArn(APP_ARN)
+                                .appId(APP_ID)
+                                .name(APP_NAME)
+                                .tags(Translator.getTagsSDK(TAGS_CFN))
                                 .build())
                         .build());
         when(proxyClient.client().listTagsForResource(any(ListTagsForResourceRequest.class)))

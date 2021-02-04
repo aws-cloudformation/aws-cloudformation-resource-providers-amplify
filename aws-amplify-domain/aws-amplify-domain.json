@@ -13,14 +13,22 @@
       "type": "array",
       "uniqueItems": false,
       "items": {
-        "type": "string"
+        "type": "string",
+        "pattern": "(?s).+"
       }
     },
     "AutoSubDomainIAMRole": {
+      "type": "string",
+      "pattern": "^$|^arn:aws:iam::\\d{12}:role.+",
+      "maxLength": 1000
+    },
+    "CertificateRecord": {
       "type": "string"
     },
     "DomainName": {
-      "type": "string"
+      "type": "string",
+      "pattern": "^(((?!-)[A-Za-z0-9-]{0,62}[A-Za-z0-9])\\.)+((?!-)[A-Za-z0-9-]{1,62}[A-Za-z0-9])(\\.)?$",
+      "maxLength": 255
     },
     "DomainStatus": {
       "type": "string"
@@ -36,7 +44,8 @@
       "uniqueItems": false,
       "items": {
         "$ref": "#/definitions/SubDomainSetting"
-      }
+      },
+      "maxItems": 255
     }
   },
   "definitions": {
@@ -45,10 +54,13 @@
       "additionalProperties": false,
       "properties": {
         "Prefix": {
-          "type": "string"
+          "type": "string",
+          "pattern": "(?s).*",
+          "maxLength": 255
         },
         "BranchName": {
-          "type": "string"
+          "type": "string",
+          "maxLength": 255
         }
       },
       "required": [
@@ -62,16 +74,15 @@
     "DomainName",
     "SubDomainSettings"
   ],
-  "createOnlyProperties": [
-    "/properties/AppId",
-    "/properties/DomainName"
-  ],
   "primaryIdentifier": [
-    "/properties/DomainName"
+    "/properties/Arn"
   ],
   "readOnlyProperties": [
+    "/properties/Arn",
+    "/properties/DomainName",
     "/properties/DomainStatus",
-    "/properties/StatusReason"
+    "/properties/StatusReason",
+    "/properties/CertificateRecord"
   ],
   "handlers": {
     "create": {
@@ -79,26 +90,30 @@
         "amplify:CreateDomainAssociation",
         "route53:ListHostedZones",
         "route53:ChangeResourceRecordSets",
-        "iam:PassRole"
+        "iam:PassRole",
+        "amplify:TagResource"
       ]
     },
     "delete": {
       "permissions": [
         "amplify:DeleteDomainAssociation",
-        "iam:PassRole"
+        "iam:PassRole",
+        "amplify:DeleteDomainAssociation"
       ]
     },
     "list": {
       "permissions": [
         "amplify:ListDomainAssociations",
-        "iam:PassRole"
+        "iam:PassRole",
+        "amplify:ListTagsForResource"
       ]
     },
     "read": {
       "permissions": [
         "amplify:GetDomainAssociation",
         "route53:ListHostedZones",
-        "iam:PassRole"
+        "iam:PassRole",
+        "amplify:ListTagsForResource"
       ]
     },
     "update": {
@@ -106,7 +121,10 @@
         "amplify:UpdateDomainAssociation",
         "route53:ListHostedZones",
         "route53:ChangeResourceRecordSets",
-        "iam:PassRole"
+        "iam:PassRole",
+        "amplify:ListTagsForResource",
+        "amplify:TagResource",
+        "amplify:UntagResource"
       ]
     }
   }

@@ -1,5 +1,5 @@
 {
-  "Arn": "this property is read only",
+  "Arn": "Providing this value results in an exception being thrown",
   "AppId": "dnonexistent",
-  "BranchName": "CfnInvokeTestInvalid"
+  "BranchName": "ContractTestInvalid"
 }

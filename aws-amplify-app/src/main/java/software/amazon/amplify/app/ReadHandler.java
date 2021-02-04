@@ -30,12 +30,13 @@ public class ReadHandler extends BaseHandlerStd {
                     getAppRequest,
                     proxyInvocation.client()::getApp,
                     ResourceModel.TYPE_NAME,
-                    model.getAppId(),
+                    model.getArn(),
                     logger
             ))
             .done(getAppResponse -> {
-                logger.log("INFO: returning model: " + model);
-                return ProgressEvent.defaultSuccessHandler(Translator.translateFromReadResponse(getAppResponse));
+                ResourceModel modelRet = Translator.translateFromReadResponse(getAppResponse);
+                logger.log("INFO: returning model: " + modelRet);
+                return ProgressEvent.defaultSuccessHandler(modelRet);
             });
     }
 }

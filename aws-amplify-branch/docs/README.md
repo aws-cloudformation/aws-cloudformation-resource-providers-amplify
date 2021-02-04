@@ -15,7 +15,6 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#appid" title="AppId">AppId</a>" : <i>String</i>,
         "<a href="#backendenvironmentarn" title="BackendEnvironmentArn">BackendEnvironmentArn</a>" : <i>String</i>,
         "<a href="#basicauthconfig" title="BasicAuthConfig">BasicAuthConfig</a>" : <i><a href="basicauthconfig.md">BasicAuthConfig</a></i>,
-        "<a href="#branchname" title="BranchName">BranchName</a>" : <i>String</i>,
         "<a href="#buildspec" title="BuildSpec">BuildSpec</a>" : <i>String</i>,
         "<a href="#description" title="Description">Description</a>" : <i>String</i>,
         "<a href="#displayname" title="DisplayName">DisplayName</a>" : <i>String</i>,
@@ -41,7 +40,6 @@ Properties:
     <a href="#appid" title="AppId">AppId</a>: <i>String</i>
     <a href="#backendenvironmentarn" title="BackendEnvironmentArn">BackendEnvironmentArn</a>: <i>String</i>
     <a href="#basicauthconfig" title="BasicAuthConfig">BasicAuthConfig</a>: <i><a href="basicauthconfig.md">BasicAuthConfig</a></i>
-    <a href="#branchname" title="BranchName">BranchName</a>: <i>String</i>
     <a href="#buildspec" title="BuildSpec">BuildSpec</a>: <i>String</i>
     <a href="#description" title="Description">Description</a>: <i>String</i>
     <a href="#displayname" title="DisplayName">DisplayName</a>: <i>String</i>
@@ -67,7 +65,7 @@ _Required_: Yes
 
 _Type_: String
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### BackendEnvironmentArn
 
@@ -84,14 +82,6 @@ _Required_: No
 _Type_: <a href="basicauthconfig.md">BasicAuthConfig</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### BranchName
-
-_Required_: Yes
-
-_Type_: String
-
-_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### BuildSpec
 
@@ -214,3 +204,7 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 #### Arn
 
 Returns the <code>Arn</code> value.
+
+#### BranchName
+
+Returns the <code>BranchName</code> value.

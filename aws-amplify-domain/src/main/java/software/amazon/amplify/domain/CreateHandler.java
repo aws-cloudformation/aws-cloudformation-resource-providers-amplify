@@ -1,5 +1,6 @@
 package software.amazon.amplify.domain;
 
+import org.apache.commons.lang3.ObjectUtils;
 import software.amazon.amplify.common.utils.ClientWrapper;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
 import software.amazon.awssdk.services.amplify.model.CreateDomainAssociationResponse;
@@ -30,8 +31,10 @@ public class CreateHandler extends BaseHandlerStd {
         final ResourceModel model = request.getDesiredResourceState();
         logger.log("INFO: requesting with model: " + model);
 
-        if (hasReadOnlyProperties(model)) {
-            throw new CfnInvalidRequestException("Create request includes at least one read-only property.");
+        // Make sure the user isn't trying to assign values to read-only properties
+        String disallowedVal = checkReadOnlyProperties(model);
+        if (disallowedVal != null) {
+            throw new CfnInvalidRequestException(String.format("Attempted to provide value to a read-only property: %s", disallowedVal));
         }
 
         return ProgressEvent.progress(model, callbackContext)
@@ -41,7 +44,7 @@ public class CreateHandler extends BaseHandlerStd {
                         .translateToServiceRequest(Translator::translateToCreateRequest)
                         .makeServiceCall((createDomainAssociationRequest, proxyInvocation) -> {
                             checkIfResourceExists(model, proxyClient, logger);
-                            return (CreateDomainAssociationResponse) ClientWrapper.execute(
+                            CreateDomainAssociationResponse createDomainAssociationResponse = (CreateDomainAssociationResponse) ClientWrapper.execute(
                                     proxy,
                                     createDomainAssociationRequest,
                                     proxyInvocation.client()::createDomainAssociation,
@@ -49,11 +52,17 @@ public class CreateHandler extends BaseHandlerStd {
                                     model.getArn(),
                                     logger
                             );
+                            setResourceModelId(model, createDomainAssociationResponse.domainAssociation());
+                            return createDomainAssociationResponse;
                         })
                         .stabilize((awsRequest, awsResponse, client, resourceModel, context) -> isStabilized(proxy, proxyClient,
                                 model, logger))
                         .progress())
                 .then(progress -> new ReadHandler().handleRequest(proxy, request, callbackContext, proxyClient, logger));
+    }
+
+    private String checkReadOnlyProperties(final ResourceModel model) {
+        return ObjectUtils.firstNonNull(model.getDomainStatus(), model.getStatusReason(), model.getCertificateRecord());
     }
 
     private boolean isStabilized(final AmazonWebServicesClientProxy proxy,

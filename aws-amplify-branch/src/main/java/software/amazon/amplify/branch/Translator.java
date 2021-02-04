@@ -13,6 +13,8 @@ import software.amazon.awssdk.services.amplify.model.ListBranchesRequest;
 import software.amazon.awssdk.services.amplify.model.ListBranchesResponse;
 import software.amazon.awssdk.services.amplify.model.ListTagsForResourceRequest;
 import software.amazon.awssdk.services.amplify.model.UpdateBranchRequest;
+import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
+import software.amazon.cloudformation.exceptions.CfnNotFoundException;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -33,6 +35,8 @@ import java.util.stream.Stream;
  */
 
 public class Translator {
+  private static final String ARN_SPLIT_KEY = "/branches/";
+
   /**
    * Request to create a resource
    * @param model resource model
@@ -79,6 +83,7 @@ public class Translator {
    * @return getBranchRequest the aws service request to describe a resource
    */
   static GetBranchRequest translateToReadRequest(final ResourceModel model) {
+    initializeModel(model);
     return GetBranchRequest.builder()
             .appId(model.getAppId())
             .branchName(model.getBranchName())
@@ -92,10 +97,9 @@ public class Translator {
    */
   static ResourceModel translateFromReadResponse(final GetBranchResponse getBranchResponse) {
     final Branch branch = getBranchResponse.branch();
-    final String SPLIT_KEY = "/branches/";
 
     ResourceModel.ResourceModelBuilder branchModelBuilder = ResourceModel.builder()
-            .appId(ArnUtils.getAppId(branch.branchArn(), SPLIT_KEY))
+            .appId(ArnUtils.getAppId(branch.branchArn(), ARN_SPLIT_KEY))
             .arn(branch.branchArn())
             .branchName(branch.branchName())
             .buildSpec(branch.buildSpec())
@@ -128,6 +132,7 @@ public class Translator {
    * @return deleteBranchRequest the aws service request to delete a resource
    */
   static DeleteBranchRequest translateToDeleteRequest(final ResourceModel model) {
+    initializeModel(model);
     return DeleteBranchRequest.builder()
             .appId(model.getAppId())
             .branchName(model.getBranchName())
@@ -140,6 +145,7 @@ public class Translator {
    * @return updateBranchRequest the aws service request to modify a resource
    */
   static UpdateBranchRequest translateToUpdateRequest(final ResourceModel model) {
+    initializeModel(model);
     final UpdateBranchRequest.Builder updateBranchRequest = UpdateBranchRequest.builder()
             .appId(model.getAppId())
             .branchName(model.getBranchName())
@@ -207,6 +213,20 @@ public class Translator {
   /*
    * Helpers
    */
+  private static void initializeModel(final ResourceModel model) {
+    if (model.getAppId() == null || model.getBranchName() == null) {
+      String arn = model.getArn();
+      if (arn == null) {
+        throw new CfnNotFoundException(ResourceModel.TYPE_NAME, null);
+      }
+      try {
+        model.setAppId(ArnUtils.getAppId(arn, ARN_SPLIT_KEY));
+        model.setBranchName(ArnUtils.getResourceName(arn, ARN_SPLIT_KEY));
+      } catch (Exception e) {
+        throw new CfnGeneralServiceException(ResourceModel.TYPE_NAME, e);
+      }
+    }
+  }
 
   private static List<EnvironmentVariable> getEnvironmentVariablesCFN(@NonNull final Map<String, String> envVars) {
     List<EnvironmentVariable> envVarsCFN = new ArrayList<>();
