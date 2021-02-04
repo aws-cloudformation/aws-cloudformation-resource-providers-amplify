@@ -1,6 +1,6 @@
 {
   "typeName": "AWS::Amplify::Domain",
-  "description": "Resource Type definition for AWS::Amplify::Domain",
+  "description": "The AWS::Amplify::Domain resource allows you to connect a custom domain to your app.",
   "additionalProperties": false,
   "properties": {
     "AppId": {
