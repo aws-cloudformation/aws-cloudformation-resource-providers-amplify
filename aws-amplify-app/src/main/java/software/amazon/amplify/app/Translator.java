@@ -202,10 +202,16 @@ public class Translator {
       updateAppRequest.enableBasicAuth(basicAuthConfig.getEnableBasicAuth());
       updateAppRequest.basicAuthCredentials(getBasicAuthCredentialsSDK(basicAuthConfig));
     }
-    software.amazon.amplify.app.AutoBranchCreationConfig autoBranchCreationConfig = model.getAutoBranchCreationConfig();
-    if (autoBranchCreationConfig != null) {
-      updateAppRequest.enableAutoBranchCreation(autoBranchCreationConfig.getEnableAutoBranchCreation());
-      updateAppRequest.autoBranchCreationConfig(getAutoBranchCreationConfigSDK(autoBranchCreationConfig));
+    software.amazon.amplify.app.AutoBranchCreationConfig autoBranchCreationConfigCFN = model.getAutoBranchCreationConfig();
+    if (autoBranchCreationConfigCFN != null) {
+      updateAppRequest.enableAutoBranchCreation(autoBranchCreationConfigCFN.getEnableAutoBranchCreation());
+      if (autoBranchCreationConfigCFN.getEnableAutoBranchCreation()) {
+        updateAppRequest.autoBranchCreationConfig(getAutoBranchCreationConfigSDK(autoBranchCreationConfigCFN));
+        List<String> autoBranchCreationPatterns = autoBranchCreationConfigCFN.getAutoBranchCreationPatterns();
+        if (CollectionUtils.isNotEmpty(autoBranchCreationPatterns)) {
+          updateAppRequest.autoBranchCreationPatterns(autoBranchCreationPatterns);
+        }
+      }
     }
     return updateAppRequest.build();
   }
