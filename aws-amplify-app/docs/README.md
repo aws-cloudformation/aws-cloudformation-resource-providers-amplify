@@ -1,6 +1,6 @@
 # AWS::Amplify::App
 
-Resource Type definition for AWS::Amplify::App
+The AWS::Amplify::App resource creates Apps in the Amplify Console. An App is a collection of branches.
 
 ## Syntax
 

@@ -19,7 +19,7 @@
     },
     "AutoSubDomainIAMRole": {
       "type": "string",
-      "pattern": "^$|^arn:aws:iam::\\d{12}:role.+",
+      "pattern": "^$|^arn:.+:iam::\\d{12}:role.+",
       "maxLength": 1000
     },
     "CertificateRecord": {
@@ -77,9 +77,12 @@
   "primaryIdentifier": [
     "/properties/Arn"
   ],
+  "createOnlyProperties": [
+    "/properties/AppId",
+    "/properties/DomainName"
+  ],
   "readOnlyProperties": [
     "/properties/Arn",
-    "/properties/DomainName",
     "/properties/DomainStatus",
     "/properties/StatusReason",
     "/properties/CertificateRecord"
