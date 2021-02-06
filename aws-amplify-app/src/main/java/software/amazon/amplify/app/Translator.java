@@ -111,51 +111,44 @@ public class Translator {
    */
   static ResourceModel translateFromReadResponse(final GetAppResponse getAppResponse) {
     ResourceModel.ResourceModelBuilder appModelBuilder = ResourceModel.builder();
-    try {
-      App app = getAppResponse.app();
+    App app = getAppResponse.app();
 
-      appModelBuilder
-              .appId(app.appId())
-              .appName(app.name())
-              .arn(app.appArn())
-              .buildSpec(app.buildSpec())
-              .customHeaders(app.customHeaders())
-              .description(app.description())
-              .defaultDomain(app.defaultDomain())
-              .enableBranchAutoDeletion(app.enableBranchAutoDeletion())
-              .iAMServiceRole(app.iamServiceRoleArn())
-              .name(app.name())
-              .repository(app.repository());
+    appModelBuilder
+            .appId(app.appId())
+            .appName(app.name())
+            .arn(app.appArn())
+            .buildSpec(app.buildSpec())
+            .customHeaders(app.customHeaders())
+            .description(app.description())
+            .defaultDomain(app.defaultDomain())
+            .enableBranchAutoDeletion(app.enableBranchAutoDeletion())
+            .iAMServiceRole(app.iamServiceRoleArn())
+            .name(app.name())
+            .repository(app.repository());
 
-      Map<String, String> appEnvVars = app.environmentVariables();
-      if (MapUtils.isNotEmpty(appEnvVars)) {
-        appModelBuilder.environmentVariables(getEnvironmentVariablesCFN(appEnvVars));
+    Map<String, String> appEnvVars = app.environmentVariables();
+    if (MapUtils.isNotEmpty(appEnvVars)) {
+      appModelBuilder.environmentVariables(getEnvironmentVariablesCFN(appEnvVars));
+    }
+
+    if (CollectionUtils.isNotEmpty(app.customRules())) {
+      List<software.amazon.amplify.app.CustomRule> customRulesCFN = new ArrayList<>();
+      for (CustomRule customRule : app.customRules()) {
+        customRulesCFN.add(software.amazon.amplify.app.CustomRule.builder()
+                .source(customRule.source())
+                .target(customRule.target())
+                .status(customRule.status())
+                .condition(customRule.condition())
+                .build());
       }
+      appModelBuilder.customRules(customRulesCFN);
+    }
 
-      if (CollectionUtils.isNotEmpty(app.customRules())) {
-        List<software.amazon.amplify.app.CustomRule> customRulesCFN = new ArrayList<>();
-        for (CustomRule customRule : app.customRules()) {
-          customRulesCFN.add(software.amazon.amplify.app.CustomRule.builder()
-                  .source(customRule.source())
-                  .target(customRule.target())
-                  .status(customRule.status())
-                  .condition(customRule.condition())
-                  .build());
-        }
-        appModelBuilder.customRules(customRulesCFN);
-      }
-
-      Map<String, String> appTags = app.tags();
-      if (MapUtils.isNotEmpty(appTags)) {
-        appModelBuilder.tags(getTagsCFN(appTags));
-      }
-      return appModelBuilder.build();
-    } catch (final Exception e ) {
-      System.out.println("*** [DEV] unhandled exception : " + e);
-      e.printStackTrace();
+    Map<String, String> appTags = app.tags();
+    if (MapUtils.isNotEmpty(appTags)) {
+      appModelBuilder.tags(getTagsCFN(appTags));
     }
     return appModelBuilder.build();
-
   }
 
   /**
@@ -249,21 +242,17 @@ public class Translator {
   /*
    * Helpers
    */
-  private static void initializeModel(@NonNull ResourceModel model) {
+  private static void initializeModel(final ResourceModel model) {
     if (model.getAppId() == null) {
       String arn = model.getArn();
       if (arn == null) {
         throw new CfnNotFoundException(ResourceModel.TYPE_NAME, null);
       }
-      try {
-        model.setAppId(ArnUtils.getAppId(arn, ARN_SPLIT_KEY));
-      } catch (Exception e) {
-        throw new CfnGeneralServiceException(ResourceModel.TYPE_NAME, e);
-      }
+      model.setAppId(ArnUtils.getAppId(arn, ARN_SPLIT_KEY));
     }
   }
 
-  public static Map<String, String> getTagsSDK(@NonNull final List<Tag> tags) {
+  static Map<String, String> getTagsSDK(final List<Tag> tags) {
     Map<String, String> tagMap = new HashMap<>();
     for (Tag tag : tags) {
       tagMap.put(tag.getKey(), tag.getValue());
@@ -272,7 +261,7 @@ public class Translator {
   }
 
   @VisibleForTesting
-  static List<Tag> getTagsCFN(@NonNull final Map<String, String> tags) {
+  static List<Tag> getTagsCFN(final Map<String, String> tags) {
     List<Tag> tagsCFN = new ArrayList<>();
     tags.forEach((k, v) -> tagsCFN.add(Tag.builder()
             .key(k)
@@ -282,7 +271,7 @@ public class Translator {
   }
 
   @VisibleForTesting
-  static List<CustomRule> getCustomRulesSDK(@NonNull final List<software.amazon.amplify.app.CustomRule> customRulesCFN) {
+  static List<CustomRule> getCustomRulesSDK(final List<software.amazon.amplify.app.CustomRule> customRulesCFN) {
     List<CustomRule> customRules = new ArrayList<>();
     for (software.amazon.amplify.app.CustomRule customRuleCFN: customRulesCFN) {
       final CustomRule customRule = CustomRule.builder()
@@ -297,7 +286,7 @@ public class Translator {
   }
 
   @VisibleForTesting
-  static Map<String, String> getEnvironmentVariablesSDK(@NonNull final List<EnvironmentVariable> envVarsCFN) {
+  static Map<String, String> getEnvironmentVariablesSDK(final List<EnvironmentVariable> envVarsCFN) {
     Map<String, String> envVars = new HashMap<>();
     for (EnvironmentVariable envVarCFN : envVarsCFN) {
       envVars.put(envVarCFN.getName(), envVarCFN.getValue());
@@ -306,7 +295,7 @@ public class Translator {
   }
 
   @VisibleForTesting
-  static List<EnvironmentVariable> getEnvironmentVariablesCFN(@NonNull final Map<String, String> envVars) {
+  static List<EnvironmentVariable> getEnvironmentVariablesCFN(final Map<String, String> envVars) {
     List<EnvironmentVariable> envVarsCFN = new ArrayList<>();
     envVars.forEach((k, v) -> envVarsCFN.add(EnvironmentVariable.builder()
             .name(k)
@@ -316,7 +305,7 @@ public class Translator {
   }
 
   @VisibleForTesting
-  static String getBasicAuthCredentialsSDK(@NonNull BasicAuthConfig basicAuthConfig) {
+  static String getBasicAuthCredentialsSDK(BasicAuthConfig basicAuthConfig) {
     if (basicAuthConfig.getEnableBasicAuth() == null || basicAuthConfig.getEnableBasicAuth() == false) {
       return null;
     }
@@ -330,18 +319,7 @@ public class Translator {
   }
 
   @VisibleForTesting
-  static BasicAuthConfig getBasicAuthConfigCFN(@NonNull String basicAuthConfigString) {
-    final String DELIMITER = ":";
-    final String userInfo = Arrays.toString(Base64.getDecoder().decode(basicAuthConfigString));
-    return BasicAuthConfig.builder()
-            .username(userInfo.split(DELIMITER)[0])
-            .password(userInfo.split(DELIMITER)[1])
-            .enableBasicAuth(true)
-            .build();
-  }
-
-  @VisibleForTesting
-  static AutoBranchCreationConfig getAutoBranchCreationConfigSDK(@NonNull final software.amazon.amplify.app.AutoBranchCreationConfig autoBranchCreationConfigCFN) {
+  static AutoBranchCreationConfig getAutoBranchCreationConfigSDK(final software.amazon.amplify.app.AutoBranchCreationConfig autoBranchCreationConfigCFN) {
     AutoBranchCreationConfig.Builder autoBranchCreationConfig = AutoBranchCreationConfig.builder()
             .buildSpec(autoBranchCreationConfigCFN.getBuildSpec())
             .stage(autoBranchCreationConfigCFN.getStage())

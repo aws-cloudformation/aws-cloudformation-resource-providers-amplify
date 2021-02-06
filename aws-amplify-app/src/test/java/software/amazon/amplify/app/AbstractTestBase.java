@@ -1,8 +1,6 @@
 package software.amazon.amplify.app;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
@@ -36,12 +34,21 @@ public class AbstractTestBase {
             .status("200")
             .build());
   protected static BasicAuthConfig BASIC_AUTH_CONFIG = BasicAuthConfig.builder()
+          .enableBasicAuth(true)
           .username("dummyUser")
           .password("dummyPass")
           .build();
+  protected static BasicAuthConfig INVALID_BASIC_AUTH_CONFIG = BasicAuthConfig.builder()
+          .enableBasicAuth(true)
+          .build();
+  protected static BasicAuthConfig DISABLED_BASIC_AUTH_CONFIG = BasicAuthConfig.builder()
+          .enableBasicAuth(false)
+          .build();
   protected static AutoBranchCreationConfig AUTO_BRANCH_CREATION_CONFIG = AutoBranchCreationConfig.builder()
           .autoBranchCreationPatterns(ImmutableList.of("/feature*", "/dev*"))
+          .basicAuthConfig(BASIC_AUTH_CONFIG)
           .enableAutoBranchCreation(true)
+          .environmentVariables(ENV_VARS_CFN)
           .build();
   protected static List<Tag> TAGS_CFN = ImmutableList.of(Tag.builder().key("foo").value("bar").build());
 

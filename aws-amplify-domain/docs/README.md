@@ -63,7 +63,7 @@ _Type_: String
 
 _Maximum_: <code>1000</code>
 
-_Pattern_: <code>^$|^arn:aws:iam::\d{12}:role.+</code>
+_Pattern_: <code>^$|^arn:.+:iam::\d{12}:role.+</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

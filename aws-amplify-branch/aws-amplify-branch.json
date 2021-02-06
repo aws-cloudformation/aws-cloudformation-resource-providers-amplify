@@ -9,9 +9,6 @@
     "Arn": {
       "type": "string"
     },
-    "BackendEnvironmentArn": {
-      "type": "string"
-    },
     "BasicAuthConfig": {
       "$ref": "#/definitions/BasicAuthConfig"
     },
@@ -24,13 +21,7 @@
     "Description": {
       "type": "string"
     },
-    "DisplayName": {
-      "type": "string"
-    },
     "EnableAutoBuild": {
-      "type": "boolean"
-    },
-    "EnableNotification": {
       "type": "boolean"
     },
     "EnablePerformanceMode": {
@@ -45,9 +36,6 @@
       "items": {
         "$ref": "#/definitions/EnvironmentVariable"
       }
-    },
-    "Framework": {
-      "type": "string"
     },
     "PullRequestEnvironmentName": {
       "type": "string"
@@ -68,9 +56,6 @@
       "items": {
         "$ref": "#/definitions/Tag"
       }
-    },
-    "Ttl": {
-      "type": "string"
     }
   },
   "definitions": {

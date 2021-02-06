@@ -5,7 +5,9 @@ import software.amazon.awssdk.services.amplify.AmplifyClient;
 import software.amazon.awssdk.services.amplify.model.DeleteDomainAssociationRequest;
 import software.amazon.awssdk.services.amplify.model.DeleteDomainAssociationResponse;
 import software.amazon.awssdk.services.amplify.model.DomainAssociation;
+import software.amazon.awssdk.services.amplify.model.DomainStatus;
 import software.amazon.awssdk.services.amplify.model.GetDomainAssociationRequest;
+import software.amazon.awssdk.services.amplify.model.GetDomainAssociationResponse;
 import software.amazon.awssdk.services.amplify.model.NotFoundException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.OperationStatus;
@@ -88,6 +90,13 @@ public class DeleteHandlerTest extends AbstractTestBase {
                                 .build())
                         .build());
         when(proxyClient.client().getDomainAssociation(any(GetDomainAssociationRequest.class)))
+                .thenReturn(GetDomainAssociationResponse.builder()
+                        .domainAssociation(DomainAssociation.builder()
+                                .domainAssociationArn(DOMAIN_ASSOCIATION_ARN)
+                                .domainName(DOMAIN_NAME)
+                                .domainStatus(DomainStatus.AVAILABLE)
+                                .build())
+                        .build())
                 .thenThrow(NotFoundException.builder().message("Resource Not Found").build());
     }
 }

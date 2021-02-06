@@ -1,6 +1,5 @@
 package software.amazon.amplify.branch;
 
-import lombok.NonNull;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import software.amazon.amplify.common.utils.ArnUtils;
@@ -13,7 +12,6 @@ import software.amazon.awssdk.services.amplify.model.ListBranchesRequest;
 import software.amazon.awssdk.services.amplify.model.ListBranchesResponse;
 import software.amazon.awssdk.services.amplify.model.ListTagsForResourceRequest;
 import software.amazon.awssdk.services.amplify.model.UpdateBranchRequest;
-import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnNotFoundException;
 
 import java.nio.charset.StandardCharsets;
@@ -45,34 +43,29 @@ public class Translator {
   static CreateBranchRequest translateToCreateRequest(final ResourceModel model) {
     final CreateBranchRequest.Builder createBranchRequest = CreateBranchRequest.builder()
             .appId(model.getAppId())
-            .backendEnvironmentArn(model.getBackendEnvironmentArn())
             .branchName(model.getBranchName())
             .buildSpec(model.getBuildSpec())
             .description(model.getDescription())
-            .displayName(model.getDisplayName())
             .enableAutoBuild(model.getEnableAutoBuild())
-            .enableNotification(model.getEnableNotification())
             .enablePerformanceMode(model.getEnablePerformanceMode())
             .enablePullRequestPreview(model.getEnablePullRequestPreview())
-            .framework(model.getFramework())
             .pullRequestEnvironmentName(model.getPullRequestEnvironmentName())
-            .stage(model.getStage())
-            .ttl(model.getTtl());
+            .stage(model.getStage());
 
     BasicAuthConfig basicAuthConfig = model.getBasicAuthConfig();
     if (basicAuthConfig != null) {
       createBranchRequest.enableBasicAuth(basicAuthConfig.getEnableBasicAuth());
-      createBranchRequest.basicAuthCredentials(getBasicAuthCredentials(basicAuthConfig));
+      createBranchRequest.basicAuthCredentials(getBasicAuthCredentialsSDK(basicAuthConfig));
     }
 
     List<EnvironmentVariable> environmentVariables = model.getEnvironmentVariables();
     if (CollectionUtils.isNotEmpty(environmentVariables)) {
-      createBranchRequest.environmentVariables(getEnvironmentVariables(environmentVariables));
+      createBranchRequest.environmentVariables(getEnvironmentVariablesSDK(environmentVariables));
     }
 
     List<Tag> appTags = model.getTags();
     if (CollectionUtils.isNotEmpty(appTags)) {
-      createBranchRequest.tags(getTags(appTags));
+      createBranchRequest.tags(getTagsSDK(appTags));
     }
     return createBranchRequest.build();
   }
@@ -104,15 +97,11 @@ public class Translator {
             .branchName(branch.branchName())
             .buildSpec(branch.buildSpec())
             .description(branch.description())
-            .displayName(branch.displayName())
             .enableAutoBuild(branch.enableAutoBuild())
-            .enableNotification(branch.enableNotification())
             .enablePerformanceMode(branch.enablePerformanceMode())
             .enablePullRequestPreview(branch.enablePullRequestPreview())
-            .framework(branch.framework())
             .pullRequestEnvironmentName(branch.pullRequestEnvironmentName())
-            .stage(branch.stageAsString())
-            .ttl(branch.ttl());
+            .stage(branch.stageAsString());
 
     Map<String, String> branchEnvVars = branch.environmentVariables();
     if (MapUtils.isNotEmpty(branchEnvVars)) {
@@ -149,27 +138,22 @@ public class Translator {
     final UpdateBranchRequest.Builder updateBranchRequest = UpdateBranchRequest.builder()
             .appId(model.getAppId())
             .branchName(model.getBranchName())
-            .backendEnvironmentArn(model.getBackendEnvironmentArn())
             .buildSpec(model.getBuildSpec())
             .description(model.getDescription())
-            .displayName(model.getDisplayName())
             .enableAutoBuild(model.getEnableAutoBuild())
-            .enableNotification(model.getEnableNotification())
             .enablePerformanceMode(model.getEnablePerformanceMode())
             .enablePullRequestPreview(model.getEnablePullRequestPreview())
-            .framework(model.getFramework())
             .pullRequestEnvironmentName(model.getPullRequestEnvironmentName())
-            .stage(model.getStage())
-            .ttl(model.getTtl());
+            .stage(model.getStage());
 
     List<EnvironmentVariable> environmentVariables = model.getEnvironmentVariables();
     if (CollectionUtils.isNotEmpty(environmentVariables)) {
-      updateBranchRequest.environmentVariables(getEnvironmentVariables(environmentVariables));
+      updateBranchRequest.environmentVariables(getEnvironmentVariablesSDK(environmentVariables));
     }
     BasicAuthConfig basicAuthConfig = model.getBasicAuthConfig();
     if (basicAuthConfig != null) {
       updateBranchRequest.enableBasicAuth(basicAuthConfig.getEnableBasicAuth());
-      updateBranchRequest.basicAuthCredentials(getBasicAuthCredentials(basicAuthConfig));
+      updateBranchRequest.basicAuthCredentials(getBasicAuthCredentialsSDK(basicAuthConfig));
     }
     return updateBranchRequest.build();
   }
@@ -213,22 +197,18 @@ public class Translator {
   /*
    * Helpers
    */
-  private static void initializeModel(@NonNull ResourceModel model) {
+  private static void initializeModel(ResourceModel model) {
     if (model.getAppId() == null || model.getBranchName() == null) {
       String arn = model.getArn();
       if (arn == null) {
         throw new CfnNotFoundException(ResourceModel.TYPE_NAME, null);
       }
-      try {
-        model.setAppId(ArnUtils.getAppId(arn, ARN_SPLIT_KEY));
-        model.setBranchName(ArnUtils.getResourceName(arn, ARN_SPLIT_KEY));
-      } catch (Exception e) {
-        throw new CfnGeneralServiceException(ResourceModel.TYPE_NAME, e);
-      }
+      model.setAppId(ArnUtils.getAppId(arn, ARN_SPLIT_KEY));
+      model.setBranchName(ArnUtils.getResourceName(arn, ARN_SPLIT_KEY));
     }
   }
 
-  private static List<EnvironmentVariable> getEnvironmentVariablesCFN(@NonNull final Map<String, String> envVars) {
+  static List<EnvironmentVariable> getEnvironmentVariablesCFN(final Map<String, String> envVars) {
     List<EnvironmentVariable> envVarsCFN = new ArrayList<>();
     envVars.forEach((k, v) -> envVarsCFN.add(EnvironmentVariable.builder()
             .name(k)
@@ -237,7 +217,7 @@ public class Translator {
     return envVarsCFN;
   }
 
-  private static List<Tag> getTagsCFN(@NonNull final Map<String, String> tags) {
+  static List<Tag> getTagsCFN(final Map<String, String> tags) {
     List<Tag> tagsCFN = new ArrayList<>();
     tags.forEach((k, v) -> tagsCFN.add(Tag.builder()
             .key(k)
@@ -246,7 +226,7 @@ public class Translator {
     return tagsCFN;
   }
 
-  public static Map<String, String> getTags(@NonNull final List<Tag> tags) {
+  static Map<String, String> getTagsSDK(final List<Tag> tags) {
     Map<String, String> tagMap = new HashMap<>();
     for (Tag tag : tags) {
       tagMap.put(tag.getKey(), tag.getValue());
@@ -254,7 +234,7 @@ public class Translator {
     return tagMap;
   }
 
-  private static Map<String, String> getEnvironmentVariables(@NonNull final List<EnvironmentVariable> envVarsCFN) {
+  static Map<String, String> getEnvironmentVariablesSDK(final List<EnvironmentVariable> envVarsCFN) {
     Map<String, String> envVars = new HashMap<>();
     for (EnvironmentVariable envVarCFN : envVarsCFN) {
       envVars.put(envVarCFN.getName(), envVarCFN.getValue());
@@ -262,12 +242,12 @@ public class Translator {
     return envVars;
   }
 
-  private static String getBasicAuthCredentials(@NonNull BasicAuthConfig basicAuthConfig) {
+  static String getBasicAuthCredentialsSDK(BasicAuthConfig basicAuthConfig) {
     final String userInfo = String.format("%s:%s", basicAuthConfig.getUsername(), basicAuthConfig.getPassword());
     return Base64.getEncoder().encodeToString(userInfo.getBytes(StandardCharsets.UTF_8));
   }
 
-  private static <T> Stream<T> streamOfOrEmpty(final Collection<T> collection) {
+  static <T> Stream<T> streamOfOrEmpty(final Collection<T> collection) {
     return Optional.ofNullable(collection)
         .map(Collection::stream)
         .orElseGet(Stream::empty);

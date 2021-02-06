@@ -47,16 +47,7 @@ public class Translator {
 
     List<SubDomainSetting> subDomainSettingsCFN = model.getSubDomainSettings();
     if (CollectionUtils.isNotEmpty(subDomainSettingsCFN)) {
-      List<software.amazon.awssdk.services.amplify.model.SubDomainSetting> subDomainSettingsSDK = new ArrayList<>();
-      for (final SubDomainSetting subDomainSettingCFN : subDomainSettingsCFN) {
-        software.amazon.awssdk.services.amplify.model.SubDomainSetting subDomainSettingSDK =
-                software.amazon.awssdk.services.amplify.model.SubDomainSetting.builder()
-                  .prefix(subDomainSettingCFN.getPrefix())
-                  .branchName(subDomainSettingCFN.getBranchName())
-                  .build();
-        subDomainSettingsSDK.add(subDomainSettingSDK);
-      }
-      createDomainAssociationRequest.subDomainSettings(subDomainSettingsSDK);
+      createDomainAssociationRequest.subDomainSettings(getSubDomainSettingsSDK(subDomainSettingsCFN));
     }
     return createDomainAssociationRequest.build();
   }
@@ -139,16 +130,7 @@ public class Translator {
 
     List<SubDomainSetting> subDomainSettingsCFN = model.getSubDomainSettings();
     if (CollectionUtils.isNotEmpty(subDomainSettingsCFN)) {
-      List<software.amazon.awssdk.services.amplify.model.SubDomainSetting> subDomainSettingsSDK = new ArrayList<>();
-      for (final SubDomainSetting subDomainSettingCFN : subDomainSettingsCFN) {
-        software.amazon.awssdk.services.amplify.model.SubDomainSetting subDomainSettingSDK =
-                software.amazon.awssdk.services.amplify.model.SubDomainSetting.builder()
-                        .prefix(subDomainSettingCFN.getPrefix())
-                        .branchName(subDomainSettingCFN.getBranchName())
-                        .build();
-        subDomainSettingsSDK.add(subDomainSettingSDK);
-      }
-      updateDomainAssociationRequest.subDomainSettings(subDomainSettingsSDK);
+      updateDomainAssociationRequest.subDomainSettings(getSubDomainSettingsSDK(subDomainSettingsCFN));
     }
     return updateDomainAssociationRequest.build();
   }
@@ -183,22 +165,30 @@ public class Translator {
   /*
    * Helpers
    */
-  private static void initializeModel(@NonNull ResourceModel model) {
+  private static void initializeModel(ResourceModel model) {
     if (model.getAppId() == null || model.getDomainName() == null) {
       String arn = model.getArn();
       if (arn == null) {
         throw new CfnNotFoundException(ResourceModel.TYPE_NAME, null);
       }
-      try {
-        model.setAppId(ArnUtils.getAppId(arn, ARN_SPLIT_KEY));
-        model.setDomainName(ArnUtils.getResourceName(arn, ARN_SPLIT_KEY));
-      } catch (Exception e) {
-        throw new CfnGeneralServiceException(ResourceModel.TYPE_NAME, e);
-      }
+      model.setAppId(ArnUtils.getAppId(arn, ARN_SPLIT_KEY));
+      model.setDomainName(ArnUtils.getResourceName(arn, ARN_SPLIT_KEY));
     }
   }
 
-  private static List<SubDomainSetting> getSubDomainSettingsCFN(List<SubDomain> subDomainsSDK) {
+  static List<software.amazon.awssdk.services.amplify.model.SubDomainSetting> getSubDomainSettingsSDK(List<SubDomainSetting> subDomainSettingsCFN) {
+    List<software.amazon.awssdk.services.amplify.model.SubDomainSetting> subDomainSettingsSDK = new ArrayList<>();
+    for (final SubDomainSetting subDomainSettingCFN : subDomainSettingsCFN) {
+      software.amazon.awssdk.services.amplify.model.SubDomainSetting subDomainSettingSDK =
+              software.amazon.awssdk.services.amplify.model.SubDomainSetting.builder()
+                      .prefix(subDomainSettingCFN.getPrefix())
+                      .branchName(subDomainSettingCFN.getBranchName())
+                      .build();
+      subDomainSettingsSDK.add(subDomainSettingSDK);
+    }
+    return subDomainSettingsSDK;
+  }
+  static List<SubDomainSetting> getSubDomainSettingsCFN(List<SubDomain> subDomainsSDK) {
     List<SubDomainSetting> subDomainSettingsCFN = new ArrayList<>();
     for (SubDomain subDomain : subDomainsSDK) {
       software.amazon.awssdk.services.amplify.model.SubDomainSetting subDomainSettingSDK = subDomain.subDomainSetting();
