@@ -1,15 +1,12 @@
 {
   "typeName": "AWS::Amplify::Branch",
-  "description": "Resource Type definition for AWS::Amplify::Branch",
+  "description": "The AWS::Amplify::Branch resource creates a new branch within an app.",
   "additionalProperties": false,
   "properties": {
     "AppId": {
       "type": "string"
     },
     "Arn": {
-      "type": "string"
-    },
-    "BackendEnvironmentArn": {
       "type": "string"
     },
     "BasicAuthConfig": {
@@ -24,13 +21,7 @@
     "Description": {
       "type": "string"
     },
-    "DisplayName": {
-      "type": "string"
-    },
     "EnableAutoBuild": {
-      "type": "boolean"
-    },
-    "EnableNotification": {
       "type": "boolean"
     },
     "EnablePerformanceMode": {
@@ -45,9 +36,6 @@
       "items": {
         "$ref": "#/definitions/EnvironmentVariable"
       }
-    },
-    "Framework": {
-      "type": "string"
     },
     "PullRequestEnvironmentName": {
       "type": "string"
@@ -68,9 +56,6 @@
       "items": {
         "$ref": "#/definitions/Tag"
       }
-    },
-    "Ttl": {
-      "type": "string"
     }
   },
   "definitions": {
@@ -138,8 +123,7 @@
     "/properties/BranchName"
   ],
   "readOnlyProperties": [
-    "/properties/Arn",
-    "/properties/BranchName"
+    "/properties/Arn"
   ],
   "writeOnlyProperties": [
     "/properties/BasicAuthConfig"

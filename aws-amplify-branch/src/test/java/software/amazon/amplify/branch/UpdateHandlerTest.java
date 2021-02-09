@@ -3,12 +3,8 @@ package software.amazon.amplify.branch;
 import java.time.Duration;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
 import software.amazon.awssdk.services.amplify.model.Branch;
-import software.amazon.awssdk.services.amplify.model.DomainAssociation;
-import software.amazon.awssdk.services.amplify.model.DomainStatus;
 import software.amazon.awssdk.services.amplify.model.GetBranchRequest;
 import software.amazon.awssdk.services.amplify.model.GetBranchResponse;
-import software.amazon.awssdk.services.amplify.model.GetDomainAssociationRequest;
-import software.amazon.awssdk.services.amplify.model.GetDomainAssociationResponse;
 import software.amazon.awssdk.services.amplify.model.ListTagsForResourceRequest;
 import software.amazon.awssdk.services.amplify.model.ListTagsForResourceResponse;
 import software.amazon.awssdk.services.amplify.model.TagResourceRequest;
@@ -34,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -71,7 +68,9 @@ public class UpdateHandlerTest extends AbstractTestBase {
         final ResourceModel model = ResourceModel.builder()
                 .appId(APP_ID)
                 .branchName(BRANCH_NAME)
-                .tags(TAGS)
+                .basicAuthConfig(BASIC_AUTH_CONFIG)
+                .environmentVariables(ENV_VARS_CFN)
+                .tags(TAGS_CFN)
                 .build();
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -85,7 +84,8 @@ public class UpdateHandlerTest extends AbstractTestBase {
                 .arn(BRANCH_ARN)
                 .appId(APP_ID)
                 .branchName(BRANCH_NAME)
-                .tags(TAGS)
+                .environmentVariables(ENV_VARS_CFN)
+                .tags(TAGS_CFN)
                 .build();
 
         assertThat(response).isNotNull();
@@ -97,7 +97,8 @@ public class UpdateHandlerTest extends AbstractTestBase {
         assertThat(response.getErrorCode()).isNull();
     }
 
-    private void stubProxyClient() {
+    @Test
+    public void handleRequest_SimpleSuccess_MinimalBranch() {
         when(proxyClient.client().updateBranch(any(UpdateBranchRequest.class)))
                 .thenReturn(UpdateBranchResponse.builder()
                         .branch(Branch.builder()
@@ -110,17 +111,58 @@ public class UpdateHandlerTest extends AbstractTestBase {
                         .branch(Branch.builder()
                                 .branchArn(BRANCH_ARN)
                                 .branchName(BRANCH_NAME)
-                                .tags(Translator.getTags(TAGS))
                                 .build())
                         .build());
+        when(proxyClient.client().listTagsForResource(any(ListTagsForResourceRequest.class)))
+                .thenReturn(ListTagsForResourceResponse.builder().build());
+
+        final UpdateHandler handler = new UpdateHandler();
+
+        final ResourceModel model = ResourceModel.builder()
+                .appId(APP_ID)
+                .branchName(BRANCH_NAME)
+                .build();
+
+        final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
+                .desiredResourceState(model)
+                .build();
+
+        final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(proxy, request,
+                new CallbackContext(), proxyClient, logger);
+
+        final ResourceModel expected = ResourceModel.builder()
+                .arn(BRANCH_ARN)
+                .branchName(BRANCH_NAME)
+                .appId(APP_ID)
+                .build();
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
+        assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
+        assertThat(response.getResourceModel()).isEqualTo(expected);
+        assertThat(response.getResourceModels()).isNull();
+        assertThat(response.getMessage()).isNull();
+        assertThat(response.getErrorCode()).isNull();
+        verify(sdkClient, never()).tagResource(any(TagResourceRequest.class));
+        verify(sdkClient, never()).untagResource(any(UntagResourceRequest.class));
+    }
+
+    private void stubProxyClient() {
+        Branch branchMock = Branch.builder()
+                .branchArn(BRANCH_ARN)
+                .branchName(BRANCH_NAME)
+                .environmentVariables(Translator.getEnvironmentVariablesSDK(ENV_VARS_CFN))
+                .tags(Translator.getTagsSDK(TAGS_CFN))
+                .build();
+        when(proxyClient.client().updateBranch(any(UpdateBranchRequest.class)))
+                .thenReturn(UpdateBranchResponse.builder().branch(branchMock).build());
+        when(proxyClient.client().getBranch(any(GetBranchRequest.class)))
+                .thenReturn(GetBranchResponse.builder().branch(branchMock).build());
         when(proxyClient.client().listTagsForResource(any(ListTagsForResourceRequest.class)))
                 .thenReturn(ListTagsForResourceResponse.builder()
                         .tags(ImmutableMap.of("oldFoo", "oldBar"))
                         .build());
-        when(proxyClient.client().tagResource(any(TagResourceRequest.class))).thenReturn(TagResourceResponse.builder()
-                .build());
-
-        when(proxyClient.client().untagResource(any(UntagResourceRequest.class))).thenReturn(UntagResourceResponse.builder()
-                .build());
+        when(proxyClient.client().tagResource(any(TagResourceRequest.class))).thenReturn(TagResourceResponse.builder().build());
+        when(proxyClient.client().untagResource(any(UntagResourceRequest.class))).thenReturn(UntagResourceResponse.builder().build());
     }
 }

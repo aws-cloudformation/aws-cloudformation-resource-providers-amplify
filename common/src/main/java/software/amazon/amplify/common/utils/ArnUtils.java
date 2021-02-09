@@ -1,9 +1,14 @@
 package software.amazon.amplify.common.utils;
 
 import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
+// Resource Arn Formats:
+// App
 // arn:aws:amplify:region:account:apps/appId
+// Branch
 // arn:aws:amplify:region:account:apps/appId/branches/branchName
+// Domain
 // arn:aws:amplify:region:account:apps/appId/domains/domainName
+
 public class ArnUtils {
     private static final int ARN_SPLIT_LENGTH = 2;
     private static final int APP_ID_APP_SPLIT_INDEX = 1;

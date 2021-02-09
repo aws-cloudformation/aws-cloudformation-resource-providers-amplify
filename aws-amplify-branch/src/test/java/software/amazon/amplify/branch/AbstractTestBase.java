@@ -23,7 +23,17 @@ public class AbstractTestBase {
   protected static String APP_ID = "dummyId";
   protected static String BRANCH_NAME = "dummyName";
   protected static String BRANCH_ARN = String.format("arn:aws:amplify:region:accountId:apps/%s/branches/%s", APP_ID, BRANCH_NAME);
-  protected static List<Tag> TAGS = ImmutableList.of(Tag.builder().key("foo").value("bar").build());
+  protected static List<EnvironmentVariable> ENV_VARS_CFN = ImmutableList.of(EnvironmentVariable.builder()
+          .name("foo")
+          .value("bar")
+          .build());
+  protected static BasicAuthConfig BASIC_AUTH_CONFIG = BasicAuthConfig.builder()
+          .enableBasicAuth(true)
+          .username("dummyUser")
+          .password("dummyPass")
+          .build();
+  protected static List<Tag> TAGS_CFN = ImmutableList.of(Tag.builder().key("foo").value("bar").build());
+
 
   static {
     MOCK_CREDENTIALS = new Credentials("accessKey", "secretKey", "token");

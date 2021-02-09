@@ -1,6 +1,7 @@
 package software.amazon.amplify.app;
 
 import java.time.Duration;
+
 import software.amazon.awssdk.services.amplify.AmplifyClient;
 import software.amazon.awssdk.services.amplify.model.App;
 import software.amazon.awssdk.services.amplify.model.GetAppRequest;
@@ -30,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -67,6 +69,10 @@ public class UpdateHandlerTest extends AbstractTestBase {
         final ResourceModel model = ResourceModel.builder()
                 .appId(APP_ID)
                 .name(APP_NAME)
+                .customRules(CUSTOM_RULES_CFN)
+                .basicAuthConfig(BASIC_AUTH_CONFIG)
+                .environmentVariables(ENV_VARS_CFN)
+                .autoBranchCreationConfig(AUTO_BRANCH_CREATION_CONFIG)
                 .tags(TAGS_CFN)
                 .build();
 
@@ -94,6 +100,59 @@ public class UpdateHandlerTest extends AbstractTestBase {
 
         verify(amplifyClient).tagResource(any(TagResourceRequest.class));
         verify(amplifyClient).untagResource(any(UntagResourceRequest.class));
+    }
+
+    @Test
+    public void handleRequest_SimpleSuccess_NoTags() {
+        when(proxyClient.client().updateApp(any(UpdateAppRequest.class)))
+                .thenReturn(UpdateAppResponse.builder()
+                        .app(App.builder()
+                                .appArn(APP_ARN)
+                                .appId(APP_ID)
+                                .name(APP_NAME)
+                                .build())
+                        .build());
+        when(proxyClient.client().getApp(any(GetAppRequest.class)))
+                .thenReturn(GetAppResponse.builder()
+                        .app(App.builder()
+                                .appArn(APP_ARN)
+                                .appId(APP_ID)
+                                .name(APP_NAME)
+                                .build())
+                        .build());
+        when(proxyClient.client().listTagsForResource(any(ListTagsForResourceRequest.class)))
+                .thenReturn(ListTagsForResourceResponse.builder().build());
+
+        final UpdateHandler handler = new UpdateHandler();
+
+        final ResourceModel model = ResourceModel.builder()
+                .appId(APP_ID)
+                .name(APP_NAME)
+                .build();
+
+        final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
+                .desiredResourceState(model)
+                .build();
+
+        final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(proxy, request, new CallbackContext(), proxyClient, logger);
+
+        final ResourceModel expected = ResourceModel.builder()
+                .arn(APP_ARN)
+                .appId(APP_ID)
+                .appName(APP_NAME)
+                .name(APP_NAME)
+                .build();
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
+        assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
+        assertThat(response.getResourceModel()).isEqualTo(expected);
+        assertThat(response.getResourceModels()).isNull();
+        assertThat(response.getMessage()).isNull();
+        assertThat(response.getErrorCode()).isNull();
+        verify(amplifyClient, atLeastOnce()).serviceName();
+        verify(amplifyClient, never()).tagResource(any(TagResourceRequest.class));
+        verify(amplifyClient, never()).untagResource(any(UntagResourceRequest.class));
     }
 
     private void stubProxyClient() {
