@@ -10,9 +10,7 @@
     },
     "BuildSpec": "foo: bar",
     "Description": "dummyDescriptionUpdate",
-    "DisplayName": "dummydisplaynameupdate",
     "EnableAutoBuild": false,
-    "EnableNotification": false,
     "EnablePerformanceMode": false,
     "EnablePullRequestPreview": false,
     "EnvironmentVariables": [
@@ -25,7 +23,6 @@
         "Value": "envValue2update"
       }
     ],
-    "Framework": "dummyFrameworkUpdate",
     "PullRequestEnvironmentName": "pr-update",
     "Stage": "DEVELOPMENT",
     "Tags": [

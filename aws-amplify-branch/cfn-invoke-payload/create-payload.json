@@ -2,7 +2,6 @@
   "desiredResourceState": {
     "AppId": "replacewithrealappid",
     "BranchName": "CfnInvokeTestCreate",
-    "BackendEnvironmentArn": "arn:aws:amplify:region:accountId:apps/appId/backendenvironments/backendEnvironmentName",
     "BasicAuthConfig": {
       "EnableBasicAuth": true,
       "Username": "user",
@@ -10,9 +9,7 @@
     },
     "BuildSpec": "foo: bar",
     "Description": "dummyDescription",
-    "DisplayName": "dummydisplayname",
     "EnableAutoBuild": true,
-    "EnableNotification": true,
     "EnablePerformanceMode": true,
     "EnablePullRequestPreview": true,
     "EnvironmentVariables": [
@@ -25,7 +22,6 @@
         "Value": "envValue2"
       }
     ],
-    "Framework": "dummyFramework",
     "PullRequestEnvironmentName": "pr-1",
     "Stage": "DEVELOPMENT",
     "Tags": [

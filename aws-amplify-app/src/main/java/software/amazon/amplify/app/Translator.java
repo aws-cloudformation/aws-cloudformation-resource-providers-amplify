@@ -76,12 +76,10 @@ public class Translator {
     software.amazon.amplify.app.AutoBranchCreationConfig autoBranchCreationConfigCFN = model.getAutoBranchCreationConfig();
     if (autoBranchCreationConfigCFN != null) {
       createAppRequest.enableAutoBranchCreation(autoBranchCreationConfigCFN.getEnableAutoBranchCreation());
-      if (autoBranchCreationConfigCFN.getEnableAutoBranchCreation()) {
-        createAppRequest.autoBranchCreationConfig(getAutoBranchCreationConfigSDK(autoBranchCreationConfigCFN));
-        List<String> autoBranchCreationPatterns = autoBranchCreationConfigCFN.getAutoBranchCreationPatterns();
-        if (CollectionUtils.isNotEmpty(autoBranchCreationPatterns)) {
-          createAppRequest.autoBranchCreationPatterns(autoBranchCreationPatterns);
-        }
+      createAppRequest.autoBranchCreationConfig(getAutoBranchCreationConfigSDK(autoBranchCreationConfigCFN));
+      List<String> autoBranchCreationPatterns = autoBranchCreationConfigCFN.getAutoBranchCreationPatterns();
+      if (CollectionUtils.isNotEmpty(autoBranchCreationPatterns)) {
+        createAppRequest.autoBranchCreationPatterns(autoBranchCreationPatterns);
       }
     }
 
@@ -183,11 +181,11 @@ public class Translator {
             .customHeaders(model.getCustomHeaders());
 
     List<software.amazon.amplify.app.CustomRule> customRules = model.getCustomRules();
-    if (CollectionUtils.isNotEmpty(customRules)) {
+    if (customRules != null) {
       updateAppRequest.customRules(getCustomRulesSDK(customRules));
     }
     List<EnvironmentVariable> environmentVariables = model.getEnvironmentVariables();
-    if (CollectionUtils.isNotEmpty(environmentVariables)) {
+    if (environmentVariables != null) {
       updateAppRequest.environmentVariables(getEnvironmentVariablesSDK(environmentVariables));
     }
     BasicAuthConfig basicAuthConfig = model.getBasicAuthConfig();
@@ -198,12 +196,10 @@ public class Translator {
     software.amazon.amplify.app.AutoBranchCreationConfig autoBranchCreationConfigCFN = model.getAutoBranchCreationConfig();
     if (autoBranchCreationConfigCFN != null) {
       updateAppRequest.enableAutoBranchCreation(autoBranchCreationConfigCFN.getEnableAutoBranchCreation());
-      if (autoBranchCreationConfigCFN.getEnableAutoBranchCreation()) {
-        updateAppRequest.autoBranchCreationConfig(getAutoBranchCreationConfigSDK(autoBranchCreationConfigCFN));
-        List<String> autoBranchCreationPatterns = autoBranchCreationConfigCFN.getAutoBranchCreationPatterns();
-        if (CollectionUtils.isNotEmpty(autoBranchCreationPatterns)) {
-          updateAppRequest.autoBranchCreationPatterns(autoBranchCreationPatterns);
-        }
+      updateAppRequest.autoBranchCreationConfig(getAutoBranchCreationConfigSDK(autoBranchCreationConfigCFN));
+      List<String> autoBranchCreationPatterns = autoBranchCreationConfigCFN.getAutoBranchCreationPatterns();
+      if (autoBranchCreationPatterns != null) {
+        updateAppRequest.autoBranchCreationPatterns(autoBranchCreationPatterns);
       }
     }
     return updateAppRequest.build();

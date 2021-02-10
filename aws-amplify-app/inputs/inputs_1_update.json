@@ -3,6 +3,7 @@
   "BuildSpec": "dummySpecUpdate",
   "AccessToken": "dummyAccessTokenUpdate",
   "EnableBranchAutoDeletion": false,
+  "Repository": "{{ContractTestRepoCloneUrl}}",
   "CustomRules": [
     {
       "Source": "/sourceUpdate",
