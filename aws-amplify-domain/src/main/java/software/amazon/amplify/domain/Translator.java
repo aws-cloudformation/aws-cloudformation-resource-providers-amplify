@@ -129,7 +129,7 @@ public class Translator {
             .autoSubDomainIAMRole(model.getAutoSubDomainIAMRole());
 
     List<SubDomainSetting> subDomainSettingsCFN = model.getSubDomainSettings();
-    if (CollectionUtils.isNotEmpty(subDomainSettingsCFN)) {
+    if (subDomainSettingsCFN != null) {
       updateDomainAssociationRequest.subDomainSettings(getSubDomainSettingsSDK(subDomainSettingsCFN));
     }
     return updateDomainAssociationRequest.build();

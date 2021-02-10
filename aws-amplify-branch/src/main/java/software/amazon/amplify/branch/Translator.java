@@ -147,7 +147,7 @@ public class Translator {
             .stage(model.getStage());
 
     List<EnvironmentVariable> environmentVariables = model.getEnvironmentVariables();
-    if (CollectionUtils.isNotEmpty(environmentVariables)) {
+    if (environmentVariables != null) {
       updateBranchRequest.environmentVariables(getEnvironmentVariablesSDK(environmentVariables));
     }
     BasicAuthConfig basicAuthConfig = model.getBasicAuthConfig();
