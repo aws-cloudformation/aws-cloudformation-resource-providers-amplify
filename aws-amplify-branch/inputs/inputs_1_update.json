@@ -1,5 +1,5 @@
 {
-  "AppId": "replacewithrealappid",
+  "AppId": "{{ContractTestAppId}}",
   "BranchName": "ContractTest",
   "BasicAuthConfig": {
     "EnableBasicAuth": true,
@@ -7,12 +7,9 @@
     "Password": "passupdate"
   },
   "Description": "dummyDescriptionUpdate",
-  "DisplayName": "dummydisplaynameupdate",
   "EnableAutoBuild": false,
-  "EnableNotification": false,
   "EnablePerformanceMode": false,
   "EnablePullRequestPreview": false,
-  "Framework": "dummyFrameworkUpdate",
   "PullRequestEnvironmentName": "pr-update",
   "Stage": "DEVELOPMENT"
 }

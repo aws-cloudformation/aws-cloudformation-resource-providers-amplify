@@ -4,6 +4,7 @@
   "BuildSpec": "dummySpec",
   "AccessToken": "dummyAccessToken",
   "EnableBranchAutoDeletion": false,
+  "Repository": "{{ContractTestRepoCloneUrl}}",
   "CustomRules": [
     {
       "Source": "/source",

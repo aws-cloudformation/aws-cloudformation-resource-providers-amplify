@@ -1,11 +1,11 @@
 {
-  "AppId": "replacewithrealappid",
-  "DomainName": "anydomain.amplifyapp.com",
+  "AppId": "{{ContractTestAppId}}",
+  "DomainName": "contracttest.amplifyapp.com",
   "AutoSubDomainIAMRole": "arn:aws:iam::000000000000:role/DummyRoleUpdate",
   "EnableAutoSubDomain": true,
   "SubDomainSettings": [
     {
-      "BranchName": "replacewithrealbranchname",
+      "BranchName": "{{ContractTestBranchName}}",
       "Prefix": "testupdate"
     }
   ]

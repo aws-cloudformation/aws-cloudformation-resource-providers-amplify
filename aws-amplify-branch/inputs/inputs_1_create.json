@@ -1,5 +1,5 @@
 {
-  "AppId": "replacewithrealappid",
+  "AppId": "{{ContractTestAppId}}",
   "BranchName": "ContractTest",
   "BasicAuthConfig": {
     "EnableBasicAuth": true,
@@ -7,9 +7,7 @@
     "Password": "pass"
   },
   "Description": "dummyDescription",
-  "DisplayName": "dummydisplayname",
   "EnableAutoBuild": true,
-  "EnableNotification": true,
   "EnablePerformanceMode": true,
   "EnablePullRequestPreview": true,
   "EnvironmentVariables": [
@@ -22,8 +20,6 @@
       "Value": "envValue2"
     }
   ],
-  "Framework": "dummyFramework",
   "PullRequestEnvironmentName": "pr-1",
-  "Stage": "DEVELOPMENT",
-  "Ttl": "5"
+  "Stage": "DEVELOPMENT"
 }
