@@ -107,6 +107,7 @@ public class UpdateHandlerTest extends AbstractTestBase {
                 .subDomainSettings(SUBDOMAIN_SETTINGS_CFN)
                 .autoSubDomainCreationPatterns(AUTO_SUBDOMAIN_CREATION_PATTERNS)
                 .domainStatus(DomainStatus.AVAILABLE.toString())
+                .statusReason(DEFAULT_DOMAIN_STATUS)
                 .build();
 
         assertThat(response).isNotNull();

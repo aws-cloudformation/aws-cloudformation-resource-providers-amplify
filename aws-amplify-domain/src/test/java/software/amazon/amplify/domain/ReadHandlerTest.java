@@ -79,6 +79,7 @@ public class ReadHandlerTest extends AbstractTestBase {
                 .appId(APP_ID)
                 .arn(DOMAIN_ASSOCIATION_ARN)
                 .domainName(DOMAIN_NAME)
+                .statusReason(DEFAULT_DOMAIN_STATUS)
                 .build();
 
         assertThat(response).isNotNull();
