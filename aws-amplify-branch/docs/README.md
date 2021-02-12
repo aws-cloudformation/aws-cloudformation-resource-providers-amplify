@@ -73,6 +73,10 @@ _Required_: Yes
 
 _Type_: String
 
+_Minimum_: <code>1</code>
+
+_Maximum_: <code>255</code>
+
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### BuildSpec

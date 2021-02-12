@@ -60,8 +60,8 @@
     },
     "Name": {
       "type": "string",
-      "minLength": 3,
-      "maxLength": 1024
+      "minLength": 1,
+      "maxLength": 255
     },
     "Repository": {
       "type": "string"
