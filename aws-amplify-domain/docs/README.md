@@ -117,14 +117,30 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 
 Returns the <code>Arn</code> value.
 
-#### DomainStatus
+#### AutoSubDomainCreationPatterns
 
-Returns the <code>DomainStatus</code> value.
+Returns the <code>AutoSubDomainCreationPatterns</code> value.
 
-#### StatusReason
+#### AutoSubDomainIAMRole
 
-Returns the <code>StatusReason</code> value.
+Returns the <code>AutoSubDomainIAMRole</code> value.
 
 #### CertificateRecord
 
 Returns the <code>CertificateRecord</code> value.
+
+#### DomainName
+
+Returns the <code>DomainName</code> value.
+
+#### DomainStatus
+
+Returns the <code>DomainStatus</code> value.
+
+#### EnableAutoSubDomain
+
+Returns the <code>EnableAutoSubDomain</code> value.
+
+#### StatusReason
+
+Returns the <code>StatusReason</code> value.

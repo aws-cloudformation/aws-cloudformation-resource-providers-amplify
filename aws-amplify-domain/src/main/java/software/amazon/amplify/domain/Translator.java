@@ -74,7 +74,7 @@ public class Translator {
   }
 
   /**
-   * Translates resource object from sdk into a resource modelcreate
+   * Translates resource object from sdk into a resource model
    * @param getDomainAssociationResponse the aws service describe resource response
    * @return model resource model
    */
