@@ -1,10 +1,36 @@
 {
   "Name": "ContractTestCreate",
-  "OauthToken": "dummyOAuthToken",
-  "BuildSpec": "dummySpec",
   "AccessToken": "dummyAccessToken",
-  "EnableBranchAutoDeletion": false,
-  "Repository": "{{ContractTestRepoCloneUrl}}",
+  "AutoBranchCreationConfig": {
+    "AutoBranchCreationPatterns": [
+      "feature/**",
+      "test/**"
+    ],
+    "BasicAuthConfig": {
+      "EnableBasicAuth": true,
+      "Username": "branchUser",
+      "Password": "branchPass"
+    },
+    "EnableAutoBranchCreation": true,
+    "EnableAutoBuild": true,
+    "EnablePullRequestPreview": true,
+    "EnvironmentVariables": [
+      {
+        "Name": "branchEnvName1",
+        "Value": "branchEnvValue1"
+      },
+      {
+        "Name": "branchEnvName2",
+        "Value": "branchEnvValue2"
+      }
+    ]
+  },
+  "BasicAuthConfig": {
+    "EnableBasicAuth": true,
+    "Username": "user",
+    "Password": "pass"
+  },
+  "BuildSpec": "foo: bar",
   "CustomRules": [
     {
       "Source": "/source",
@@ -12,6 +38,8 @@
       "Status": "200"
     }
   ],
+  "Description": "CFN Registry Contract Test App",
+  "EnableBranchAutoDeletion": false,
   "EnvironmentVariables": [
     {
       "Name": "envName1",
@@ -22,9 +50,17 @@
       "Value": "envValue2"
     }
   ],
-  "BasicAuthConfig": {
-    "EnableBasicAuth": true,
-    "Username": "user",
-    "Password": "pass"
-  }
+  "IAMServiceRole": "{{ContractTestRoleArn}}",
+  "OauthToken": "dummyOAuthToken",
+  "Repository": "{{ContractTestRepoCloneUrl}}",
+  "Tags": [
+    {
+      "Key": "tagKeyOne",
+      "Value": "tagValueOne"
+    },
+    {
+      "Key": "tagKeyTwo",
+      "Value": "tagValueTwo"
+    }
+  ]
 }

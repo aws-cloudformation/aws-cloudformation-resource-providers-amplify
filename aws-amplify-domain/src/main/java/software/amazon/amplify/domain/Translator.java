@@ -2,6 +2,7 @@ package software.amazon.amplify.domain;
 
 import lombok.NonNull;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import software.amazon.amplify.common.utils.ArnUtils;
 import software.amazon.awssdk.services.amplify.model.CreateDomainAssociationRequest;
 import software.amazon.awssdk.services.amplify.model.DeleteDomainAssociationRequest;
@@ -31,6 +32,7 @@ import java.util.stream.Stream;
 
 public class Translator {
   private static final String ARN_SPLIT_KEY = "/domains/";
+  private static final String NO_REASON_FOUND = "No reason found";
 
   /**
    * Request to create a resource
@@ -86,8 +88,12 @@ public class Translator {
             .domainName(domainAssociation.domainName())
             .enableAutoSubDomain(domainAssociation.enableAutoSubDomain())
             .autoSubDomainIAMRole(domainAssociation.autoSubDomainIAMRole())
-            .domainStatus(domainAssociation.domainStatusAsString())
-            .statusReason(domainAssociation.statusReason());
+            .domainStatus(domainAssociation.domainStatusAsString());
+
+    // StatusReason gets populated when domainAssociation creation fails; provide default value
+    final String statusReason = StringUtils.isEmpty(domainAssociation.statusReason()) ?
+            NO_REASON_FOUND : domainAssociation.statusReason();
+    domainAssociationModelBuilder.statusReason(statusReason);
 
     List<String> autoSubDomainCreationPatterns = domainAssociation.autoSubDomainCreationPatterns();
     if (CollectionUtils.isNotEmpty(autoSubDomainCreationPatterns)) {

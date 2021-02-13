@@ -3,13 +3,29 @@
   "BranchName": "ContractTest",
   "BasicAuthConfig": {
     "EnableBasicAuth": true,
-    "Username": "userupdate",
-    "Password": "passupdate"
+    "Username": "userUpdate",
+    "Password": "passUpdate"
   },
-  "Description": "dummyDescriptionUpdate",
+  "Description": "CFN Registry Contract Test Branch Update",
   "EnableAutoBuild": false,
   "EnablePerformanceMode": false,
   "EnablePullRequestPreview": false,
-  "PullRequestEnvironmentName": "pr-update",
-  "Stage": "DEVELOPMENT"
+  "EnvironmentVariables": [
+    {
+      "Name": "envName1Update",
+      "Value": "envValue1Update"
+    },
+    {
+      "Name": "envName2Update",
+      "Value": "envValue2Update"
+    }
+  ],
+  "PullRequestEnvironmentName": "pr-1-Update",
+  "Stage": "DEVELOPMENT",
+  "Tags": [
+    {
+      "Key": "tagKeyOneUpdate",
+      "Value": "tagValueOneUpdate"
+    }
+  ]
 }

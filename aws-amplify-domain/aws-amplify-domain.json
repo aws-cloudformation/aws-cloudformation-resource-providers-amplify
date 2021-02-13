@@ -4,16 +4,23 @@
   "additionalProperties": false,
   "properties": {
     "AppId": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 20,
+      "pattern": "d[a-z0-9]+"
     },
     "Arn": {
-      "type": "string"
+      "type": "string",
+      "maxLength": 1000,
+      "pattern": "(?s).*"
     },
     "AutoSubDomainCreationPatterns": {
       "type": "array",
       "uniqueItems": false,
       "items": {
         "type": "string",
+        "minLength": 1,
+        "maxLength": 2048,
         "pattern": "(?s).+"
       }
     },
@@ -23,7 +30,8 @@
       "maxLength": 1000
     },
     "CertificateRecord": {
-      "type": "string"
+      "type": "string",
+      "maxLength": 1000
     },
     "DomainName": {
       "type": "string",
@@ -37,7 +45,8 @@
       "type": "boolean"
     },
     "StatusReason": {
-      "type": "string"
+      "type": "string",
+      "maxLength": 1000
     },
     "SubDomainSettings": {
       "type": "array",
@@ -55,12 +64,14 @@
       "properties": {
         "Prefix": {
           "type": "string",
-          "pattern": "(?s).*",
-          "maxLength": 255
+          "maxLength": 255,
+          "pattern": "(?s).*"
         },
         "BranchName": {
           "type": "string",
-          "maxLength": 255
+          "minLength": 1,
+          "maxLength": 255,
+          "pattern": "(?s).+"
         }
       },
       "required": [

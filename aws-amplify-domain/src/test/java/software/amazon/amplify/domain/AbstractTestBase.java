@@ -31,6 +31,7 @@ public class AbstractTestBase {
           .branchName(BRANCH_NAME)
           .build());
   protected static List<String> AUTO_SUBDOMAIN_CREATION_PATTERNS = ImmutableList.of("/feature*", "/dev*");
+  protected static final String DEFAULT_DOMAIN_STATUS = "No reason found";
 
   static {
     MOCK_CREDENTIALS = new Credentials("accessKey", "secretKey", "token");

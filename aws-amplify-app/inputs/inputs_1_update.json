@@ -1,25 +1,63 @@
 {
-  "Name": "ContractTestUpdate",
-  "BuildSpec": "dummySpecUpdate",
+  "Name": "ContractTestCreateUpdate",
   "AccessToken": "dummyAccessTokenUpdate",
-  "EnableBranchAutoDeletion": false,
-  "Repository": "{{ContractTestRepoCloneUrl}}",
-  "CustomRules": [
-    {
-      "Source": "/sourceUpdate",
-      "Target": "/targetUpdate",
-      "Status": "200"
-    }
-  ],
-  "EnvironmentVariables": [
-    {
-      "Name": "fooUpdate",
-      "Value": "barUpdate"
-    }
-  ],
+  "AutoBranchCreationConfig": {
+    "AutoBranchCreationPatterns": [
+      "featureUpdate/**",
+      "testUpdate/**"
+    ],
+    "BasicAuthConfig": {
+      "EnableBasicAuth": true,
+      "Username": "branchUserUpdate",
+      "Password": "branchPassUpdate"
+    },
+    "EnableAutoBranchCreation": true,
+    "EnableAutoBuild": true,
+    "EnablePerformanceMode": true,
+    "EnablePullRequestPreview": true,
+    "EnvironmentVariables": [
+      {
+        "Name": "branchEnvName1Update",
+        "Value": "branchEnvValue1Update"
+      },
+      {
+        "Name": "branchEnvName2Update",
+        "Value": "branchEnvValue2Update"
+      }
+    ]
+  },
   "BasicAuthConfig": {
     "EnableBasicAuth": true,
     "Username": "userUpdate",
     "Password": "passUpdate"
-  }
+  },
+  "BuildSpec": "foo: update",
+  "CustomRules": [
+    {
+      "Source": "/sourceUpdate",
+      "Target": "/targetUpdate",
+      "Status": "400"
+    }
+  ],
+  "Description": "CFN Registry Contract Test App Update",
+  "EnableBranchAutoDeletion": false,
+  "EnvironmentVariables": [
+    {
+      "Name": "envName1Update",
+      "Value": "envValue1Update"
+    },
+    {
+      "Name": "envName2Update",
+      "Value": "envValue2Update"
+    }
+  ],
+  "IAMServiceRole": "{{ContractTestRoleArn}}",
+  "OauthToken": "dummyOAuthTokenUpdate",
+  "Repository": "{{ContractTestRepoCloneUrl}}",
+  "Tags": [
+    {
+      "Key": "tagKeyOneUpdate",
+      "Value": "tagValueOneUpdate"
+    }
+  ]
 }

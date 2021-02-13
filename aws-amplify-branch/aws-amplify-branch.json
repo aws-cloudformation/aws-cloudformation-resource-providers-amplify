@@ -4,22 +4,35 @@
   "additionalProperties": false,
   "properties": {
     "AppId": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 20,
+      "pattern": "d[a-z0-9]+"
     },
     "Arn": {
-      "type": "string"
+      "type": "string",
+      "maxLength": 1000,
+      "pattern": "(?s).*"
     },
     "BasicAuthConfig": {
       "$ref": "#/definitions/BasicAuthConfig"
     },
     "BranchName": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "pattern": "(?s).+"
     },
     "BuildSpec": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 25000,
+      "pattern": "(?s).+"
     },
     "Description": {
-      "type": "string"
+      "type": "string",
+      "maxLength": 1000,
+      "pattern": "(?s).*"
     },
     "EnableAutoBuild": {
       "type": "boolean"
@@ -38,7 +51,9 @@
       }
     },
     "PullRequestEnvironmentName": {
-      "type": "string"
+      "type": "string",
+      "maxLength": 20,
+      "pattern": "(?s).*"
     },
     "Stage": {
       "type": "string",
@@ -63,46 +78,61 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "Value": {
-          "type": "string"
-        },
         "Name": {
-          "type": "string"
+          "type": "string",
+          "maxLength": 255,
+          "pattern": "(?s).*"
+        },
+        "Value": {
+          "type": "string",
+          "maxLength": 5500,
+          "pattern": "(?s).*"
         }
       },
       "required": [
-        "Value",
-        "Name"
+        "Name",
+        "Value"
       ]
     },
     "Tag": {
       "type": "object",
       "additionalProperties": false,
+      "insertionOrder": false,
       "properties": {
-        "Value": {
-          "type": "string"
-        },
         "Key": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^(?!aws:)[a-zA-Z+-=._:/]+$"
+        },
+        "Value": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 256,
+          "pattern": "^([\\p{L}\\p{Z}\\p{N}_.:/=+\\-@]*)$"
         }
       },
       "required": [
-        "Value",
-        "Key"
+        "Key",
+        "Value"
       ]
     },
     "BasicAuthConfig": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "Username": {
-          "type": "string"
-        },
         "EnableBasicAuth": {
           "type": "boolean"
         },
+        "Username": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
         "Password": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
         }
       },
       "required": [
