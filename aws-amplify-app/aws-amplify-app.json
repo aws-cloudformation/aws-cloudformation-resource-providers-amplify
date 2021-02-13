@@ -9,13 +9,21 @@
       "maxLength": 255
     },
     "AppId": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 20,
+      "pattern": "d[a-z0-9]+"
     },
     "AppName": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "pattern": "(?s).+"
     },
     "Arn": {
-      "type": "string"
+      "type": "string",
+      "maxLength": 1000,
+      "pattern": "(?s).*"
     },
     "AutoBranchCreationConfig": {
       "$ref": "#/definitions/AutoBranchCreationConfig"
@@ -26,10 +34,14 @@
     "BuildSpec": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 25000
+      "maxLength": 25000,
+      "pattern": "(?s).+"
     },
     "CustomHeaders": {
-      "type": "string"
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 25000,
+      "pattern": "(?s).*"
     },
     "CustomRules": {
       "type": "array",
@@ -39,11 +51,14 @@
       }
     },
     "DefaultDomain": {
-      "type": "string"
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 1000
     },
     "Description": {
       "type": "string",
-      "maxLength": 1000
+      "maxLength": 1000,
+      "pattern": "(?s).*"
     },
     "EnableBranchAutoDeletion": {
       "type": "boolean"
@@ -56,19 +71,25 @@
       }
     },
     "IAMServiceRole": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000,
+      "pattern": "(?s).*"
     },
     "Name": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 255
-    },
-    "Repository": {
-      "type": "string"
+      "maxLength": 255,
+      "pattern": "(?s).+"
     },
     "OauthToken": {
       "type": "string",
-      "maxLength": 1000
+      "maxLength": 1000,
+      "pattern": "(?s).*"
+    },
+    "Repository": {
+      "type": "string",
+      "pattern": "(?s).*"
     },
     "Tags": {
       "type": "array",
@@ -121,7 +142,8 @@
         },
         "PullRequestEnvironmentName": {
           "type": "string",
-          "maxLength": 20
+          "maxLength": 20,
+          "pattern": "(?s).*"
         },
         "Stage": {
           "type": "string",
@@ -139,13 +161,13 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "EnableBasicAuth": {
+          "type": "boolean"
+        },
         "Username": {
           "type": "string",
           "minLength": 1,
           "maxLength": 255
-        },
-        "EnableBasicAuth": {
-          "type": "boolean"
         },
         "Password": {
           "type": "string",
@@ -161,22 +183,26 @@
         "Condition": {
           "type": "string",
           "minLength": 0,
-          "maxLength": 2048
+          "maxLength": 2048,
+          "pattern": "(?s).*"
         },
         "Status": {
           "type": "string",
           "minLength": 3,
-          "maxLength": 7
+          "maxLength": 7,
+          "pattern": ".{3,7}"
         },
         "Target": {
           "type": "string",
           "minLength": 1,
-          "maxLength": 2048
+          "maxLength": 2048,
+          "pattern": "(?s).+"
         },
         "Source": {
           "type": "string",
           "minLength": 1,
-          "maxLength": 2048
+          "maxLength": 2048,
+          "pattern": "(?s).+"
         }
       },
       "required": [
@@ -188,18 +214,20 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "Value": {
-          "type": "string",
-          "maxLength": 5500
-        },
         "Name": {
           "type": "string",
-          "maxLength": 255
+          "maxLength": 255,
+          "pattern": "(?s).*"
+        },
+        "Value": {
+          "type": "string",
+          "maxLength": 5500,
+          "pattern": "(?s).*"
         }
       },
       "required": [
-        "Value",
-        "Name"
+        "Name",
+        "Value"
       ]
     },
     "Tag": {
@@ -220,8 +248,8 @@
         }
       },
       "required": [
-        "Value",
-        "Key"
+        "Key",
+        "Value"
       ]
     }
   },

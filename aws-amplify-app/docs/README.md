@@ -23,8 +23,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#environmentvariables" title="EnvironmentVariables">EnvironmentVariables</a>" : <i>[ <a href="environmentvariable.md">EnvironmentVariable</a>, ... ]</i>,
         "<a href="#iamservicerole" title="IAMServiceRole">IAMServiceRole</a>" : <i>String</i>,
         "<a href="#name" title="Name">Name</a>" : <i>String</i>,
-        "<a href="#repository" title="Repository">Repository</a>" : <i>String</i>,
         "<a href="#oauthtoken" title="OauthToken">OauthToken</a>" : <i>String</i>,
+        "<a href="#repository" title="Repository">Repository</a>" : <i>String</i>,
         "<a href="#tags" title="Tags">Tags</a>" : <i>[ <a href="tag.md">Tag</a>, ... ]</i>
     }
 }
@@ -48,8 +48,8 @@ Properties:
       - <a href="environmentvariable.md">EnvironmentVariable</a></i>
     <a href="#iamservicerole" title="IAMServiceRole">IAMServiceRole</a>: <i>String</i>
     <a href="#name" title="Name">Name</a>: <i>String</i>
-    <a href="#repository" title="Repository">Repository</a>: <i>String</i>
     <a href="#oauthtoken" title="OauthToken">OauthToken</a>: <i>String</i>
+    <a href="#repository" title="Repository">Repository</a>: <i>String</i>
     <a href="#tags" title="Tags">Tags</a>: <i>
       - <a href="tag.md">Tag</a></i>
 </pre>
@@ -94,6 +94,8 @@ _Minimum_: <code>1</code>
 
 _Maximum_: <code>25000</code>
 
+_Pattern_: <code>(?s).+</code>
+
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### CustomHeaders
@@ -101,6 +103,10 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 _Required_: No
 
 _Type_: String
+
+_Maximum_: <code>25000</code>
+
+_Pattern_: <code>(?s).*</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -119,6 +125,8 @@ _Required_: No
 _Type_: String
 
 _Maximum_: <code>1000</code>
+
+_Pattern_: <code>(?s).*</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -144,6 +152,12 @@ _Required_: No
 
 _Type_: String
 
+_Minimum_: <code>1</code>
+
+_Maximum_: <code>1000</code>
+
+_Pattern_: <code>(?s).*</code>
+
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### Name
@@ -156,13 +170,7 @@ _Minimum_: <code>1</code>
 
 _Maximum_: <code>255</code>
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### Repository
-
-_Required_: No
-
-_Type_: String
+_Pattern_: <code>(?s).+</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -173,6 +181,18 @@ _Required_: No
 _Type_: String
 
 _Maximum_: <code>1000</code>
+
+_Pattern_: <code>(?s).*</code>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### Repository
+
+_Required_: No
+
+_Type_: String
+
+_Pattern_: <code>(?s).*</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

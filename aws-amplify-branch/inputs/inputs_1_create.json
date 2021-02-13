@@ -6,7 +6,7 @@
     "Username": "user",
     "Password": "pass"
   },
-  "Description": "dummyDescription",
+  "Description": "CFN Registry Contract Test Branch",
   "EnableAutoBuild": true,
   "EnablePerformanceMode": true,
   "EnablePullRequestPreview": true,
@@ -21,5 +21,15 @@
     }
   ],
   "PullRequestEnvironmentName": "pr-1",
-  "Stage": "DEVELOPMENT"
+  "Stage": "DEVELOPMENT",
+  "Tags": [
+    {
+      "Key": "tagKeyOne",
+      "Value": "tagValueOne"
+    },
+    {
+      "Key": "tagKeyTwo",
+      "Value": "tagValueTwo"
+    }
+  ]
 }

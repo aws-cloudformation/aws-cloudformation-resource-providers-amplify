@@ -57,6 +57,12 @@ _Required_: Yes
 
 _Type_: String
 
+_Minimum_: <code>1</code>
+
+_Maximum_: <code>20</code>
+
+_Pattern_: <code>d[a-z0-9]+</code>
+
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### BasicAuthConfig
@@ -77,6 +83,8 @@ _Minimum_: <code>1</code>
 
 _Maximum_: <code>255</code>
 
+_Pattern_: <code>(?s).+</code>
+
 _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 #### BuildSpec
@@ -85,6 +93,12 @@ _Required_: No
 
 _Type_: String
 
+_Minimum_: <code>1</code>
+
+_Maximum_: <code>25000</code>
+
+_Pattern_: <code>(?s).+</code>
+
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### Description
@@ -92,6 +106,10 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 _Required_: No
 
 _Type_: String
+
+_Maximum_: <code>1000</code>
+
+_Pattern_: <code>(?s).*</code>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -133,6 +151,10 @@ _Required_: No
 
 _Type_: String
 
+_Maximum_: <code>20</code>
+
+_Pattern_: <code>(?s).*</code>
+
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
 #### Stage
@@ -168,3 +190,7 @@ For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::G
 #### Arn
 
 Returns the <code>Arn</code> value.
+
+#### BranchName
+
+Returns the <code>BranchName</code> value.

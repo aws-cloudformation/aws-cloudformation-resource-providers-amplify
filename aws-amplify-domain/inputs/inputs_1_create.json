@@ -1,8 +1,11 @@
 {
   "AppId": "{{ContractTestAppId}}",
   "DomainName": "contracttest.amplifyapp.com",
-  "AutoSubDomainIAMRole": "arn:aws:iam::000000000000:role/DummyRole",
-  "EnableAutoSubDomain": false,
+  "AutoSubDomainCreationPatterns": [
+    "/feature*"
+  ],
+  "AutoSubDomainIAMRole": "{{ContractTestRoleArn}}",
+  "EnableAutoSubDomain": true,
   "SubDomainSettings": [
     {
       "BranchName": "{{ContractTestBranchName}}",
