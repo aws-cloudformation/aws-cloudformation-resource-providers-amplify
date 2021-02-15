@@ -119,6 +119,7 @@ public class CreateHandlerTest extends AbstractTestBase {
                 .subDomainSettings(SUBDOMAIN_SETTINGS_CFN)
                 .autoSubDomainCreationPatterns(AUTO_SUBDOMAIN_CREATION_PATTERNS)
                 .domainStatus(DomainStatus.PENDING_VERIFICATION.toString())
+                .statusReason(DEFAULT_DOMAIN_STATUS)
                 .build();
 
         assertThat(response).isNotNull();
@@ -161,6 +162,7 @@ public class CreateHandlerTest extends AbstractTestBase {
                 .arn(DOMAIN_ASSOCIATION_ARN)
                 .domainName(DOMAIN_NAME)
                 .domainStatus(DomainStatus.PENDING_VERIFICATION.toString())
+                .statusReason(DEFAULT_DOMAIN_STATUS)
                 .build();
 
         assertThat(response).isNotNull();
