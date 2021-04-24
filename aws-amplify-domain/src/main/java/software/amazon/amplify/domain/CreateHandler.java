@@ -16,9 +16,16 @@ import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ProxyClient;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
+import software.amazon.cloudformation.proxy.delay.Constant;
+
+import java.time.Duration;
 
 public class CreateHandler extends BaseHandlerStd {
     private Logger logger;
+    // Custom domain creation involves CloudFront distribution creation which takes additional stabilization time
+    private static final Duration HANDLER_CALLBACK_DELAY_SECONDS = Duration.ofMinutes(3L);
+    private static final Duration HANDLER_TIMEOUT_MINUTES = Duration.ofMinutes(10L);
+    private static final Constant BACKOFF_STRATEGY = Constant.of().timeout(HANDLER_TIMEOUT_MINUTES).delay(HANDLER_CALLBACK_DELAY_SECONDS).build();
 
     protected ProgressEvent<ResourceModel, CallbackContext> handleRequest(
         final AmazonWebServicesClientProxy proxy,
@@ -42,6 +49,7 @@ public class CreateHandler extends BaseHandlerStd {
                     proxy.initiate("AWS-Amplify-Domain::Create", proxyClient,progress.getResourceModel(),
                             progress.getCallbackContext())
                         .translateToServiceRequest(Translator::translateToCreateRequest)
+                        .backoffDelay(BACKOFF_STRATEGY)
                         .makeServiceCall((createDomainAssociationRequest, proxyInvocation) -> {
                             checkIfResourceExists(model, proxyClient, logger);
                             CreateDomainAssociationResponse createDomainAssociationResponse = (CreateDomainAssociationResponse) ClientWrapper.execute(
