@@ -2,8 +2,12 @@ package software.amazon.amplify.branch;
 
 import java.time.Duration;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
+import software.amazon.awssdk.services.amplify.model.Branch;
 import software.amazon.awssdk.services.amplify.model.DeleteBranchRequest;
 import software.amazon.awssdk.services.amplify.model.DeleteBranchResponse;
+import software.amazon.awssdk.services.amplify.model.GetBranchRequest;
+import software.amazon.awssdk.services.amplify.model.GetBranchResponse;
+import software.amazon.awssdk.services.amplify.model.NotFoundException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.OperationStatus;
 import software.amazon.cloudformation.proxy.ProgressEvent;
@@ -41,6 +45,7 @@ public class DeleteHandlerTest extends AbstractTestBase {
         proxy = new AmazonWebServicesClientProxy(logger, MOCK_CREDENTIALS, () -> Duration.ofSeconds(600).toMillis());
         sdkClient = mock(AmplifyClient.class);
         proxyClient = MOCK_PROXY(proxy, sdkClient);
+        stubProxyClient();
     }
 
     @AfterEach
@@ -59,11 +64,8 @@ public class DeleteHandlerTest extends AbstractTestBase {
                 .build();
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
-            .desiredResourceState(model)
-            .build();
-
-        when(proxyClient.client().deleteBranch(any(DeleteBranchRequest.class)))
-                .thenReturn(DeleteBranchResponse.builder().build());
+                .desiredResourceState(model)
+                .build();
 
         final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(proxy, request,
                 new CallbackContext(), proxyClient, logger);
@@ -75,5 +77,17 @@ public class DeleteHandlerTest extends AbstractTestBase {
         assertThat(response.getResourceModels()).isNull();
         assertThat(response.getMessage()).isNull();
         assertThat(response.getErrorCode()).isNull();
+    }
+
+    private void stubProxyClient() {
+        when(proxyClient.client().deleteBranch(any(DeleteBranchRequest.class)))
+                .thenReturn(DeleteBranchResponse.builder().build());
+        when(proxyClient.client().getBranch(any(GetBranchRequest.class)))
+                .thenReturn(GetBranchResponse.builder()
+                        .branch(Branch.builder()
+                                .branchName(BRANCH_NAME)
+                                .build())
+                        .build())
+                .thenThrow(NotFoundException.builder().message("Resource Not Found").build());
     }
 }
