@@ -1,10 +1,13 @@
 package software.amazon.amplify.app;
 
 import java.time.Duration;
-import software.amazon.awssdk.core.SdkClient;
 import software.amazon.awssdk.services.amplify.AmplifyClient;
+import software.amazon.awssdk.services.amplify.model.App;
 import software.amazon.awssdk.services.amplify.model.DeleteAppRequest;
 import software.amazon.awssdk.services.amplify.model.DeleteAppResponse;
+import software.amazon.awssdk.services.amplify.model.GetAppRequest;
+import software.amazon.awssdk.services.amplify.model.GetAppResponse;
+import software.amazon.awssdk.services.amplify.model.NotFoundException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.OperationStatus;
 import software.amazon.cloudformation.proxy.ProgressEvent;
@@ -42,6 +45,7 @@ public class DeleteHandlerTest extends AbstractTestBase {
         proxy = new AmazonWebServicesClientProxy(logger, MOCK_CREDENTIALS, () -> Duration.ofSeconds(600).toMillis());
         amplifyClient = mock(AmplifyClient.class);
         proxyClient = MOCK_PROXY(proxy, amplifyClient);
+        stubProxyClient();
     }
 
     @AfterEach
@@ -59,11 +63,8 @@ public class DeleteHandlerTest extends AbstractTestBase {
                 .build();
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
-            .desiredResourceState(model)
-            .build();
-
-        when(proxyClient.client().deleteApp(any(DeleteAppRequest.class)))
-                .thenReturn(DeleteAppResponse.builder().build());
+                .desiredResourceState(model)
+                .build();
 
         final ProgressEvent<ResourceModel, CallbackContext> response = handler.handleRequest(proxy, request,
                 new CallbackContext(), proxyClient, logger);
@@ -75,5 +76,17 @@ public class DeleteHandlerTest extends AbstractTestBase {
         assertThat(response.getResourceModels()).isNull();
         assertThat(response.getMessage()).isNull();
         assertThat(response.getErrorCode()).isNull();
+    }
+
+    private void stubProxyClient() {
+        when(proxyClient.client().deleteApp(any(DeleteAppRequest.class)))
+                .thenReturn(DeleteAppResponse.builder().build());
+        when(proxyClient.client().getApp(any(GetAppRequest.class)))
+                .thenReturn(GetAppResponse.builder()
+                        .app(App.builder()
+                                .name("testApp")
+                                .build())
+                        .build())
+                .thenThrow(NotFoundException.builder().message("Resource Not Found").build());
     }
 }
